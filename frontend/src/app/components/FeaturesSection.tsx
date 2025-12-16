@@ -13,7 +13,7 @@ const features = [
       "Jadwalkan sesi secara fleksibel",
       "Privasi dan keamanan terjamin",
     ],
-    imageUrl: "/feature-consultation.png", // Ganti dengan gambar relevan
+    imageUrl: "/images/home/consultation.png",
   },
   {
     title: "Resep Digital yang Sah dan Cepat",
@@ -24,7 +24,7 @@ const features = [
       "Terintegrasi dengan apotek",
       "Hindari salah baca resep",
     ],
-    imageUrl: "/feature-prescription.png", // Ganti dengan gambar relevan
+    imageUrl: "/images/home/drug.png",
   },
   {
     title: "Apotek Antar, Obat Sampai di Hari yang Sama",
@@ -35,7 +35,7 @@ const features = [
       "Stok obat terjamin",
       "Lacak pesanan secara real-time",
     ],
-    imageUrl: "/feature-pharmacy.png", // Ganti dengan gambar relevan
+    imageUrl: "/images/home/pharmacy.png",
   },
 ];
 
@@ -53,7 +53,7 @@ export const FeaturesSection = () => {
           Semua Kebutuhan Kesehatan dalam Satu Genggaman
         </motion.h2>
 
-        <div className="space-y-20">
+        <div className="space-y-20 max-w-6xl mx-auto">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
@@ -61,7 +61,7 @@ export const FeaturesSection = () => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.8 }}
-              className="grid md:grid-cols-2 gap-12 items-center"
+              className="grid md:grid-cols-2 items-center"
             >
               {/* Kolom Teks */}
               <div className={index % 2 === 1 ? "md:order-last" : ""}>
@@ -84,9 +84,9 @@ export const FeaturesSection = () => {
                 <Image
                   src={feature.imageUrl}
                   alt={feature.title}
-                  width={500}
-                  height={500}
-                  className="rounded-xl object-contain shadow-2xl"
+                  width={400}
+                  height={400}
+                  className="rounded-xl object-cover shadow-2xl transition-all duration-300 hover:scale-105"
                 />
               </div>
             </motion.div>

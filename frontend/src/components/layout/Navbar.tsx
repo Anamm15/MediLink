@@ -11,11 +11,12 @@ const menuItems = [
   { text: "Beranda", href: "/" },
   { text: "Cari Dokter", href: "/doctors" },
   { text: "Apotek", href: "/pharmacy" },
+  { text: "Dashboard User", href: "/user/dashboard" },
+  { text: "Dashboard Doctor", href: "/doctors/dashboard" },
   { text: "Artikel", href: "/articles" },
 ];
 
 // --- DATA PENGGUNA (SIMULASI) ---
-// Di aplikasi nyata, ini akan datang dari context atau session
 const mockUser = {
   name: "Budi Setiawan",
   avatarUrl: "https://i.pravatar.cc/150?u=budi",
@@ -24,14 +25,9 @@ const mockUser = {
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-
-  // --- SIMULASI STATUS LOGIN ---
-  // Ganti ini dengan logika autentikasi Anda
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
   const pathname = usePathname();
 
-  // Efek shadow saat scroll
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -40,7 +36,6 @@ export const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Tutup menu mobile saat navigasi
   useEffect(() => {
     if (isMenuOpen) {
       setIsMenuOpen(false);
@@ -60,7 +55,7 @@ export const Navbar = () => {
           className="flex items-center gap-2 font-bold text-cyan-600"
         >
           <ShieldCheck className="h-7 w-7" />
-          <span className="text-xl">HealthApp</span>
+          <span className="text-xl font-bold">MediLink</span>
         </Link>
 
         {/* 2. Menu Navigasi Desktop */}
@@ -69,7 +64,7 @@ export const Navbar = () => {
             <Link
               key={item.text}
               href={item.href}
-              className={`text-sm font-semibold transition-colors hover:text-cyan-600 ${
+              className={`font-semibold transition-colors hover:text-cyan-600 ${
                 pathname === item.href ? "text-cyan-600" : "text-gray-600"
               }`}
             >
@@ -102,13 +97,13 @@ export const Navbar = () => {
                 <div className="py-1">
                   <Link
                     href="/dashboard"
-                    className="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="flex w-full items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     <LayoutDashboard className="h-4 w-4" /> Dashboard
                   </Link>
                   <button
                     onClick={() => setIsLoggedIn(false)}
-                    className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    className="flex w-full items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100"
                   >
                     <LogOut className="h-4 w-4" /> Logout
                   </button>
@@ -119,13 +114,13 @@ export const Navbar = () => {
             <>
               <Link
                 href="/login"
-                className="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-cyan-600"
+                className="px-4 py-2 font-semibold text-gray-600 hover:text-cyan-600"
               >
                 Masuk
               </Link>
               <Link
                 href="/register"
-                className="rounded-full bg-cyan-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-cyan-600"
+                className="rounded-full bg-cyan-500 px-5 py-2 font-semibold text-white shadow-sm hover:bg-cyan-600"
               >
                 Daftar
               </Link>

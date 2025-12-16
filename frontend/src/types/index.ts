@@ -1,5 +1,4 @@
 export type Doctor = {
-  // ... properti dari halaman daftar sebelumnya
   id: string;
   name: string;
   specialty: string;
@@ -31,7 +30,6 @@ export type PatientReview = {
   date: string;
 };
 
-// Tipe data lengkap untuk halaman detail
 export type DoctorDetail = Doctor & {
   yearsOfExperience: number;
   patientCount: number;
@@ -49,7 +47,7 @@ export type DoctorDetail = Doctor & {
 export type Medicine = {
   id: string;
   name: string;
-  dosage: string; // e.g., "500 mg"
+  dosage: string;
   imageUrl: string;
   price: number;
   quantity: number;
@@ -59,7 +57,7 @@ export type Prescription = {
   id: string;
   doctorName: string;
   doctorSpecialty: string;
-  date: string; // e.g., "19 Sep 2025"
+  date: string;
   medicines: Medicine[];
   isRedeemed: boolean;
 };

@@ -84,7 +84,6 @@ export default function DoctorsPage() {
           </header>
 
           <SearchFilter />
-
           <DoctorList doctors={mockDoctors} />
         </div>
       </main>

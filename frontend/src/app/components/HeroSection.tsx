@@ -46,7 +46,7 @@ export const HeroSection = () => {
           className="relative"
         >
           <Image
-            src="/hero-image.png" // Ganti dengan gambar ilustrasi/foto yang relevan
+            src="/images/home/hero.avif"
             alt="Dokter sedang konsultasi online dengan pasien"
             width={600}
             height={600}
