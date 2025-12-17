@@ -1,0 +1,56 @@
+@baseUrl = http://localhost:5000/api/v1/users
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNWE0NGJiMTMtOThlYy00ZTA4LThlNmYtNWE2ZWE4NWQzNGY3Iiwicm9sZSI6InVzZXIiLCJpc3MiOiJtZWRpbGluay1hcHAiLCJleHAiOjE3NjYwNjQ3NDQsImlhdCI6MTc2NTk3ODM0NH0.rDr7wCjkJVLVO4gniaQUG6cRU2LCex5edmbSEfKBSHY
+
+###
+GET {{baseUrl}}/
+Authorization: Bearer {{token}}
+
+###
+GET {{baseUrl}}/me
+Authorization: Bearer {{token}}
+
+###
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+   "first_name": "John",
+   "last_name": "Doe",
+   "email": "john.doe@example.com",
+   "phone_number": "+6283111037657",
+   "password": "SecurePass123"
+}
+
+###
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+   "email": "john.doe@example.com",
+   "password": "NewSecurePass456"
+}
+
+###
+PUT {{baseUrl}}/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+   "first_name": "Johnathan",
+   "last_name": "Doe",
+   "phone_number": "+6283111037658"
+}
+
+###
+PATCH {{baseUrl}}/password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+   "old_password": "SecurePass123",
+   "new_password": "NewSecurePass456"
+}
+
+###
+DELETE {{baseUrl}}/
+Authorization: Bearer {{token}}

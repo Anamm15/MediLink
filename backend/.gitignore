@@ -1,0 +1,64 @@
+# --- Binaries ---
+# File hasil compile
+bin/
+out/
+dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Nama aplikasi (jika Anda melakukan go build -o main)
+main
+app
+server
+
+# --- Testing ---
+# Hasil coverage testing
+*.out
+*.test
+*.prof
+
+# --- Environment & Secrets ---
+# SANGAT PENTING: Jangan upload file secret ke git
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.key
+
+# --- Dependencies ---
+# Folder vendor tidak perlu di-upload jika menggunakan Go Modules
+# Namun jika Anda memang sengaja ingin mem-vendor, hapus baris ini
+vendor/
+
+# --- IDEs & Editors ---
+# JetBrains (GoLand, IntelliJ)
+.idea/
+*.iwb
+*.iml
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+*.code-workspace
+
+# Temporary files
+*.swp
+*.swo
+.DS_Store
+
+# --- Database & Logs ---
+# File log Gin atau aplikasi
+*.log
+logs/
+
+# SQLite (jika menggunakan gorm dengan sqlite)
+*.db
+*.db-journal
+
+# Docker
+.docker/

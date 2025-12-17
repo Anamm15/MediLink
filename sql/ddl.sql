@@ -14,7 +14,8 @@ CREATE TABLE users (
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(20) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     address TEXT,
     role user_role NOT NULL,
     status user_status NOT NULL DEFAULT 'active',
@@ -22,7 +23,6 @@ CREATE TABLE users (
     birth_date DATE,
     gender gender_enum,
     is_verified BOOLEAN DEFAULT FALSE,
-    last_login_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -79,7 +79,6 @@ CREATE TABLE patients (
     insurance_number VARCHAR(100),
     occupation VARCHAR(100),
 );
-
 
 -- --- 2. Transactional & Activity Tables ---
 
