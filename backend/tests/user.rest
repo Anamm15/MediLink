@@ -15,9 +15,9 @@ Content-Type: application/json
 
 {
    "first_name": "Moch",
-   "last_name": "Rizal",
-   "email": "oblolovina@gmail.com",
-   "phone_number": "+6283098037643",
+   "last_name": "Muhajir",
+   "email": "muhajir@gmail.com",
+   "phone_number": "+6283098037610",
    "password": "SecurePass123",
    "gender": "male",
    "address": "Jl. Kebon Jeruk No. 123",

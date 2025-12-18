@@ -37,6 +37,8 @@ func SetUpDatabaseConnection() *gorm.DB {
 		entity.User{},
 		entity.Patient{},
 		entity.Clinic{},
+		entity.Doctor{},
+		entity.DoctorSchedule{},
 	); err != nil {
 		fmt.Println(err)
 		panic(err)

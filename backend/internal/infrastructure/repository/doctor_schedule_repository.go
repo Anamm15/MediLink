@@ -1,0 +1,68 @@
+package repository
+
+import (
+	"context"
+
+	"MediLink/internal/domain/entity"
+	"MediLink/internal/domain/repository"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
+
+type doctorScheduleRepository struct {
+	db *gorm.DB
+}
+
+func NewDoctorScheduleRepository(db *gorm.DB) repository.DoctorScheduleRepository {
+	return &doctorScheduleRepository{db: db}
+}
+
+func (r *doctorScheduleRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity.DoctorSchedule, error) {
+	var schedule entity.DoctorSchedule
+	if err := r.db.WithContext(ctx).
+		First(&schedule, id).Error; err != nil {
+		return nil, err
+	}
+	return &schedule, nil
+}
+
+func (r *doctorScheduleRepository) GetByDoctorID(ctx context.Context, doctorID uuid.UUID) ([]entity.DoctorSchedule, error) {
+	var schedules []entity.DoctorSchedule
+	if err := r.db.WithContext(ctx).
+		Where("doctor_id = ?", doctorID).
+		Find(&schedules).Error; err != nil {
+		return nil, err
+	}
+	return schedules, nil
+}
+
+func (r *doctorScheduleRepository) Create(ctx context.Context, schedule *entity.DoctorSchedule) (*entity.DoctorSchedule, error) {
+	if err := r.db.WithContext(ctx).
+		Create(schedule).Error; err != nil {
+		return nil, err
+	}
+	return schedule, nil
+}
+
+func (r *doctorScheduleRepository) Update(ctx context.Context, schedule *entity.DoctorSchedule) error {
+	if err := r.db.WithContext(ctx).
+		Model(schedule).
+		Omit("id", "doctor_id").
+		Updates(schedule).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *doctorScheduleRepository) Delete(ctx context.Context, id uuid.UUID) error {
+	result := r.db.WithContext(ctx).Delete(&entity.DoctorSchedule{}, id)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
+}

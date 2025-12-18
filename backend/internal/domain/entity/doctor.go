@@ -1,6 +1,8 @@
 package entity
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"gorm.io/datatypes"
 )
@@ -23,4 +25,10 @@ type Doctor struct {
 	AvailableForTelemedicine bool    `gorm:"default:false"`
 
 	Bio *string `gorm:"type:text"`
+
+	DoctorSchedule []DoctorSchedule `gorm:"foreignKey:DoctorID"`
+	User           User             `gorm:"foreignKey:UserID"`
+	Clinic         *Clinic          `gorm:"foreignKey:ClinicID"`
+
+	CreatedAt time.Time `gorm:"type:timestamptz;default:now()"`
 }

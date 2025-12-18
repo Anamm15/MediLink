@@ -1,0 +1,51 @@
+@baseUrl = http://localhost:5000/api/v1/doctors
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTE3NWQ1MzgtZjJjMS00MzhhLWE3N2UtODc4NjFiNjllMWRkIiwicm9sZSI6ImRvY3RvciIsImlzcyI6Im1lZGlsaW5rLWFwcCIsImV4cCI6MTc2NjE1MDkwOCwiaWF0IjoxNzY2MDY0NTA4fQ.XH9ASV4PK4gWego6_cQTy2qRnyrO37hITSta4OFweII
+
+###
+POST http://localhost:5000/api/v1/users/login
+Content-Type: application/json
+
+{
+   "email": "muhajir@gmail.com",
+   "password": "SecurePass123"
+}
+
+###
+GET {{baseUrl}}?name=muhajir
+
+###
+GET {{baseUrl}}/0902d466-40c2-4bb7-9884-81035819ebdc
+
+###
+PUT {{baseUrl}}/0902d466-40c2-4bb7-9884-81035819ebdc
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "specialization": "Dokter Penyakit Dalam"
+}
+
+
+###
+POST {{baseUrl}}/schedule
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "day_of_week": "MONDAY",
+  "start_time": "2025-01-15T08:00:00Z",
+  "end_time": "2025-01-15T12:00:00Z",
+  "type": "ONSITE",
+  "location": "Klinik Sehat Sentosa - Lantai 2",
+  "max_appointments": 20
+}
+
+
+###
+PUT {{baseUrl}}/schedule/93cb8ce5-f5db-49c3-90b0-93ecb0ed79b8
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+   "day_of_week": "sunday"
+}

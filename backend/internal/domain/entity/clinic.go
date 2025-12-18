@@ -31,5 +31,6 @@ type Clinic struct {
 	Accreditation   *string    `gorm:"type:varchar(100)"`
 	EstablishedDate *time.Time `gorm:"type:date"`
 
+	Doctors   []Doctor  `gorm:"foreignKey:ClinicID"`
 	CreatedAt time.Time `gorm:"type:timestamptz;default:now()"`
 }
