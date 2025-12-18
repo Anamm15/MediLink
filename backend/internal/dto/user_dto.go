@@ -18,7 +18,7 @@ type UserResponseDTO struct {
 	Email       string               `json:"email"`
 	Address     *string              `json:"address"`
 	Status      constants.UserStatus `json:"status"`
-	BirthDate   *time.Time           `json:"birthdate"`
+	BirthDate   string               `json:"birthdate"`
 	BirthPlace  *string              `json:"birthplace"`
 	Gender      *constants.Gender    `json:"gender"`
 	IsVerified  bool                 `json:"is_verified"`
@@ -26,18 +26,9 @@ type UserResponseDTO struct {
 	UpdatedAt   time.Time            `json:"updated_at"`
 }
 
-type UserProfileDTO struct {
-	ID         uint   `json:"id"`
-	Name       string `json:"name"`
-	Email      string `json:"email"`
-	Role       string `json:"role"`
-	Status     string `json:"status"`
-	Address    string `json:"address"`
-	BirthPlace string `json:"birth_place"`
-	BirthDate  string `json:"birth_date"`
-	Gender     string `json:"gender"`
-	IsVerified bool   `json:"is_verified"`
-	CreatedAt  string `json:"created_at"`
+type UserProfileResponseDTO struct {
+	User    UserResponseDTO    `json:"user"`
+	Patient PatientResponseDTO `json:"patient"`
 }
 
 type UserRegistrationRequestDTO struct {
@@ -46,6 +37,10 @@ type UserRegistrationRequestDTO struct {
 	PhoneNumber string `json:"phone_number" binding:"required,e164"`
 	Email       string `json:"email" binding:"required,email"`
 	Password    string `json:"password" binding:"required,min=8"`
+	Gender      string `json:"gender" binding:"omitempty,oneof=male female other"`
+	Address     string `json:"address" binding:"required"`
+	BirthPlace  string `json:"birth_place" binding:"required"`
+	BirthDate   string `json:"birth_date" binding:"required"`
 }
 
 type UserRegistrationResponseDTO struct {
@@ -73,6 +68,10 @@ type UserChangePasswordRequestDTO struct {
 	NewPassword *string `json:"new_password" binding:"required,min=8"`
 }
 
+type UserVerifyOTPRequestDTO struct {
+	OTP string `json:"otp" binding:"required"`
+}
+
 type OnBoardPatientRequestDTO struct {
 	MedicalHistory string `json:"medical_history" binding:"required"`
 }
@@ -86,7 +85,7 @@ func MapUserToUserResponseDTO(user *entity.User) UserResponseDTO {
 		Email:       user.Email,
 		Address:     user.Address,
 		Status:      user.Status,
-		BirthDate:   user.BirthDate,
+		BirthDate:   utils.ConvertTimeToString(*user.BirthDate),
 		BirthPlace:  user.BirthPlace,
 		Gender:      user.Gender,
 		IsVerified:  user.IsVerified,
@@ -104,7 +103,7 @@ func MapUserResponseDTOToUser(dto UserResponseDTO) entity.User {
 		Email:       dto.Email,
 		Address:     dto.Address,
 		Status:      dto.Status,
-		BirthDate:   dto.BirthDate,
+		BirthDate:   utils.ConvertStringToTime(dto.BirthDate),
 		BirthPlace:  dto.BirthPlace,
 		Gender:      dto.Gender,
 		IsVerified:  dto.IsVerified,

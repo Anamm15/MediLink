@@ -25,11 +25,20 @@ func main() {
 	server.Use(middlewares.SetupCORS())
 
 	db := database.SetUpDatabaseConnection()
+	redisClient := database.NewRedisClient()
+
 	userRepository := repository.NewUserRepository(db)
-	userUsecase := usecase.NewUserUsecase(userRepository)
+	patientRepository := repository.NewPatientRepository(db)
+	redisRepository := repository.NewRedisRepository(redisClient)
+
+	userUsecase := usecase.NewUserUsecase(userRepository, patientRepository, redisRepository)
+	patientUsecase := usecase.NewPatientUsecase(patientRepository)
+
 	userDelivery := delivery.NewUserDelivery(userUsecase)
+	patientDelivery := delivery.NewPatientDelivery(patientUsecase)
 
 	routes.UserRoute(server, userDelivery)
+	routes.PatientRoute(server, patientDelivery)
 
 	port := os.Getenv("PORT")
 	server.Run(":" + port)

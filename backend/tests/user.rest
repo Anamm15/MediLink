@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:5000/api/v1/users
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNWE0NGJiMTMtOThlYy00ZTA4LThlNmYtNWE2ZWE4NWQzNGY3Iiwicm9sZSI6InVzZXIiLCJpc3MiOiJtZWRpbGluay1hcHAiLCJleHAiOjE3NjYwNjQ3NDQsImlhdCI6MTc2NTk3ODM0NH0.rDr7wCjkJVLVO4gniaQUG6cRU2LCex5edmbSEfKBSHY
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiOWMyMThjMGMtOTFiNS00NmY4LTkyNTItOThlYmY3NTNjMTk5Iiwicm9sZSI6InVzZXIiLCJpc3MiOiJtZWRpbGluay1hcHAiLCJleHAiOjE3NjYwOTk4MjEsImlhdCI6MTc2NjAxMzQyMX0.5mPs77RO2bWOllJXZ25aUK1AT8TE_4b1QjBesbgcniY
 
 ###
 GET {{baseUrl}}/
@@ -14,11 +14,15 @@ POST {{baseUrl}}/register
 Content-Type: application/json
 
 {
-   "first_name": "John",
-   "last_name": "Doe",
-   "email": "john.doe@example.com",
-   "phone_number": "+6283111037657",
-   "password": "SecurePass123"
+   "first_name": "Choirul Anam",
+   "last_name": "Anam",
+   "email": "irulxartal@gmail.com",
+   "phone_number": "+6283111037643",
+   "password": "SecurePass123",
+   "gender": "male",
+   "address": "Jl. Kebon Jeruk No. 123",
+   "birth_place": "Jakarta",
+   "birth_date": "1990-05-15"
 }
 
 ###
@@ -26,8 +30,8 @@ POST {{baseUrl}}/login
 Content-Type: application/json
 
 {
-   "email": "john.doe@example.com",
-   "password": "NewSecurePass456"
+   "email": "john.cena@example.com",
+   "password": "SecurePass123"
 }
 
 ###
@@ -54,3 +58,34 @@ Content-Type: application/json
 ###
 DELETE {{baseUrl}}/
 Authorization: Bearer {{token}}
+
+###
+POST {{baseUrl}}/send-otp
+Authorization: Bearer {{token}}
+
+###
+POST {{baseUrl}}/verify-otp
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+   "otp": "630299"
+}
+
+###
+POST {{baseUrl}}/on-board-patient
+Authorization: Bearer {{ token }}
+Content-Type: application/json
+
+{
+  "identity_number": "3171012345100001",
+  "blood_type": "O+",
+  "weight_kg": 72,
+  "height_cm": 175,
+  "allergies": "Seafood, Penicillin",
+  "chronic_diseases": "None",
+  "emergency_contact": "+6281234561790",
+  "insurance_provider": "BPJS Kesehatan",
+  "insurance_number": "0001234567891",
+  "occupation": "Software Engineer"
+}

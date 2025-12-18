@@ -2,6 +2,9 @@ package usecase
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"time"
 
 	"MediLink/internal/domain/entity"
 	errs "MediLink/internal/domain/errors"
@@ -9,17 +12,30 @@ import (
 	"MediLink/internal/domain/usecase"
 	"MediLink/internal/dto"
 	"MediLink/internal/helpers/constants"
+	"MediLink/internal/infrastructure/mail"
 	"MediLink/internal/utils"
 
 	"github.com/google/uuid"
+	"golang.org/x/sync/errgroup"
+	"gorm.io/gorm"
 )
 
 type userUsecase struct {
-	userRepo repository.UserRepository
+	userRepo    repository.UserRepository
+	patientRepo repository.PatientRepository
+	cacheRepo   repository.CacheRepository
 }
 
-func NewUserUsecase(userRepo repository.UserRepository) usecase.UserUsecase {
-	return &userUsecase{userRepo: userRepo}
+func NewUserUsecase(
+	userRepo repository.UserRepository,
+	patientRepo repository.PatientRepository,
+	cacheRepo repository.CacheRepository,
+) usecase.UserUsecase {
+	return &userUsecase{
+		userRepo:    userRepo,
+		patientRepo: patientRepo,
+		cacheRepo:   cacheRepo,
+	}
 }
 
 func (u *userUsecase) Register(ctx context.Context, data dto.UserRegistrationRequestDTO) (dto.UserRegistrationResponseDTO, error) {
@@ -34,6 +50,10 @@ func (u *userUsecase) Register(ctx context.Context, data dto.UserRegistrationReq
 		Email:       data.Email,
 		PhoneNumber: data.PhoneNumber,
 		Password:    hashedPassword,
+		Gender:      (*constants.Gender)(&data.Gender),
+		Address:     &data.Address,
+		BirthPlace:  &data.BirthPlace,
+		BirthDate:   utils.ConvertStringToTime(data.BirthDate),
 	}
 	createdUser, err := u.userRepo.Create(ctx, user)
 	if err != nil {
@@ -86,12 +106,45 @@ func (u *userUsecase) GetAll(ctx context.Context, page int) ([]dto.UserResponseD
 	return userDTOs, nil
 }
 
-func (u *userUsecase) GetProfile(ctx context.Context, userID uuid.UUID) (dto.UserResponseDTO, error) {
-	user, err := u.userRepo.GetByID(ctx, userID)
-	if err != nil {
-		return dto.UserResponseDTO{}, err
+func (u *userUsecase) GetProfile(ctx context.Context, userID uuid.UUID) (dto.UserProfileResponseDTO, error) {
+	var user *entity.User
+	var patient *entity.Patient
+
+	g, ctx := errgroup.WithContext(ctx)
+
+	g.Go(func() error {
+		var err error
+		user, err = u.userRepo.GetByID(ctx, userID)
+		return err
+	})
+
+	// Patient Opsional
+	g.Go(func() error {
+		var err error
+		patient, err = u.patientRepo.GetByUserID(ctx, userID)
+
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil
+		}
+
+		return err
+	})
+
+	if err := g.Wait(); err != nil {
+		return dto.UserProfileResponseDTO{}, err
 	}
-	return dto.MapUserToUserResponseDTO(user), nil
+
+	response := dto.UserProfileResponseDTO{
+		User: dto.MapUserToUserResponseDTO(user),
+	}
+
+	// Hanya mapping patient jika datanya memang ditemukan
+	if patient != nil {
+		patientDTO := dto.MapPatientToPatientResponseDTO(patient)
+		response.Patient = patientDTO
+	}
+
+	return response, nil
 }
 
 func (u *userUsecase) UpdateProfile(ctx context.Context, userID uuid.UUID, data dto.UserUpdateProfileRequestDTO) error {
@@ -127,6 +180,91 @@ func (u *userUsecase) Delete(ctx context.Context, userID uuid.UUID) error {
 	return u.userRepo.Delete(ctx, userID)
 }
 
-// func (u *userUsecase) OnBoardPatient(userID uuid.UUID, medicalHistory string) error {
-// 	// return u.userRepo.OnBoardPatient(context.Background(), userID, medicalHistory)
-// }
+func (u *userUsecase) SendOTP(ctx context.Context, userID uuid.UUID) error {
+	user, err := u.userRepo.GetByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	otp, err := utils.GenerateOTP(6)
+	if err != nil {
+		return err
+	}
+
+	// 3. PENTING: Simpan OTP ke Storage (Redis/DB) dengan Expiration Time
+	// Key-nya bisa berupa "otp:userID" atau "otp:email"
+	// Contoh menggunakan interface repository cache/redis:
+	err = u.cacheRepo.Set(ctx, "otp:"+user.Email, otp, 5*time.Minute)
+	if err != nil {
+		return err
+	}
+
+	emailBody := utils.BuildEmailBody(user.FirstName, otp)
+
+	go func() {
+		err := mail.SendEmail(user.Email, "Kode Verifikasi Keamanan - MediLink", emailBody)
+		if err != nil {
+			fmt.Printf("Gagal mengirim email ke %s: %v\n", user.Email, err)
+		}
+	}()
+
+	return nil
+}
+
+func (u *userUsecase) VerifyOTP(ctx context.Context, userID uuid.UUID, inputOTP string) error {
+	user, err := u.userRepo.GetByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	if user.IsVerified {
+		return nil
+	}
+
+	key := "otp:" + user.Email
+
+	storedOTP, err := u.cacheRepo.Get(ctx, key)
+	if err != nil {
+		return errors.New("OTP has expired or does not exist")
+	}
+
+	if storedOTP != inputOTP {
+		return errors.New("Invalid OTP code")
+	}
+
+	_ = u.cacheRepo.Delete(ctx, key)
+	user.IsVerified = true
+
+	err = u.userRepo.Update(ctx, user)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u *userUsecase) OnBoardPatient(ctx context.Context, userID uuid.UUID, data dto.PatientCreateRequestDTO) error {
+	user, err := u.userRepo.GetByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	if !user.IsVerified {
+		return errs.ErrUserNotVerified
+	}
+
+	var patient entity.Patient
+	patient.UserID = userID
+	data.AssignToEntity(&patient)
+	_, err = u.patientRepo.Create(ctx, &patient)
+	if err != nil {
+		return err
+	}
+
+	user.Role = constants.UserRole(constants.RolePatient)
+	err = u.userRepo.Update(ctx, user)
+	if err != nil {
+		return err
+	}
+	return nil
+}

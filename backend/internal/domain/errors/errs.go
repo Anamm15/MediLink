@@ -10,4 +10,5 @@ var (
 	ErrConflict         = errors.New("record already exists")
 	ErrEmailOrPass      = errors.New("invalid email or password")
 	ErrOldPassIncorrect = errors.New("password is incorrect")
+	ErrUserNotVerified  = errors.New("user is not verified")
 )

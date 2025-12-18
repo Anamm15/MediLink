@@ -22,7 +22,7 @@ type User struct {
 
 	BirthPlace *string           `gorm:"type:varchar(100)"`
 	BirthDate  *time.Time        `gorm:"type:date"`
-	Gender     *constants.Gender `gorm:"type:varchar(10);"`
+	Gender     *constants.Gender `gorm:"type:varchar(10);not null"`
 	IsVerified bool              `gorm:"default:false"`
 
 	CreatedAt time.Time `gorm:"type:timestamptz;default:now()"`

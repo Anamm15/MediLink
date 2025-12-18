@@ -134,3 +134,55 @@ func (ud *userDelivery) Delete(ctx *gin.Context) {
 	res := utils.BuildResponseSuccess("User deleted successfully", nil)
 	ctx.JSON(http.StatusNoContent, res)
 }
+
+func (ud *userDelivery) SendOTP(ctx *gin.Context) {
+	userId := ctx.MustGet("user_id").(uuid.UUID)
+	err := ud.userUsecase.SendOTP(ctx, userId)
+	if err != nil {
+		res := utils.BuildResponseFailed("Failed to send OTP", err.Error(), nil)
+		ctx.JSON(http.StatusInternalServerError, res)
+		return
+	}
+
+	res := utils.BuildResponseSuccess("OTP sent successfully", nil)
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (ud *userDelivery) VerifyOTP(ctx *gin.Context) {
+	userId := ctx.MustGet("user_id").(uuid.UUID)
+	var req dto.UserVerifyOTPRequestDTO
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	err := ud.userUsecase.VerifyOTP(ctx, userId, req.OTP)
+	if err != nil {
+		res := utils.BuildResponseFailed("Failed to verify OTP", err.Error(), nil)
+		ctx.JSON(http.StatusInternalServerError, res)
+		return
+	}
+
+	res := utils.BuildResponseSuccess("OTP verified successfully", nil)
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (ud *userDelivery) OnBoardPatient(ctx *gin.Context) {
+	userId := ctx.MustGet("user_id").(uuid.UUID)
+	var req dto.PatientCreateRequestDTO
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		res := utils.BuildResponseFailed("Bad request", err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	err := ud.userUsecase.OnBoardPatient(ctx, userId, req)
+	if err != nil {
+		res := utils.BuildResponseFailed("Failed to on board patient", err.Error(), nil)
+		ctx.JSON(http.StatusInternalServerError, res)
+		return
+	}
+	res := utils.BuildResponseSuccess("Patient on boarded successfully", nil)
+	ctx.JSON(http.StatusOK, res)
+}

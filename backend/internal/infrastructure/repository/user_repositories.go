@@ -33,6 +33,7 @@ func (r *userRepository) GetAll(ctx context.Context, limit int, offset int) ([]e
 		Find(&users).Error; err != nil {
 		return nil, err
 	}
+
 	return users, nil
 }
 
