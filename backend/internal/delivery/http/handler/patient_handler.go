@@ -1,9 +1,9 @@
-package delivery
+package handler
 
 import (
 	"net/http"
 
-	"MediLink/internal/domain/delivery"
+	"MediLink/internal/domain/delivery/http/handler"
 	"MediLink/internal/domain/usecase"
 	"MediLink/internal/dto"
 	"MediLink/internal/utils"
@@ -12,15 +12,15 @@ import (
 	"github.com/google/uuid"
 )
 
-type patientDelivery struct {
+type patientHandler struct {
 	patientUsecase usecase.PatientUsecase
 }
 
-func NewPatientDelivery(patientUsecase usecase.PatientUsecase) delivery.PatientDelivery {
-	return &patientDelivery{patientUsecase: patientUsecase}
+func NewPatientHandler(patientUsecase usecase.PatientUsecase) handler.PatientHandler {
+	return &patientHandler{patientUsecase: patientUsecase}
 }
 
-func (p *patientDelivery) Update(ctx *gin.Context) {
+func (p *patientHandler) Update(ctx *gin.Context) {
 	userId := ctx.MustGet("user_id").(uuid.UUID)
 
 	var data dto.PatientUpdateRequestDTO

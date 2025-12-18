@@ -14,10 +14,10 @@ POST {{baseUrl}}/register
 Content-Type: application/json
 
 {
-   "first_name": "Choirul Anam",
-   "last_name": "Anam",
-   "email": "irulxartal@gmail.com",
-   "phone_number": "+6283111037643",
+   "first_name": "Moch",
+   "last_name": "Rizal",
+   "email": "oblolovina@gmail.com",
+   "phone_number": "+6283098037643",
    "password": "SecurePass123",
    "gender": "male",
    "address": "Jl. Kebon Jeruk No. 123",

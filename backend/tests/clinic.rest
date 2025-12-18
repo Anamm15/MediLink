@@ -1,0 +1,76 @@
+@baseUrl = http://localhost:5000/api/v1/clinics
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYjBiNmMyYTItNzIwYy00NGVlLTgxNmQtNGFhOTYwYTA1YzdiIiwicm9sZSI6ImFkbWluIiwiaXNzIjoibWVkaWxpbmstYXBwIiwiZXhwIjoxNzY2MTEyNDMwLCJpYXQiOjE3NjYwMjYwMzB9.yFgvUzYbxfB72oCaPlFRifYE5UwcH40I33v02sqAdu8
+
+###
+POST http://localhost:5000/api/v1/users/login
+Content-Type: application/json
+
+{
+   "email": "oblolovina@gmail.com",
+   "password": "SecurePass123"
+}
+
+###
+GET {{baseUrl}}/
+Authorization: Bearer {{token}}
+
+###
+GET {{baseUrl}}/944e7b0e-f8cc-48ef-83f2-44a9b5eff75f
+Authorization: Bearer {{token}}
+
+###
+POST {{baseUrl}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Klinik Sehat Sentosa",
+  "code": "KSS-001",
+  "type": "Klinik Umum",
+  "address": "Jl. Merdeka No. 123",
+  "city": "Jakarta Selatan",
+  "province": "DKI Jakarta",
+  "postal_code": "12345",
+  "phone_number": "+62-21-5551234",
+  "email": "info@kliniksehat.co.id",
+  "latitude": -6.260718,
+  "longitude": 106.781639,
+  "opening_time": {
+    "monday":    "08:00-20:00",
+    "tuesday":   "08:00-20:00",
+    "wednesday": "08:00-20:00",
+    "thursday":  "08:00-20:00",
+    "friday":    "08:00-20:00",
+    "saturday":  "08:00-14:00",
+    "sunday":    "closed"
+  },
+  "facilities": [
+    "UGD",
+    "Laboratorium",
+    "Apotek",
+    "Ruang Tunggu AC"
+  ],
+  "insurance_partners": [
+    "BPJS Kesehatan",
+    "Prudential",
+    "Allianz"
+  ],
+  "accreditation": "Paripurna",
+  "established_date": "2015-06-15"
+}
+
+###
+PUT {{baseUrl}}/944e7b0e-f8cc-48ef-83f2-44a9b5eff75f
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Klinik Sehat Sentosa Utama",
+  "phone_number": "+62-21-7778889",
+  "email": "contact@kliniksehat.co.id",
+  "status": "inactive"
+}
+
+###
+DELETE {{baseUrl}}/944e7b0e-f8cc-48ef-83f2-44a9b5eff75f
+Authorization: Bearer {{token}}

@@ -1,9 +1,9 @@
-package delivery
+package handler
 
 import (
 	"net/http"
 
-	"MediLink/internal/domain/delivery"
+	"MediLink/internal/domain/delivery/http/handler"
 	"MediLink/internal/domain/usecase"
 	"MediLink/internal/dto"
 	"MediLink/internal/utils"
@@ -12,17 +12,17 @@ import (
 	"github.com/google/uuid"
 )
 
-type userDelivery struct {
+type userHandler struct {
 	userUsecase usecase.UserUsecase
 }
 
-func NewUserDelivery(userUsecase usecase.UserUsecase) delivery.UserDelivery {
-	return &userDelivery{
+func NewUserHandler(userUsecase usecase.UserUsecase) handler.UserHandler {
+	return &userHandler{
 		userUsecase: userUsecase,
 	}
 }
 
-func (ud *userDelivery) Register(ctx *gin.Context) {
+func (ud *userHandler) Register(ctx *gin.Context) {
 	var req dto.UserRegistrationRequestDTO
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
@@ -41,7 +41,7 @@ func (ud *userDelivery) Register(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, res)
 }
 
-func (ud *userDelivery) Login(ctx *gin.Context) {
+func (ud *userHandler) Login(ctx *gin.Context) {
 	var req dto.UserLoginRequestDTO
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
@@ -59,7 +59,7 @@ func (ud *userDelivery) Login(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (ud *userDelivery) GetAll(ctx *gin.Context) {
+func (ud *userHandler) GetAll(ctx *gin.Context) {
 	pageQuery := ctx.DefaultQuery("page", "1")
 	page := utils.StringToInt(pageQuery)
 	users, err := ud.userUsecase.GetAll(ctx, page)
@@ -73,7 +73,7 @@ func (ud *userDelivery) GetAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (ud *userDelivery) GetProfile(ctx *gin.Context) {
+func (ud *userHandler) GetProfile(ctx *gin.Context) {
 	userId := ctx.MustGet("user_id").(uuid.UUID)
 	profile, err := ud.userUsecase.GetProfile(ctx, userId)
 	if err != nil {
@@ -85,7 +85,7 @@ func (ud *userDelivery) GetProfile(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (ud *userDelivery) UpdateProfile(ctx *gin.Context) {
+func (ud *userHandler) UpdateProfile(ctx *gin.Context) {
 	userId := ctx.MustGet("user_id").(uuid.UUID)
 	var req dto.UserUpdateProfileRequestDTO
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -104,7 +104,7 @@ func (ud *userDelivery) UpdateProfile(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (ud *userDelivery) ChangePassword(ctx *gin.Context) {
+func (ud *userHandler) ChangePassword(ctx *gin.Context) {
 	userId := ctx.MustGet("user_id").(uuid.UUID)
 	var req dto.UserChangePasswordRequestDTO
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -123,7 +123,7 @@ func (ud *userDelivery) ChangePassword(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (ud *userDelivery) Delete(ctx *gin.Context) {
+func (ud *userHandler) Delete(ctx *gin.Context) {
 	userId := ctx.MustGet("user_id").(uuid.UUID)
 	err := ud.userUsecase.Delete(ctx, userId)
 	if err != nil {
@@ -135,7 +135,7 @@ func (ud *userDelivery) Delete(ctx *gin.Context) {
 	ctx.JSON(http.StatusNoContent, res)
 }
 
-func (ud *userDelivery) SendOTP(ctx *gin.Context) {
+func (ud *userHandler) SendOTP(ctx *gin.Context) {
 	userId := ctx.MustGet("user_id").(uuid.UUID)
 	err := ud.userUsecase.SendOTP(ctx, userId)
 	if err != nil {
@@ -148,7 +148,7 @@ func (ud *userDelivery) SendOTP(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (ud *userDelivery) VerifyOTP(ctx *gin.Context) {
+func (ud *userHandler) VerifyOTP(ctx *gin.Context) {
 	userId := ctx.MustGet("user_id").(uuid.UUID)
 	var req dto.UserVerifyOTPRequestDTO
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -168,7 +168,7 @@ func (ud *userDelivery) VerifyOTP(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (ud *userDelivery) OnBoardPatient(ctx *gin.Context) {
+func (ud *userHandler) OnBoardPatient(ctx *gin.Context) {
 	userId := ctx.MustGet("user_id").(uuid.UUID)
 	var req dto.PatientCreateRequestDTO
 	if err := ctx.ShouldBindJSON(&req); err != nil {

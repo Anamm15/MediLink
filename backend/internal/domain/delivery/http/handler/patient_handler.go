@@ -1,7 +1,7 @@
-package delivery
+package handler
 
 import "github.com/gin-gonic/gin"
 
-type PatientDelivery interface {
+type PatientHandler interface {
 	Update(c *gin.Context)
 }

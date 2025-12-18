@@ -1,8 +1,8 @@
-package delivery
+package handler
 
 import "github.com/gin-gonic/gin"
 
-type UserDelivery interface {
+type UserHandler interface {
 	Register(ctx *gin.Context)
 	Login(ctx *gin.Context)
 	// RefreshToken(ctx *gin.Context)
