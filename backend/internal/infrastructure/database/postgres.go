@@ -40,6 +40,8 @@ func SetUpDatabaseConnection() *gorm.DB {
 		entity.Doctor{},
 		entity.DoctorSchedule{},
 		entity.Medicine{},
+		entity.Prescription{},
+		entity.PrescriptionMedicine{},
 	); err != nil {
 		fmt.Println(err)
 		panic(err)

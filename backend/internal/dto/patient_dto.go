@@ -49,7 +49,7 @@ type PatientUpdateRequestDTO struct {
 func MapPatientToPatientResponseDTO(patient *entity.Patient) PatientResponseDTO {
 	return PatientResponseDTO{
 		PatientID:         patient.ID,
-		IdentityNumber:    *patient.IdentityNumber,
+		IdentityNumber:    patient.IdentityNumber,
 		BloodType:         patient.BloodType,
 		WeightKg:          patient.WeightKg,
 		HeightCm:          patient.HeightCm,
@@ -63,7 +63,7 @@ func MapPatientToPatientResponseDTO(patient *entity.Patient) PatientResponseDTO 
 }
 
 func (dto *PatientCreateRequestDTO) AssignToEntity(patient *entity.Patient) {
-	patient.IdentityNumber = &dto.IdentityNumber
+	patient.IdentityNumber = dto.IdentityNumber
 	patient.BloodType = dto.BloodType
 	patient.WeightKg = dto.WeightKg
 	patient.HeightCm = dto.HeightCm
@@ -76,9 +76,6 @@ func (dto *PatientCreateRequestDTO) AssignToEntity(patient *entity.Patient) {
 }
 
 func (dto *PatientUpdateRequestDTO) AssignToEntity(patient *entity.Patient) {
-	if dto.IdentityNumber != nil {
-		patient.IdentityNumber = dto.IdentityNumber
-	}
 	if dto.BloodType != nil {
 		patient.BloodType = dto.BloodType
 	}

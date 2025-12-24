@@ -12,9 +12,12 @@ type Prescription struct {
 	DoctorID  uuid.UUID  `gorm:"type:uuid;not null"`
 	ClinicID  *uuid.UUID `gorm:"type:uuid"`
 
-	Notes *string `gorm:"type:text"`
+	Notes      *string `gorm:"type:text"`
+	IsRedeemed bool    `gorm:"default:false"`
 
-	IsRedeemed bool `gorm:"default:false"`
-
-	CreatedAt time.Time `gorm:"type:timestamptz;default:now()"`
+	CreatedAt time.Time              `gorm:"type:timestamptz;default:now()"`
+	Patient   *Patient               `gorm:"foreignKey:PatientID"`
+	Doctor    *Doctor                `gorm:"foreignKey:DoctorID"`
+	Clinic    *Clinic                `gorm:"foreignKey:ClinicID"`
+	Medicines []PrescriptionMedicine `gorm:"foreignKey:PrescriptionID"`
 }
