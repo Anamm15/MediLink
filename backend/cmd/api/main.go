@@ -33,21 +33,25 @@ func main() {
 	clinicRepository := repository.NewClinicRepository(db)
 	doctorRepository := repository.NewDoctorRepository(db)
 	doctorScheduleRepository := repository.NewDoctorScheduleRepository(db)
+	medicineRepository := repository.NewMedicineRepository(db)
 
 	userUsecase := usecase.NewUserUsecase(userRepository, patientRepository, redisRepository)
 	patientUsecase := usecase.NewPatientUsecase(patientRepository)
 	clinicUsecase := usecase.NewClinicUsecase(clinicRepository)
 	doctorUsecase := usecase.NewDoctorUsecase(doctorRepository, doctorScheduleRepository)
+	medicineUsecase := usecase.NewMedicineUsecase(medicineRepository)
 
 	userHandler := handler.NewUserHandler(userUsecase)
 	patientHandler := handler.NewPatientHandler(patientUsecase)
 	clinicHandler := handler.NewClinicHandler(clinicUsecase)
 	doctorHandler := handler.NewDoctorHandler(doctorUsecase)
+	medicineHandler := handler.NewMedicineHandler(medicineUsecase)
 
 	http.UserRoute(server, userHandler)
 	http.PatientRoute(server, patientHandler)
 	http.ClinicRoute(server, clinicHandler)
 	http.DoctorRoute(server, doctorHandler)
+	http.MedicineRoute(server, medicineHandler)
 
 	port := os.Getenv("PORT")
 	server.Run(":" + port)

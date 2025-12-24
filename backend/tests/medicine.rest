@@ -1,0 +1,47 @@
+@baseUrl = http://localhost:5000/api/v1/medicines
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYjBiNmMyYTItNzIwYy00NGVlLTgxNmQtNGFhOTYwYTA1YzdiIiwicm9sZSI6ImFkbWluIiwiaXNzIjoibWVkaWxpbmstYXBwIiwiZXhwIjoxNzY2NjIzNDY5LCJpYXQiOjE3NjY1MzcwNjl9.zvEy_As7O6zmN67PxrG2f8bGm8L-5fjFyfl4_q9utm4
+
+###
+POST http://localhost:5000/api/v1/users/login
+Content-Type: application/json
+
+{
+   "email": "oblolovina@gmail.com",
+   "password": "SecurePass123"
+}
+
+###
+GET {{baseUrl}}
+
+###
+GET {{baseUrl}}/3e9f0cca-ae47-4fea-9b00-77fe2106232a
+
+###
+GET {{baseUrl}}/search?name=Cetirizine
+
+###
+POST {{baseUrl}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+   "name": "Cetirizine 10mg",
+   "description": "Obat antihistamin untuk meredakan gejala alergi.",
+   "dosage": "1 tablet, 1 kali sehari sebelum tidur",
+   "price": 8000,
+   "stock": 90,
+   "requires_prescription": false
+}
+
+###
+PUT {{baseUrl}}/3e9f0cca-ae47-4fea-9b00-77fe2106232a
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+   "price": 6000
+}
+
+###
+DELETE {{baseUrl}}/45c8477c-e6c3-4405-986f-861d803a530b
+Authorization: Bearer {{token}}

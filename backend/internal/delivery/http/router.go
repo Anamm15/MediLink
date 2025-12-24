@@ -56,3 +56,15 @@ func DoctorRoute(server *gin.Engine, doctorHandler handler.DoctorHandler) {
 		doctor.PUT("/schedule/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), doctorHandler.UpdateSchedule)
 	}
 }
+
+func MedicineRoute(server *gin.Engine, medicineHandler handler.MedicineHandler) {
+	medicine := server.Group("/api/v1/medicines")
+	{
+		medicine.GET("/", medicineHandler.GetAll)
+		medicine.GET("/:id", medicineHandler.GetByID)
+		medicine.GET("/search", medicineHandler.Search)
+		medicine.POST("/", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), medicineHandler.Create)
+		medicine.PUT("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), medicineHandler.Update)
+		medicine.DELETE("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), medicineHandler.Delete)
+	}
+}
