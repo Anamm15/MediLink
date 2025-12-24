@@ -12,14 +12,17 @@ import (
 )
 
 type PrescriptionUsecase struct {
-	prescriptionRepository         repository.PrescriptionRepository
-	prescriptionMedicineRepository repository.PrescriptionMedicineRepository
+	prescriptionRepository     repository.PrescriptionRepository
+	prescriptionItemRepository repository.PrescriptionItemRepository
 }
 
-func NewPrescriptionUsecase(prescriptionRepository repository.PrescriptionRepository, prescriptionMedicineRepository repository.PrescriptionMedicineRepository) usecase.PrescriptionUsecase {
+func NewPrescriptionUsecase(
+	prescriptionRepository repository.PrescriptionRepository,
+	prescriptionItemRepository repository.PrescriptionItemRepository,
+) usecase.PrescriptionUsecase {
 	return &PrescriptionUsecase{
-		prescriptionRepository:         prescriptionRepository,
-		prescriptionMedicineRepository: prescriptionMedicineRepository,
+		prescriptionRepository:     prescriptionRepository,
+		prescriptionItemRepository: prescriptionItemRepository,
 	}
 }
 
@@ -76,20 +79,20 @@ func (pu *PrescriptionUsecase) Delete(ctx context.Context, id uuid.UUID) error {
 	return pu.prescriptionRepository.Delete(ctx, id)
 }
 
-func (pu *PrescriptionUsecase) AddMedicine(ctx context.Context, prescriptionID uuid.UUID, data *dto.PrescriptionMedicineCreateDTO) (dto.PrescriptionMedicineResponseDTO, error) {
-	prescription := &entity.PrescriptionMedicine{}
+func (pu *PrescriptionUsecase) AddMedicine(ctx context.Context, prescriptionID uuid.UUID, data *dto.PrescriptionItemCreateDTO) (dto.PrescriptionItemResponseDTO, error) {
+	prescription := &entity.PrescriptionItem{}
 	data.ToModel(prescription)
-	err := pu.prescriptionMedicineRepository.Add(ctx, prescription)
+	err := pu.prescriptionItemRepository.Add(ctx, prescription)
 	if err != nil {
-		return dto.PrescriptionMedicineResponseDTO{}, err
+		return dto.PrescriptionItemResponseDTO{}, err
 	}
-	return dto.ToPrescriptionMedicineResponseDTO(prescription), nil
+	return dto.ToPrescriptionItemResponseDTO(prescription), nil
 }
 
 func (pu *PrescriptionUsecase) UpdateMedicine(ctx context.Context, id uuid.UUID, quantity int) error {
-	return pu.prescriptionMedicineRepository.Update(ctx, id, quantity)
+	return pu.prescriptionItemRepository.Update(ctx, id, quantity)
 }
 
 func (pu *PrescriptionUsecase) RemoveMedicine(ctx context.Context, id uuid.UUID) error {
-	return pu.prescriptionMedicineRepository.Delete(ctx, id)
+	return pu.prescriptionItemRepository.Delete(ctx, id)
 }

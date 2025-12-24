@@ -4,110 +4,109 @@ import (
 	"time"
 
 	"MediLink/internal/domain/entity"
-	"MediLink/internal/helpers/constants"
+	"MediLink/internal/helpers/enum"
 
 	"github.com/google/uuid"
 	"gorm.io/datatypes"
 )
 
 type DoctorProfileResponseDTO struct {
-	DoctorID       uuid.UUID                   `json:"doctor_id" gorm:"column:id"`
-	FirstName      string                      `json:"first_name"`
-	LastName       string                      `json:"last_name"`
-	Email          string                      `json:"email"`
-	PhoneNumber    string                      `json:"phone_number"`
-	ClinicName     *string                     `json:"clinic_name"`
-	ClinicAdress   *string                     `json:"clinic_address"`
-	Specialization string                      `json:"specialization"`
-	LicenseNumber  string                      `json:"license_number"`
-	Experience     datatypes.JSON              `json:"experience"`
-	Education      datatypes.JSON              `json:"education"`
-	IsActive       bool                        `json:"is_active"`
-	Rating         float64                     `json:"rating"`
-	TotalReviews   int                         `json:"total_reviews"`
-	Bio            *string                     `json:"bio"`
-	Schedule       []DoctorScheduleResponseDTO `json:"schedule"`
-}
+	DoctorID     uuid.UUID `json:"doctor_id" gorm:"column:id"`
+	Name         string    `json:"name"`
+	Email        string    `json:"email"`
+	PhoneNumber  string    `json:"phone_number"`
+	ClinicName   *string   `json:"clinic_name"`
+	ClinicAdress *string   `json:"clinic_address"`
 
-type DoctorScheduleResponseDTO struct {
-	ID              uuid.UUID                 `json:"id"`
-	DayOfWeek       constants.ScheduleDay     `json:"day_of_week"`
-	StartTime       time.Time                 `json:"start_time"`
-	EndTime         time.Time                 `json:"end_time"`
-	Type            constants.AppointmentType `json:"type"`
-	Location        *string                   `json:"location"`
-	MaxAppointments *int                      `json:"max_appointments"`
+	Specialization  string         `json:"specialization"`
+	LicenseNumber   string         `json:"license_number"`
+	Bio             *string        `json:"bio"`
+	ExperienceYears int            `json:"experience_years"`
+	Education       datatypes.JSON `json:"education"`
+
+	RatingCount int     `json:"rating_count"`
+	RatingTotal float64 `json:"rating_total"`
+	ReviewCount int     `json:"review_count"`
+
+	Schedule []DoctorScheduleResponseDTO `json:"schedule"`
 }
 
 type DoctorUpdateRequestDTO struct {
-	Specialization *string         `json:"specialization"`
-	LicenseNumber  *string         `json:"license_number"`
-	Experience     *datatypes.JSON `json:"experience"`
-	Education      *datatypes.JSON `json:"education"`
-	IsActive       *bool           `json:"is_active"`
-	Bio            *string         `json:"bio"`
+	Specialization  *string         `json:"specialization"`
+	LicenseNumber   *string         `json:"license_number"`
+	ExperienceYears *int            `json:"experience_years"`
+	Education       *datatypes.JSON `json:"education"`
+	Bio             *string         `json:"bio"`
+}
+
+type DoctorScheduleResponseDTO struct {
+	ID        uuid.UUID        `json:"id"`
+	DayOfWeek enum.ScheduleDay `json:"day_of_week"`
+	StartTime time.Time        `json:"start_time"`
+	EndTime   time.Time        `json:"end_time"`
+
+	IsActive bool `json:"is_active"`
+	MaxQuota *int `json:"max_quota"`
 }
 
 type DoctorCreateScheduleRequestDTO struct {
-	DoctorID        uuid.UUID                 `json:"doctor_id" binding:"required" validate:"required"`
-	DayOfWeek       constants.ScheduleDay     `json:"day_of_week" binding:"required" validate:"required"`
-	StartTime       time.Time                 `json:"start_time" binding:"required" validate:"required"`
-	EndTime         time.Time                 `json:"end_time" binding:"required" validate:"required"`
-	Type            constants.AppointmentType `json:"type" binding:"required" validate:"required"`
-	Location        *string                   `json:"location" binding:"required" validate:"required"`
-	MaxAppointments *int                      `json:"max_appointments" binding:"required" validate:"required"`
+	DoctorID  uuid.UUID        `json:"doctor_id" binding:"required" validate:"required"`
+	DayOfWeek enum.ScheduleDay `json:"day_of_week" binding:"required" validate:"required"`
+	StartTime time.Time        `json:"start_time" binding:"required" validate:"required"`
+	EndTime   time.Time        `json:"end_time" binding:"required" validate:"required"`
+	IsActive  bool             `json:"is_active"`
+	MaxQuota  *int             `json:"max_quota"`
 }
 
 type DoctorUpdateScheduleRequestDTO struct {
-	DayOfWeek       *constants.ScheduleDay     `json:"day_of_week"`
-	StartTime       *time.Time                 `json:"start_time"`
-	EndTime         *time.Time                 `json:"end_time"`
-	Type            *constants.AppointmentType `json:"type"`
-	Location        *string                    `json:"location"`
-	MaxAppointments *int                       `json:"max_appointments"`
+	DayOfWeek *enum.ScheduleDay `json:"day_of_week"`
+	StartTime *time.Time        `json:"start_time"`
+	EndTime   *time.Time        `json:"end_time"`
+	IsActive  *bool             `json:"is_active"`
+	MaxQuota  *int              `json:"max_quota"`
 }
 
 func MapEntityToDoctorResponseDTO(entity *entity.Doctor) DoctorProfileResponseDTO {
 	return DoctorProfileResponseDTO{
-		DoctorID:       entity.ID,
-		FirstName:      entity.User.FirstName,
-		LastName:       entity.User.LastName,
-		Email:          entity.User.Email,
-		PhoneNumber:    entity.User.PhoneNumber,
-		ClinicName:     &entity.Clinic.Name,
-		ClinicAdress:   &entity.Clinic.Address,
-		Specialization: entity.Specialization,
-		LicenseNumber:  entity.LicenseNumber,
-		Experience:     entity.Experience,
-		Education:      entity.Education,
-		IsActive:       entity.IsActive,
-		Rating:         entity.Rating,
-		TotalReviews:   entity.TotalReviews,
-		Bio:            entity.Bio,
-		Schedule:       MapListEntityDoctorScheduleToResponseDTO(entity.DoctorSchedule),
+		DoctorID:     entity.ID,
+		Name:         entity.User.Name,
+		Email:        entity.User.Email,
+		PhoneNumber:  entity.User.PhoneNumber,
+		ClinicName:   &entity.Clinic.Name,
+		ClinicAdress: &entity.Clinic.Address,
+
+		Specialization:  entity.Specialization,
+		LicenseNumber:   entity.LicenseNumber,
+		Education:       entity.Education,
+		Bio:             entity.Bio,
+		ExperienceYears: entity.ExperienceYears,
+
+		RatingCount: entity.RatingCount,
+		RatingTotal: entity.RatingTotal,
+		ReviewCount: entity.ReviewCount,
+
+		Schedule: MapListEntityDoctorScheduleToResponseDTO(entity.DoctorSchedule),
 	}
 }
 
 func MapCreateScheduleRequestToEntity(dto *DoctorCreateScheduleRequestDTO) entity.DoctorSchedule {
 	return entity.DoctorSchedule{
-		DayOfWeek:       dto.DayOfWeek,
-		StartTime:       dto.StartTime,
-		EndTime:         dto.EndTime,
-		Type:            dto.Type,
-		Location:        dto.Location,
-		MaxAppointments: dto.MaxAppointments,
+		DayOfWeek: dto.DayOfWeek,
+		StartTime: dto.StartTime,
+		EndTime:   dto.EndTime,
+		IsActive:  dto.IsActive,
+		MaxQuota:  dto.MaxQuota,
 	}
 }
 
 func MapEntityDoctorScheduleToResponseDTO(entity *entity.DoctorSchedule) DoctorScheduleResponseDTO {
 	return DoctorScheduleResponseDTO{
-		ID:              entity.ID,
-		DayOfWeek:       entity.DayOfWeek,
-		StartTime:       entity.StartTime,
-		EndTime:         entity.EndTime,
-		Type:            entity.Type,
-		Location:        entity.Location,
-		MaxAppointments: entity.MaxAppointments,
+		ID:        entity.ID,
+		DayOfWeek: entity.DayOfWeek,
+		StartTime: entity.StartTime,
+		EndTime:   entity.EndTime,
+		IsActive:  entity.IsActive,
+		MaxQuota:  entity.MaxQuota,
 	}
 }
 
@@ -126,14 +125,11 @@ func (dto *DoctorUpdateRequestDTO) AssignToEntity(doctor *entity.Doctor) {
 	if dto.LicenseNumber != nil {
 		doctor.LicenseNumber = *dto.LicenseNumber
 	}
-	if dto.Experience != nil {
-		doctor.Experience = *dto.Experience
+	if dto.ExperienceYears != nil {
+		doctor.ExperienceYears = *dto.ExperienceYears
 	}
 	if dto.Education != nil {
 		doctor.Education = *dto.Education
-	}
-	if dto.IsActive != nil {
-		doctor.IsActive = *dto.IsActive
 	}
 	if dto.Bio != nil {
 		doctor.Bio = dto.Bio
@@ -144,9 +140,8 @@ func (dto *DoctorCreateScheduleRequestDTO) AssignToEntity(doctor *entity.DoctorS
 	doctor.DayOfWeek = dto.DayOfWeek
 	doctor.StartTime = dto.StartTime
 	doctor.EndTime = dto.EndTime
-	doctor.Type = dto.Type
-	doctor.Location = dto.Location
-	doctor.MaxAppointments = dto.MaxAppointments
+	doctor.IsActive = dto.IsActive
+	doctor.MaxQuota = dto.MaxQuota
 }
 
 func (dto *DoctorUpdateScheduleRequestDTO) AssignToEntity(doctor *entity.DoctorSchedule) {
@@ -159,13 +154,10 @@ func (dto *DoctorUpdateScheduleRequestDTO) AssignToEntity(doctor *entity.DoctorS
 	if dto.EndTime != nil {
 		doctor.EndTime = *dto.EndTime
 	}
-	if dto.Type != nil {
-		doctor.Type = *dto.Type
+	if dto.IsActive != nil {
+		doctor.IsActive = *dto.IsActive
 	}
-	if dto.Location != nil {
-		doctor.Location = dto.Location
-	}
-	if dto.MaxAppointments != nil {
-		doctor.MaxAppointments = dto.MaxAppointments
+	if dto.MaxQuota != nil {
+		doctor.MaxQuota = dto.MaxQuota
 	}
 }

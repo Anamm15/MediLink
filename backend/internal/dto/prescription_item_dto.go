@@ -6,34 +6,40 @@ import (
 	"github.com/google/uuid"
 )
 
-type PrescriptionMedicineResponseDTO struct {
+type PrescriptionItemResponseDTO struct {
 	ID             uuid.UUID `json:"id"`
 	PrescriptionID uuid.UUID `json:"prescription_id"`
 	MedicineID     uuid.UUID `json:"medicine_id"`
-	Quantity       int       `json:"quantity"`
+
+	Quantity     int     `json:"quantity"`
+	Instructions *string `json:"instructions,omitempty"`
 }
 
-type PrescriptionMedicineCreateDTO struct {
+type PrescriptionItemCreateDTO struct {
 	PrescriptionID uuid.UUID `json:"prescription_id" binding:"required"`
 	MedicineID     uuid.UUID `json:"medicine_id" binding:"required"`
 	Quantity       int       `json:"quantity" binding:"required"`
+	Instructions   *string   `json:"instructions,omitempty"`
 }
 
-func (dto *PrescriptionMedicineCreateDTO) ToModel(pm *entity.PrescriptionMedicine) {
+func (dto *PrescriptionItemCreateDTO) ToModel(pm *entity.PrescriptionItem) {
 	pm.PrescriptionID = dto.PrescriptionID
 	pm.MedicineID = dto.MedicineID
 	pm.Quantity = dto.Quantity
+	pm.Instructions = dto.Instructions
 }
 
-type PrescriptionMedicineUpdateDTO struct {
-	Quantity int `json:"quantity" binding:"required"`
+type PrescriptionItemUpdateDTO struct {
+	Quantity     int     `json:"quantity" binding:"required"`
+	Instructions *string `json:"instructions,omitempty"`
 }
 
-func ToPrescriptionMedicineResponseDTO(data *entity.PrescriptionMedicine) PrescriptionMedicineResponseDTO {
-	return PrescriptionMedicineResponseDTO{
+func ToPrescriptionItemResponseDTO(data *entity.PrescriptionItem) PrescriptionItemResponseDTO {
+	return PrescriptionItemResponseDTO{
 		ID:             data.ID,
 		PrescriptionID: data.PrescriptionID,
 		MedicineID:     data.MedicineID,
 		Quantity:       data.Quantity,
+		Instructions:   data.Instructions,
 	}
 }

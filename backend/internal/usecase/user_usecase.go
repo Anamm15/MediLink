@@ -12,6 +12,7 @@ import (
 	"MediLink/internal/domain/usecase"
 	"MediLink/internal/dto"
 	"MediLink/internal/helpers/constants"
+	"MediLink/internal/helpers/enum"
 	"MediLink/internal/infrastructure/mail"
 	"MediLink/internal/utils"
 
@@ -45,15 +46,10 @@ func (u *userUsecase) Register(ctx context.Context, data dto.UserRegistrationReq
 	}
 
 	user := &entity.User{
-		FirstName:   data.FirstName,
-		LastName:    data.LastName,
+		Name:        data.Name,
 		Email:       data.Email,
 		PhoneNumber: data.PhoneNumber,
 		Password:    hashedPassword,
-		Gender:      (*constants.Gender)(&data.Gender),
-		Address:     &data.Address,
-		BirthPlace:  &data.BirthPlace,
-		BirthDate:   utils.ConvertStringToTime(data.BirthDate),
 	}
 	createdUser, err := u.userRepo.Create(ctx, user)
 	if err != nil {
@@ -199,7 +195,7 @@ func (u *userUsecase) SendOTP(ctx context.Context, userID uuid.UUID) error {
 		return err
 	}
 
-	emailBody := utils.BuildEmailBody(user.FirstName, otp)
+	emailBody := utils.BuildEmailBody(user.Name, otp)
 
 	go func() {
 		err := mail.SendEmail(user.Email, "Kode Verifikasi Keamanan - MediLink", emailBody)
@@ -261,7 +257,7 @@ func (u *userUsecase) OnBoardPatient(ctx context.Context, userID uuid.UUID, data
 		return err
 	}
 
-	user.Role = constants.UserRole(constants.RolePatient)
+	user.Role = enum.UserRole(enum.RolePatient)
 	err = u.userRepo.Update(ctx, user)
 	if err != nil {
 		return err

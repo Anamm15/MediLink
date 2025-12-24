@@ -135,7 +135,7 @@ func (ph *PrescriptionHandler) AddMedicine(c *gin.Context) {
 		return
 	}
 
-	var req dto.PrescriptionMedicineCreateDTO
+	var req dto.PrescriptionItemCreateDTO
 	if err := c.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
 		c.JSON(http.StatusBadRequest, res)
@@ -162,7 +162,7 @@ func (ph *PrescriptionHandler) UpdateMedicine(c *gin.Context) {
 		return
 	}
 
-	var req dto.PrescriptionMedicineUpdateDTO
+	var req dto.PrescriptionItemUpdateDTO
 	if err := c.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
 		c.JSON(http.StatusBadRequest, res)

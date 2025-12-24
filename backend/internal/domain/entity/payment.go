@@ -3,20 +3,19 @@ package entity
 import (
 	"time"
 
-	"MediLink/internal/helpers/constants"
+	"MediLink/internal/helpers/enum"
 
 	"github.com/google/uuid"
 )
 
 type Payment struct {
-	ID uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
-
+	ID        uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
 	BillingID uuid.UUID `gorm:"type:uuid;not null"`
 
-	PaymentMethod string  `gorm:"type:varchar(50)"`
-	Amount        float64 `gorm:"type:numeric(12,2);not null"`
-
-	Status constants.PaymentStatus `gorm:"type:payment_status;not null"`
+	ExternalID    string             `gorm:"type:varchar(100);not null;uniqueIndex"`
+	PaymentMethod string             `gorm:"type:varchar(50)"`
+	Amount        float64            `gorm:"type:numeric(12,2);not null"`
+	Status        enum.PaymentStatus `gorm:"type:varchar(20);not null"`
 
 	PaymentGatewayOrderID       *string `gorm:"type:varchar(255)"`
 	PaymentGatewayTransactionID *string `gorm:"type:varchar(255)"`

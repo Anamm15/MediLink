@@ -1,217 +1,320 @@
--- Gunakan ENUM untuk tipe data yang pilihannya terbatas, lebih efisien & aman
-CREATE TYPE user_role AS ENUM ('patient', 'doctor', 'admin', 'staff', 'clinic');
+-- =============================================
+-- SECTION 0: SETUP & EXTENSIONS
+-- =============================================
+-- We need pgcrypto for UUID generation
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+-- =============================================
+-- SECTION 1: ENUMS (Type Safety)
+-- Using Enums prevents invalid data entry (e.g., preventing typos)
+-- =============================================
+CREATE TYPE user_role AS ENUM ('patient', 'doctor', 'admin', 'pharmacist', 'nurse', 'super_admin');
 CREATE TYPE user_status AS ENUM ('active', 'inactive', 'suspended', 'banned');
 CREATE TYPE gender_enum AS ENUM ('male', 'female');
-CREATE TYPE appointment_status AS ENUM ('pending', 'confirmed', 'completed', 'canceled', 'expired');
-CREATE TYPE appointment_type AS ENUM ('video_call', 'chat', 'onsite');
+CREATE TYPE appointment_status AS ENUM ('pending', 'confirmed', 'in_progress', 'completed', 'canceled', 'expired');
+CREATE TYPE appointment_type AS ENUM ('video_call', 'onsite', 'chat');
 CREATE TYPE payment_status AS ENUM ('unpaid', 'paid', 'failed', 'refunded');
 CREATE TYPE schedule_day AS ENUM ('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday');
 
--- --- 1. Core User ---
+-- =============================================
+-- SECTION 2: IDENTITY & CORE ENTITIES
+-- The foundation of the system
+-- =============================================
 
+-- 2.1 USERS
+-- Base table for authentication.
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    first_name VARCHAR(255) NOT NULL,
-    last_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    phone_number VARCHAR(20) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    address TEXT,
     role user_role NOT NULL,
+    
+    -- Profile Data
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100),
+    phone_number VARCHAR(20) UNIQUE,
+    
+    is_email_verified BOOLEAN DEFAULT FALSE,
     status user_status NOT NULL DEFAULT 'active',
-    birth_place VARCHAR(100),
-    birth_date DATE,
-    gender gender_enum,
-    is_verified BOOLEAN DEFAULT FALSE,
+    
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 2.2 CLINICS
+-- Represents physical or digital branches.
 CREATE TABLE clinics (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
-    code VARCHAR(50) UNIQUE,
-    type VARCHAR(100), 
     address TEXT NOT NULL,
     city VARCHAR(100),
-    province VARCHAR(100),
-    postal_code VARCHAR(10),
-    latitude NUMERIC(9, 6),
-    longitude NUMERIC(9, 6),
-    phone_number VARCHAR(20),
-    insurance_partners JSONB, -- ["BPJS", "Prudential", "AXA"]
-    facilities JSONB,         -- {"icu":true,"lab":true,"radiology":false}
-    email VARCHAR(255),
-    status VARCHAR(50) DEFAULT 'active',
+    coordinates POINT, -- Latitude/Longitude 
     accreditation VARCHAR(100),
-    established_date DATE,
-    opening_time JSONB,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    
+    phone_number VARCHAR(20),
+    email VARCHAR(255),
+    
+    is_active BOOLEAN DEFAULT TRUE,
+    insurance_partners JSONB, -- Array for accepted insurances
+    facilities JSONB, -- Array of strings: ["Pharmacy", "Lab"]
+    opening_time JSONB, -- e.g., {"monday": "08:00-17:00"}
+    
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 2.3 DOCTORS (Profile)
+-- Note: No clinic_id here. A doctor is an entity independent of a specific clinic.
 CREATE TABLE doctors (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    clinic_id UUID REFERENCES clinics(id) ON DELETE SET NULL,
-    specialization VARCHAR(100) NOT NULL,
-    license_number VARCHAR(100) UNIQUE NOT NULL,
-    consultation_fee NUMERIC(12, 2) DEFAULT 0,
-    experience JSONB, -- [ { "place": "RS Harapan Bunda", "years": "2018-2020" } ]
-    education JSONB, -- [ { "institution": "Universitas Indonesia", "degree": "Sp.A" } ]
-    is_active BOOLEAN DEFAULT TRUE,
-    rating NUMERIC(3, 2) DEFAULT 0,
-    total_reviews INT DEFAULT 0,
-    available_for_telemedicine BOOLEAN DEFAULT FALSE,
-    bio TEXT
+    
+    specialization VARCHAR(100) NOT NULL, -- e.g., "Cardiologist"
+    license_number VARCHAR(50) UNIQUE NOT NULL, -- STR/SIP
+    
+    bio TEXT,
+    experience_years INT DEFAULT 0,
+    education JSONB, -- Array of objects: [{"degree": "MD", "school": "UI"}]
+
+    rating_total NUMERIC(3, 2) DEFAULT 0, -- Cached average rating (e.g. 4.8)
+    rating_count INT DEFAULT 0,
+    review_count INT DEFAULT 0,
+    
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 2.4 DOCTOR PLACEMENTS (The "Multi-Clinic" Fix)
+-- Connects a Doctor to a Clinic. A doctor can exist in 5 clinics with 5 different prices.
+CREATE TABLE doctor_clinic_placements (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    doctor_id UUID NOT NULL REFERENCES doctors(id) ON DELETE CASCADE,
+    clinic_id UUID NOT NULL REFERENCES clinics(id) ON DELETE CASCADE,
+    
+    -- Financials specific to this location
+    consultation_fee NUMERIC(12, 2) NOT NULL DEFAULT 0,
+    
+    is_active BOOLEAN DEFAULT TRUE, -- Doctor might take a break from just this clinic
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    
+    UNIQUE(doctor_id, clinic_id) -- Prevent duplicate assignment
+);
+
+-- 2.5 PATIENTS
+-- Medical profile separated from User auth data.
 CREATE TABLE patients (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    identity_number VARCHAR(50) UNIQUE, -- Primary NIK
+    
+    identity_number VARCHAR(50) UNIQUE, -- NIK or Country ID
+    birth_date DATE,
+    gender gender_enum,
     blood_type VARCHAR(5),
-    weight_kg NUMERIC(5, 2),
+    
     height_cm NUMERIC(5, 2),
-    allergies TEXT,
-    chronic_diseases TEXT,
-    emergency_contact TEXT,
+    weight_kg NUMERIC(5, 2),
+    allergies TEXT, 
+    
+    emergency_contact VARCHAR(20),
+    history_chronic_diseases TEXT,
+
     insurance_provider VARCHAR(100),
     insurance_number VARCHAR(100),
     occupation VARCHAR(100),
+    
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- --- 2. Transactional & Activity Tables ---
+-- =============================================
+-- SECTION 3: INVENTORY & PHARMACY
+-- Scalable "Catalog vs Stock" approach
+-- =============================================
 
+-- 3.1 MEDICINE CATALOG (Global Definition)
+-- What the medicine IS (e.g., "Panadol 500mg"). Shared across all clinics.
+CREATE TABLE medicines (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    generic_name VARCHAR(255), -- e.g., "Paracetamol"
+    category VARCHAR(100), -- "Antibiotic", "Analgesic"
+    description TEXT,
+    manufacturer VARCHAR(100),
+    
+    is_prescription_required BOOLEAN DEFAULT FALSE,
+    base_price NUMERIC(12, 2),
+    
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 3.2 CLINIC INVENTORY (Local Stock)
+-- What a specific clinic HAS (e.g., "Clinic A has 50 boxes of Batch X").
+CREATE TABLE clinic_inventories (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    clinic_id UUID NOT NULL REFERENCES clinics(id) ON DELETE CASCADE,
+    medicine_id UUID NOT NULL REFERENCES medicines(id),
+    
+    current_stock INT NOT NULL DEFAULT 0 CHECK (current_stock >= 0),
+    low_stock_threshold INT DEFAULT 10, -- trigger alert
+    price NUMERIC(12, 2) NOT NULL, 
+
+    batch_number VARCHAR(100),
+    expiry_date DATE,
+    
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- =============================================
+-- SECTION 4: SCHEDULING & TRANSACTIONS
+-- The core business logic
+-- =============================================
+
+-- 4.1 SCHEDULES
+-- Defined templates (e.g., "Dr. Budi works Mondays 09:00-12:00 at Clinic A")
+CREATE TABLE doctor_schedules (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    doctor_id UUID NOT NULL REFERENCES doctors(id),
+    clinic_id UUID NOT NULL REFERENCES clinics(id),
+    
+    day_of_week schedule_day NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    
+    -- Helps frontend generate slots (e.g., 09:00, 09:15, 09:30)
+    slot_duration_minutes INT DEFAULT 15,
+    max_quota INT,
+    
+    is_active BOOLEAN DEFAULT TRUE,
+    
+    UNIQUE(doctor_id, clinic_id, day_of_week, start_time, end_time)
+);
+
+-- 4.2 APPOINTMENTS
 CREATE TABLE appointments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     patient_id UUID NOT NULL REFERENCES patients(id),
     doctor_id UUID NOT NULL REFERENCES doctors(id),
-    schedule_start_time TIMESTAMPTZ NOT NULL,
-    schedule_end_time TIMESTAMPTZ NOT NULL,
-    duration_minutes INT,
-    status appointment_status NOT NULL DEFAULT 'pending',
+    clinic_id UUID NOT NULL REFERENCES clinics(id),
+    
+    appointment_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    
+    status appointment_status NOT NULL DEFAULT 'pending_payment',
     type appointment_type NOT NULL,
-    canceled_reason TEXT,
-    complaint TEXT,
-    location TEXT,
+    
+    -- === FINANCIAL SNAPSHOTS (CRITICAL) ===
+    -- We record the fee *at the moment of booking*. 
+    -- If doctor changes price later, this historical record remains accurate.
+    consultation_fee_snapshot NUMERIC(12, 2) NOT NULL,
+    
+    -- === EXECUTION DETAILS ===
+    queue_number INT, -- For onsite
+    meeting_link TEXT, -- For video call
+    
+    -- === MEDICAL CONTEXT ===
+    symptom_complaint TEXT, -- Patient's reason for visiting
+    doctor_notes TEXT, -- Private notes for doctor
+    
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE doctor_schedules (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    doctor_id UUID NOT NULL REFERENCES doctors(id) ON DELETE CASCADE,
-    day_of_week schedule_day NOT NULL,
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    type appointment_type NOT NULL,
-    location TEXT,
-    max_appointments INT,
-    is_active BOOLEAN DEFAULT TRUE,
-    UNIQUE(doctor_id, day_of_week, start_time, end_time) -- Mencegah jadwal duplikat
-);
+-- =============================================
+-- SECTION 5: MEDICAL RECORDS & OUTCOMES
+-- =============================================
 
-CREATE TABLE medicines (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255) NOT NULL,
-    dosage VARCHAR(100),
-    price NUMERIC(12, 2) NOT NULL,
-    stock INT DEFAULT 0,
-    requires_prescription BOOLEAN DEFAULT TRUE
-);
-
-CREATE TABLE prescriptions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    patient_id UUID NOT NULL REFERENCES patients(id),
-    doctor_id UUID NOT NULL REFERENCES doctors(id),
-    clinic_id UUID REFERENCES clinics(id),
-    notes TEXT,
-    is_redeemed BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Join table for Prescriptions and Medicines (Many-to-Many)
-CREATE TABLE prescription_medicines (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    prescription_id UUID NOT NULL REFERENCES prescriptions(id) ON DELETE CASCADE,
-    medicine_id UUID NOT NULL REFERENCES medicines(id),
-    instructions TEXT NOT NULL, 
-    quantity INT NOT NULL,
-    UNIQUE(prescription_id, medicine_id)
-);
-
--- --- 3. Supporting & Other Tables ---
-
+-- 5.1 MEDICAL RECORDS (EMR)
+-- Follows SOAP Standard (Subjective, Objective, Assessment, Plan)
 CREATE TABLE medical_records (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    appointment_id UUID UNIQUE REFERENCES appointments(id), -- 1-to-1 with appointment
     patient_id UUID NOT NULL REFERENCES patients(id),
     doctor_id UUID NOT NULL REFERENCES doctors(id),
-    appointment_id UUID REFERENCES appointments(id),
-    diagnosis TEXT,
-    treatment_plan TEXT,
-    next_appointment_date DATE,
+    
+    -- SOAP Data
+    subjective TEXT, -- "Patient complains of headache..."
+    objective TEXT,  -- "Blood pressure 120/80..."
+    assessment TEXT, -- "Diagnosis: Migraine"
+    plan TEXT,       -- "Rest, Prescription X..."
+    
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 5.2 PRESCRIPTIONS
+CREATE TABLE prescriptions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    medical_record_id UUID NOT NULL REFERENCES medical_records(id),
+    doctor_id UUID NOT NULL REFERENCES doctors(id),
+    patient_id UUID NOT NULL REFERENCES patients(id),
+    
+    notes TEXT, -- "Take after meals"
+    status BOOLEAN DEFAULT FALSE,
+    
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 5.3 PRESCRIPTION ITEMS
+-- Links prescription to the Catalog (not Inventory, because Inventory is decided at Checkout)
+CREATE TABLE prescription_items (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    prescription_id UUID NOT NULL REFERENCES prescriptions(id) ON DELETE CASCADE,
+    medicines_id UUID NOT NULL REFERENCES medicines(id),
+    
+    quantity INT NOT NULL,
+    dosage_instruction VARCHAR(255), -- "3x1 per day"
+    notes TEXT
+);
+
+-- =============================================
+-- SECTION 6: FINANCE (Billing)
+-- =============================================
+
+-- 6.1 BILLINGS (Invoice)
 CREATE TABLE billings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    patient_id UUID NOT NULL REFERENCES patients(id),
     appointment_id UUID UNIQUE REFERENCES appointments(id),
-    amount NUMERIC(12, 2) NOT NULL,
-    status payment_status NOT NULL DEFAULT 'unpaid',
-    due_date DATE,
-    description TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    patient_id UUID NOT NULL REFERENCES patients(id),
+    
+    total_amount NUMERIC(12, 2) NOT NULL,
+    status payment_status DEFAULT 'unpaid',
+    issued_at TIMESTAMPTZ DEFAULT NOW(),
+    paid_at TIMESTAMPTZ
 );
 
+-- 6.2 PAYMENTS (Transactions)
 CREATE TABLE payments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     billing_id UUID NOT NULL REFERENCES billings(id),
-    payment_method VARCHAR(50),
+    
+    external_id VARCHAR(255), -- Payment Gateway ID (e.g. from Midtrans/Stripe)
+    payment_method VARCHAR(50), -- "credit_card", "gopay", "bca_va"
     amount NUMERIC(12, 2) NOT NULL,
     status payment_status NOT NULL,
-    payment_gateway_order_id VARCHAR(255),
-    payment_gateway_transaction_id VARCHAR(255),
-    payment_url TEXT,
-    va_number VARCHAR(100),
+    
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE reviews (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    patient_id UUID NOT NULL REFERENCES patients(id),
-    doctor_id UUID REFERENCES doctors(id), -- Can be null if reviewing a clinic
-    clinic_id UUID REFERENCES clinics(id), -- Can be null if reviewing a doctor
-    rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
-    comment TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    CONSTRAINT chk_review_target CHECK (doctor_id IS NOT NULL OR clinic_id IS NOT NULL) -- A review must be for a doctor OR a clinic
-);
+-- =============================================
+-- SECTION 7: INDEXING (Performance)
+-- Add indexes on columns frequently used in WHERE, JOIN, and ORDER BY
+-- =============================================
 
-CREATE TABLE notifications (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE, -- Penerima
-    title VARCHAR(255) NOT NULL,
-    message TEXT NOT NULL,
-    type VARCHAR(100), -- 'APPOINTMENT_REMINDER', 'PRESCRIPTION_READY'
-    priority VARCHAR(20) DEFAULT 'normal',
-    read_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
+-- Users
+CREATE INDEX idx_users_email ON users(email);
 
--- Polymorphic Table for Files (CENTRAL)
-CREATE TABLE files (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    file_name VARCHAR(255) NOT NULL,
-    url TEXT NOT NULL, -- URL dari cloud storage (S3, GCS, dll)
-    fileable_id UUID NOT NULL,
-    fileable_type VARCHAR(100) NOT NULL, -- e.g., 'User', 'Medicine', 'MedicalRecord'
-    mime_type VARCHAR(100),
-    size_bytes INT,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
+-- Doctors & Clinics
+CREATE INDEX idx_doctor_placements_clinic ON doctor_clinic_placements(clinic_id);
+CREATE INDEX idx_doctor_placements_doctor ON doctor_clinic_placements(doctor_id);
 
--- Create indexes on frequently queried columns
-CREATE INDEX idx_appointments_patient_id ON appointments(patient_id);
-CREATE INDEX idx_appointments_doctor_id ON appointments(doctor_id);
-CREATE INDEX idx_files_fileable ON files(fileable_id, fileable_type);
+-- Appointments
+CREATE INDEX idx_appointments_patient ON appointments(patient_id);
+CREATE INDEX idx_appointments_doctor_date ON appointments(doctor_id, appointment_date);
+CREATE INDEX idx_appointments_status ON appointments(status);
+
+-- Inventory
+CREATE INDEX idx_inventory_clinic_catalog ON clinic_inventories(clinic_id, catalog_id);
+
+-- Search functionality
+CREATE INDEX idx_medicine_name ON medicines USING gin(to_tsvector('english', name));
+CREATE INDEX idx_doctor_specialization ON doctors(specialization);

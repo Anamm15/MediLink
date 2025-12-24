@@ -13,10 +13,10 @@ type MedicalRecord struct {
 	DoctorID      uuid.UUID  `gorm:"type:uuid;not null"`
 	AppointmentID *uuid.UUID `gorm:"type:uuid"`
 
-	Diagnosis     *string `gorm:"type:text"`
-	TreatmentPlan *string `gorm:"type:text"`
-
-	NextAppointmentDate *time.Time `gorm:"type:date"`
+	Subjective *string `gorm:"type:text"` // Patient's reported symptoms and complaints
+	Objective  *string `gorm:"type:text"` // Clinician's observations and findings
+	Assessment *string `gorm:"type:text"` // Diagnosis or clinical impression
+	Plan       *string `gorm:"type:text"` // Treatment plan, prescriptions, follow-ups
 
 	CreatedAt time.Time `gorm:"type:timestamptz;default:now()"`
 }

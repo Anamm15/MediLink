@@ -33,7 +33,7 @@ func (pr *PrescriptionRepository) GetByPatient(ctx context.Context, userID uuid.
 			return db.Select("id", "user_id", "specialization")
 		}).
 		Preload("Doctor.User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "first_name", "last_name")
+			return db.Select("id", "name")
 		}).
 		Preload("Medicines").
 		Preload("Medicines.Medicine").
@@ -55,7 +55,7 @@ func (pr *PrescriptionRepository) GetByDoctor(ctx context.Context, userID uuid.U
 			return db.Select("id", "user_id")
 		}).
 		Preload("Patient.User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "first_name", "last_name")
+			return db.Select("id", "name")
 		}).
 		Preload("Medicines").
 		Preload("Medicines.Medicine").
@@ -75,13 +75,13 @@ func (pr *PrescriptionRepository) GetDetailByID(ctx context.Context, id uuid.UUI
 			return db.Select("id", "user_id")
 		}).
 		Preload("Patient.User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "first_name", "last_name")
+			return db.Select("id", "name")
 		}).
 		Preload("Doctor", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "user_id", "specialization")
 		}).
 		Preload("Doctor.User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "first_name", "last_name")
+			return db.Select("id", "name")
 		}).
 		Preload("Medicines").
 		Preload("Medicines.Medicine").
@@ -116,16 +116,6 @@ func (pr *PrescriptionRepository) Create(ctx context.Context, prescription *enti
 			if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
 				First(&medicine, "id = ?", item.MedicineID).Error; err != nil {
 				return fmt.Errorf("medicine not found: %w", err)
-			}
-
-			if medicine.Stock < item.Quantity {
-				return fmt.Errorf("insufficient stock for medicine: %s", medicine.Name)
-			}
-
-			// Deduct stock
-			if err := tx.Model(&medicine).
-				Update("stock", medicine.Stock-item.Quantity).Error; err != nil {
-				return err
 			}
 		}
 

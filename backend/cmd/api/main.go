@@ -35,14 +35,14 @@ func main() {
 	doctorScheduleRepository := repository.NewDoctorScheduleRepository(db)
 	medicineRepository := repository.NewMedicineRepository(db)
 	prescriptionRepository := repository.NewPrescriptionRepository(db)
-	prescriptionMedicineRepository := repository.NewPrescriptionMedicineRepository(db)
+	prescriptionItemRepository := repository.NewPrescriptionItemRepository(db)
 
 	userUsecase := usecase.NewUserUsecase(userRepository, patientRepository, redisRepository)
 	patientUsecase := usecase.NewPatientUsecase(patientRepository)
 	clinicUsecase := usecase.NewClinicUsecase(clinicRepository)
 	doctorUsecase := usecase.NewDoctorUsecase(doctorRepository, doctorScheduleRepository)
 	medicineUsecase := usecase.NewMedicineUsecase(medicineRepository)
-	prescriptionUsecase := usecase.NewPrescriptionUsecase(prescriptionRepository, prescriptionMedicineRepository)
+	prescriptionUsecase := usecase.NewPrescriptionUsecase(prescriptionRepository, prescriptionItemRepository)
 
 	userHandler := handler.NewUserHandler(userUsecase)
 	patientHandler := handler.NewPatientHandler(patientUsecase)

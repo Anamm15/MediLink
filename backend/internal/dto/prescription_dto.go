@@ -19,10 +19,11 @@ type PrescriptionMedicinesCreate struct {
 }
 
 type PrescriptionResponseDTO struct {
-	ID        uuid.UUID  `json:"id"`
-	PatientID uuid.UUID  `json:"patient_id"`
-	DoctorID  uuid.UUID  `json:"doctor_id"`
-	ClinicID  *uuid.UUID `json:"clinic_id,omitempty"`
+	ID              uuid.UUID `json:"id"`
+	PatientID       uuid.UUID `json:"patient_id"`
+	DoctorID        uuid.UUID `json:"doctor_id"`
+	ClinicID        uuid.UUID `json:"clinic_id,omitempty"`
+	MedicalRecordID uuid.UUID `json:"medical_record_id"`
 
 	Notes      *string   `json:"notes,omitempty"`
 	IsRedeemed bool      `json:"is_redeemed"`
@@ -35,11 +36,12 @@ type PrescriptionResponseDTO struct {
 }
 
 type PrescriptionCreateDTO struct {
-	PatientID uuid.UUID                     `json:"patient_id" binding:"required"`
-	DoctorID  uuid.UUID                     `json:"doctor_id" binding:"required"`
-	ClinicID  *uuid.UUID                    `json:"clinic_id,omitempty"`
-	Notes     *string                       `json:"notes,omitempty"`
-	Medicines []PrescriptionMedicinesCreate `json:"medicines" binding:"required"`
+	PatientID       uuid.UUID                     `json:"patient_id" binding:"required"`
+	DoctorID        uuid.UUID                     `json:"doctor_id" binding:"required"`
+	ClinicID        uuid.UUID                     `json:"clinic_id,omitempty"`
+	MedicalRecordID uuid.UUID                     `json:"medical_record_id" binding:"required"`
+	Notes           *string                       `json:"notes,omitempty"`
+	Medicines       []PrescriptionMedicinesCreate `json:"medicines" binding:"required"`
 }
 
 type PrescriptionUpdateDTO struct {
@@ -53,7 +55,7 @@ func ToPrescriptionResponseDTO(prescription *entity.Prescription) *PrescriptionR
 	var patientName *string
 	var items []MedicineItem
 	if prescription.Doctor != nil {
-		fullName := prescription.Doctor.User.FirstName + " " + prescription.Doctor.User.LastName
+		fullName := prescription.Doctor.User.Name
 		doctorName = &fullName
 
 		specialty := prescription.Doctor.Specialization
@@ -61,7 +63,7 @@ func ToPrescriptionResponseDTO(prescription *entity.Prescription) *PrescriptionR
 	}
 
 	if prescription.Patient != nil {
-		fullName := prescription.Patient.User.FirstName + " " + prescription.Patient.User.LastName
+		fullName := prescription.Patient.User.Name
 		patientName = &fullName
 	}
 
@@ -77,6 +79,7 @@ func ToPrescriptionResponseDTO(prescription *entity.Prescription) *PrescriptionR
 		ID:              prescription.ID,
 		PatientID:       prescription.PatientID,
 		DoctorID:        prescription.DoctorID,
+		MedicalRecordID: prescription.MedicalRecordID,
 		ClinicID:        prescription.ClinicID,
 		Notes:           prescription.Notes,
 		IsRedeemed:      prescription.IsRedeemed,
@@ -101,9 +104,10 @@ func (dto *PrescriptionCreateDTO) ToModel(prescription *entity.Prescription) {
 	prescription.DoctorID = dto.DoctorID
 	prescription.ClinicID = dto.ClinicID
 	prescription.Notes = dto.Notes
+	prescription.MedicalRecordID = dto.MedicalRecordID
 
 	for _, medicine := range dto.Medicines {
-		prescription.Medicines = append(prescription.Medicines, entity.PrescriptionMedicine{
+		prescription.Medicines = append(prescription.Medicines, entity.PrescriptionItem{
 			MedicineID: medicine.MedicineID,
 			Quantity:   medicine.Quantity,
 		})

@@ -23,7 +23,7 @@ func (r *doctorRepository) GetWithSchedule(ctx context.Context, id uuid.UUID) (*
 	if err := r.db.WithContext(ctx).
 		Preload("DoctorSchedule").
 		Preload("User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "first_name", "last_name", "email", "phone_number")
+			return db.Select("id", "name", "email", "phone_number")
 		}).
 		Preload("Clinic", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "name", "address")
@@ -59,13 +59,13 @@ func (r *doctorRepository) Find(ctx context.Context, name string, limit int, off
 		Model(&entity.Doctor{}).
 		Preload("DoctorSchedule").
 		Preload("User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "first_name", "last_name", "email", "phone_number")
+			return db.Select("id", "name", "email", "phone_number")
 		}).
 		Preload("Clinic", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "name", "address")
 		}).
 		Joins("JOIN users u ON u.id = doctors.user_id").
-		Where("u.first_name ILIKE ? OR u.last_name ILIKE ?", "%"+name+"%", "%"+name+"%").
+		Where("u.name ILIKE ?", "%"+name+"%").
 		Limit(limit).
 		Offset(offset).
 		Find(&doctors).Error; err != nil {

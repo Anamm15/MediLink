@@ -1,4 +1,4 @@
-package constants
+package enum
 
 type (
 	UserRole   string
@@ -7,12 +7,13 @@ type (
 )
 
 const (
-	RoleUser    UserRole = "user"
-	RolePatient UserRole = "patient"
-	RoleDoctor  UserRole = "doctor"
-	RoleAdmin   UserRole = "admin"
-	RoleStaff   UserRole = "staff"
-	RoleClinic  UserRole = "clinic"
+	RoleUser       UserRole = "user"
+	RolePatient    UserRole = "patient"
+	RoleDoctor     UserRole = "doctor"
+	RoleAdmin      UserRole = "admin"
+	RoleNurse      UserRole = "nurse"
+	RolePharmacist UserRole = "pharmacist"
+	RoleSuperAdmin UserRole = "super_admin"
 )
 
 const (

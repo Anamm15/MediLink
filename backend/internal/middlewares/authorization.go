@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"slices"
 
-	"MediLink/internal/helpers/constants"
+	"MediLink/internal/helpers/enum"
 	"MediLink/internal/utils"
 
 	"github.com/gin-gonic/gin"
@@ -20,7 +20,7 @@ func AuthorizeRole(allowedRoles ...string) gin.HandlerFunc {
 			return
 		}
 
-		userRole, ok := roleInterface.(constants.UserRole)
+		userRole, ok := roleInterface.(enum.UserRole)
 		if !ok {
 			roleStr, okStr := roleInterface.(string)
 			if !okStr {
@@ -28,7 +28,7 @@ func AuthorizeRole(allowedRoles ...string) gin.HandlerFunc {
 				c.AbortWithStatusJSON(http.StatusInternalServerError, res)
 				return
 			}
-			userRole = constants.UserRole(roleStr)
+			userRole = enum.UserRole(roleStr)
 		}
 
 		if slices.Contains(allowedRoles, string(userRole)) {

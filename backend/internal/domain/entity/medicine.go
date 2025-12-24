@@ -1,15 +1,21 @@
 package entity
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Medicine struct {
-	ID          uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
-	Name        string    `gorm:"type:varchar(255);not null"`
-	Description string    `gorm:"type:text;not null"`
+	ID           uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
+	Name         string    `gorm:"type:varchar(255);not null"`
+	GenericName  *string   `gorm:"type:varchar(255)"`
+	Description  *string   `gorm:"type:text"`
+	Category     *string   `gorm:"type:varchar(100)"`
+	Manufacturer *string   `gorm:"type:varchar(100)"`
 
-	Dosage string  `gorm:"type:varchar(100);not null"`
-	Price  float64 `gorm:"type:numeric(12,2);not null"`
-	Stock  int     `gorm:"default:0"`
+	BasePrice              float64 `gorm:"type:numeric(12,2);not null"`
+	IsPrescriptionRequired bool    `gorm:"default:false"`
 
-	RequiresPrescription bool `gorm:"default:true"`
+	CreatedAt time.Time `gorm:"type:timestamptz;default:now()"`
 }

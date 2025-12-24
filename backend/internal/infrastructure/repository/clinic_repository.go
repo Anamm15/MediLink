@@ -64,7 +64,7 @@ func (r *clinicRepository) Find(ctx context.Context, name string, limit int, off
 func (r *clinicRepository) Update(ctx context.Context, clinic *entity.Clinic) error {
 	if err := r.db.WithContext(ctx).
 		Model(clinic).
-		Omit("id", "user_id").
+		Omit("id").
 		Updates(clinic).Error; err != nil {
 		return err
 	}

@@ -4,26 +4,23 @@ import (
 	"time"
 
 	"MediLink/internal/domain/entity"
-	"MediLink/internal/helpers/constants"
-	"MediLink/internal/utils"
+	"MediLink/internal/helpers/enum"
 
 	"github.com/google/uuid"
 )
 
 type UserResponseDTO struct {
-	ID          uuid.UUID            `json:"id"`
-	FirstName   string               `json:"first_name"`
-	LastName    string               `json:"last_name"`
-	PhoneNumber string               `json:"phone_number"`
-	Email       string               `json:"email"`
-	Address     *string              `json:"address"`
-	Status      constants.UserStatus `json:"status"`
-	BirthDate   string               `json:"birthdate"`
-	BirthPlace  *string              `json:"birthplace"`
-	Gender      *constants.Gender    `json:"gender"`
-	IsVerified  bool                 `json:"is_verified"`
-	CreatedAt   time.Time            `json:"created_at"`
-	UpdatedAt   time.Time            `json:"updated_at"`
+	ID    uuid.UUID     `json:"id"`
+	Email string        `json:"email"`
+	Role  enum.UserRole `json:"role"`
+
+	Name        string          `json:"name"`
+	PhoneNumber string          `json:"phone_number"`
+	Status      enum.UserStatus `json:"status"`
+	IsVerified  bool            `json:"is_verified"`
+
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type UserProfileResponseDTO struct {
@@ -32,15 +29,10 @@ type UserProfileResponseDTO struct {
 }
 
 type UserRegistrationRequestDTO struct {
-	FirstName   string `json:"first_name" binding:"required"`
-	LastName    string `json:"last_name" binding:"required"`
+	Name        string `json:"name" binding:"required"`
 	PhoneNumber string `json:"phone_number" binding:"required,e164"`
 	Email       string `json:"email" binding:"required,email"`
 	Password    string `json:"password" binding:"required,min=8"`
-	Gender      string `json:"gender" binding:"omitempty,oneof=male female other"`
-	Address     string `json:"address" binding:"required"`
-	BirthPlace  string `json:"birth_place" binding:"required"`
-	BirthDate   string `json:"birth_date" binding:"required"`
 }
 
 type UserRegistrationResponseDTO struct {
@@ -54,13 +46,9 @@ type UserLoginRequestDTO struct {
 }
 
 type UserUpdateProfileRequestDTO struct {
-	FirstName   *string `json:"first_name"`
-	LastName    *string `json:"last_name"`
+	Name        *string `json:"name"`
 	Email       *string `json:"email"`
 	PhoneNumber *string `json:"phone_number" binding:"e164"`
-	Address     *string `json:"address"`
-	BirthPlace  *string `json:"birth_place"`
-	BirthDate   *string `json:"birth_date"`
 }
 
 type UserChangePasswordRequestDTO struct {
@@ -79,15 +67,10 @@ type OnBoardPatientRequestDTO struct {
 func MapUserToUserResponseDTO(user *entity.User) UserResponseDTO {
 	return UserResponseDTO{
 		ID:          user.ID,
-		FirstName:   user.FirstName,
-		LastName:    user.LastName,
+		Name:        user.Name,
 		PhoneNumber: user.PhoneNumber,
 		Email:       user.Email,
-		Address:     user.Address,
 		Status:      user.Status,
-		BirthDate:   utils.ConvertTimeToString(*user.BirthDate),
-		BirthPlace:  user.BirthPlace,
-		Gender:      user.Gender,
 		IsVerified:  user.IsVerified,
 		CreatedAt:   user.CreatedAt,
 		UpdatedAt:   user.UpdatedAt,
@@ -97,15 +80,10 @@ func MapUserToUserResponseDTO(user *entity.User) UserResponseDTO {
 func MapUserResponseDTOToUser(dto UserResponseDTO) entity.User {
 	return entity.User{
 		ID:          dto.ID,
-		FirstName:   dto.FirstName,
-		LastName:    dto.LastName,
+		Name:        dto.Name,
 		PhoneNumber: dto.PhoneNumber,
 		Email:       dto.Email,
-		Address:     dto.Address,
 		Status:      dto.Status,
-		BirthDate:   utils.ConvertStringToTime(dto.BirthDate),
-		BirthPlace:  dto.BirthPlace,
-		Gender:      dto.Gender,
 		IsVerified:  dto.IsVerified,
 		CreatedAt:   dto.CreatedAt,
 		UpdatedAt:   dto.UpdatedAt,
@@ -113,25 +91,13 @@ func MapUserResponseDTOToUser(dto UserResponseDTO) entity.User {
 }
 
 func (req *UserUpdateProfileRequestDTO) AssignToEntity(user *entity.User) {
-	if req.FirstName != nil {
-		user.FirstName = *req.FirstName
-	}
-	if req.LastName != nil {
-		user.LastName = *req.LastName
+	if req.Name != nil {
+		user.Name = *req.Name
 	}
 	if req.Email != nil {
 		user.Email = *req.Email
 	}
 	if req.PhoneNumber != nil {
 		user.PhoneNumber = *req.PhoneNumber
-	}
-	if req.Address != nil {
-		user.Address = req.Address
-	}
-	if req.BirthPlace != nil {
-		user.BirthPlace = req.BirthPlace
-	}
-	if req.BirthDate != nil {
-		user.BirthDate = utils.ConvertStringToTime(*req.BirthDate)
 	}
 }

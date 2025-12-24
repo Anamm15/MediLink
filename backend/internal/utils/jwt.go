@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"MediLink/internal/helpers/constants"
+	"MediLink/internal/helpers/enum"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -22,13 +23,13 @@ var (
 // 1. Custom Claims Struct
 // Menggunakan struct daripada MapClaims agar Type-Safe dan mencegah typo saat akses key.
 type JWTCustomClaims struct {
-	UserID uuid.UUID          `json:"user_id"`
-	Role   constants.UserRole `json:"role"`
+	UserID uuid.UUID     `json:"user_id"`
+	Role   enum.UserRole `json:"role"`
 	jwt.RegisteredClaims
 }
 
 // 2. Generate Token
-func GenerateJWT(userID uuid.UUID, role constants.UserRole) (string, error) {
+func GenerateJWT(userID uuid.UUID, role enum.UserRole) (string, error) {
 	secretKey := constants.GetJWTSecret()
 	// Setup claims
 	claims := JWTCustomClaims{

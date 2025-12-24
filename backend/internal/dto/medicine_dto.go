@@ -7,41 +7,50 @@ import (
 )
 
 type MedicineResponseDTO struct {
-	ID                   uuid.UUID `json:"id"`
-	Name                 string    `json:"name"`
-	Description          string    `json:"description"`
-	Dosage               string    `json:"dosage"`
-	Price                float64   `json:"price"`
-	Stock                int       `json:"stock"`
-	RequiresPrescription bool      `json:"requires_prescription"`
+	ID           uuid.UUID `json:"id"`
+	Name         string    `json:"name"`
+	GenericName  *string   `json:"generic_name,omitempty"`
+	Description  *string   `json:"description"`
+	Category     *string   `json:"category,omitempty"`
+	Manufacturer *string   `json:"manufacturer,omitempty"`
+
+	BasePrice              float64 `json:"base_price"`
+	IsPrescriptionRequired bool    `json:"is_prescription_required"`
+
+	CreatedAt string `json:"created_at"`
 }
 
 type MedicineCreateDTO struct {
-	Name                 string  `json:"name" binding:"required"`
-	Description          string  `json:"description" binding:"required"`
-	Dosage               string  `json:"dosage" binding:"required"`
-	Price                float64 `json:"price" binding:"required"`
-	Stock                int     `json:"stock" binding:"required"`
-	RequiresPrescription bool    `json:"requires_prescription"`
+	Name         string  `json:"name" binding:"required"`
+	Description  *string `json:"description"`
+	GenericName  *string `json:"generic_name"`
+	Category     *string `json:"category"`
+	Manufacturer *string `json:"manufacturer"`
+
+	BasePrice              float64 `json:"base_price" binding:"required"`
+	IsPrescriptionRequired bool    `json:"is_prescription_required"`
 }
 
 type MedicineUpdateDTO struct {
-	Name                 *string  `json:"name"`
-	Description          *string  `json:"description"`
-	Dosage               *string  `json:"dosage"`
-	Price                *float64 `json:"price"`
-	Stock                *int     `json:"stock"`
-	RequiresPrescription *bool    `json:"requires_prescription"`
+	Name         *string `json:"name"`
+	GenericName  *string `json:"generic_name"`
+	Description  *string `json:"description"`
+	Category     *string `json:"category"`
+	Manufacturer *string `json:"manufacturer"`
+
+	BasePrice              *float64 `json:"base_price"`
+	IsPrescriptionRequired *bool    `json:"is_prescription_required"`
 }
 
 func (m *MedicineCreateDTO) ToModel() *entity.Medicine {
 	return &entity.Medicine{
-		Name:                 m.Name,
-		Description:          m.Description,
-		Dosage:               m.Dosage,
-		Price:                m.Price,
-		Stock:                m.Stock,
-		RequiresPrescription: m.RequiresPrescription,
+		Name:                   m.Name,
+		Description:            m.Description,
+		GenericName:            m.GenericName,
+		Category:               m.Category,
+		Manufacturer:           m.Manufacturer,
+		BasePrice:              m.BasePrice,
+		IsPrescriptionRequired: m.IsPrescriptionRequired,
 	}
 }
 
@@ -50,32 +59,36 @@ func (m *MedicineUpdateDTO) ToModel(existing *entity.Medicine) *entity.Medicine 
 		existing.Name = *m.Name
 	}
 	if m.Description != nil {
-		existing.Description = *m.Description
+		existing.Description = m.Description
 	}
-	if m.Dosage != nil {
-		existing.Dosage = *m.Dosage
+	if m.GenericName != nil {
+		existing.GenericName = m.GenericName
 	}
-	if m.Price != nil {
-		existing.Price = *m.Price
+	if m.Category != nil {
+		existing.Category = m.Category
 	}
-	if m.Stock != nil {
-		existing.Stock = *m.Stock
+	if m.Manufacturer != nil {
+		existing.Manufacturer = m.Manufacturer
 	}
-	if m.RequiresPrescription != nil {
-		existing.RequiresPrescription = *m.RequiresPrescription
+	if m.BasePrice != nil {
+		existing.BasePrice = *m.BasePrice
+	}
+	if m.IsPrescriptionRequired != nil {
+		existing.IsPrescriptionRequired = *m.IsPrescriptionRequired
 	}
 	return existing
 }
 
 func ToMedicineResponseDTO(m *entity.Medicine) *MedicineResponseDTO {
 	return &MedicineResponseDTO{
-		ID:                   m.ID,
-		Name:                 m.Name,
-		Description:          m.Description,
-		Dosage:               m.Dosage,
-		Price:                m.Price,
-		Stock:                m.Stock,
-		RequiresPrescription: m.RequiresPrescription,
+		ID:                     m.ID,
+		Name:                   m.Name,
+		Description:            m.Description,
+		GenericName:            m.GenericName,
+		Category:               m.Category,
+		Manufacturer:           m.Manufacturer,
+		BasePrice:              m.BasePrice,
+		IsPrescriptionRequired: m.IsPrescriptionRequired,
 	}
 }
 
