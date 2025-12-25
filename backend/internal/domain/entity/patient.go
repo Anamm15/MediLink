@@ -27,7 +27,9 @@ type Patient struct {
 	InsuranceNumber   *string `gorm:"type:varchar(100)"`
 	Occupation        *string `gorm:"type:varchar(100)"`
 
-	User      User      `gorm:"foreignKey:UserID"`
+	User         User          `gorm:"foreignKey:UserID"`
+	Appointments []Appointment `gorm:"foreignKey:PatientID"`
+
 	CreatedAt time.Time `gorm:"type:timestamptz;default:now()"`
 	UpdatedAt time.Time `gorm:"type:timestamptz;default:now()"`
 }

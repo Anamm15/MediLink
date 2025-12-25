@@ -1,12 +1,12 @@
 @baseUrl = http://localhost:5000/api/v1/clinics
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYjBiNmMyYTItNzIwYy00NGVlLTgxNmQtNGFhOTYwYTA1YzdiIiwicm9sZSI6ImFkbWluIiwiaXNzIjoibWVkaWxpbmstYXBwIiwiZXhwIjoxNzY2MTM5NDc0LCJpYXQiOjE3NjYwNTMwNzR9.s96nIkT91S06d8h04SAZYtmrUqBq1V5ZGTHO-2ABj8k
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzAwYzg4NzQtMTM3MS00ZWQzLTllMzgtNjFlODYwYTQ3MjM1Iiwicm9sZSI6ImFkbWluIiwiaXNzIjoibWVkaWxpbmstYXBwIiwiZXhwIjoxNzY2NzExMDgzLCJpYXQiOjE3NjY2MjQ2ODN9.EfOAl45EtGMRqxrWJnkRp9Hf_6d8UkU5fqv7C8e48MI
 
 ###
 POST http://localhost:5000/api/v1/users/login
 Content-Type: application/json
 
 {
-   "email": "oblolovina@gmail.com",
+   "email": "irulxartal@gmail.com",
    "password": "SecurePass123"
 }
 
@@ -25,23 +25,19 @@ Content-Type: application/json
 
 {
   "name": "Klinik Sehat Sentosa",
-  "code": "KSS-001",
-  "type": "Klinik Umum",
   "address": "Jl. Merdeka No. 123",
   "city": "Jakarta Selatan",
-  "province": "DKI Jakarta",
-  "postal_code": "12345",
   "phone_number": "+62-21-5551234",
   "email": "info@kliniksehat.co.id",
   "latitude": -6.260718,
   "longitude": 106.781639,
   "opening_time": {
-    "monday":    "08:00-20:00",
-    "tuesday":   "08:00-20:00",
-    "wednesday": "08:00-20:00",
-    "thursday":  "08:00-20:00",
-    "friday":    "08:00-20:00",
-    "saturday":  "08:00-14:00",
+    "monday":    "09:00-16:00",
+    "tuesday":   "09:00-16:00",
+    "wednesday": "09:00-16:00",
+    "thursday":  "09:00-16:00",
+    "friday":    "09:00-16:00",
+    "saturday":  "closed",
     "sunday":    "closed"
   },
   "facilities": [
@@ -55,8 +51,7 @@ Content-Type: application/json
     "Prudential",
     "Allianz"
   ],
-  "accreditation": "Paripurna",
-  "established_date": "2015-06-15"
+  "accreditation": "Paripurna"
 }
 
 ###

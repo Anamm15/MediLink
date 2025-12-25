@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:5000/api/v1/users
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiOWMyMThjMGMtOTFiNS00NmY4LTkyNTItOThlYmY3NTNjMTk5Iiwicm9sZSI6InVzZXIiLCJpc3MiOiJtZWRpbGluay1hcHAiLCJleHAiOjE3NjYwOTk4MjEsImlhdCI6MTc2NjAxMzQyMX0.5mPs77RO2bWOllJXZ25aUK1AT8TE_4b1QjBesbgcniY
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDJhNDEyNzktZTliNy00MjBjLTljYmYtMjUyNTQzYzExN2U0Iiwicm9sZSI6InVzZXIiLCJpc3MiOiJtZWRpbGluay1hcHAiLCJleHAiOjE3NjY3MTEzNDksImlhdCI6MTc2NjYyNDk0OX0.m5w9tSddl5pvCTcnTHbrLty1gc279j7U5tyaGoQx1YQ
 
 ###
 GET {{baseUrl}}/
@@ -14,15 +14,10 @@ POST {{baseUrl}}/register
 Content-Type: application/json
 
 {
-   "first_name": "Moch",
-   "last_name": "Muhajir",
-   "email": "muhajir@gmail.com",
-   "phone_number": "+6283098037610",
-   "password": "SecurePass123",
-   "gender": "male",
-   "address": "Jl. Kebon Jeruk No. 123",
-   "birth_place": "Jakarta",
-   "birth_date": "1990-05-15"
+   "name": "John Cena",
+   "email": "john.cena@gmail.com",
+   "phone_number": "+6283098037109",
+   "password": "SecurePass123"
 }
 
 ###
@@ -30,7 +25,7 @@ POST {{baseUrl}}/login
 Content-Type: application/json
 
 {
-   "email": "john.cena@example.com",
+   "email": "rizaloblolovina@gmail.com",
    "password": "SecurePass123"
 }
 
@@ -69,7 +64,7 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-   "otp": "630299"
+   "otp": "171443"
 }
 
 ###
@@ -79,11 +74,13 @@ Content-Type: application/json
 
 {
   "identity_number": "3171012345100001",
+  "birth_date": "1990-05-15",
+  "gender": "male",
   "blood_type": "O+",
   "weight_kg": 72,
   "height_cm": 175,
   "allergies": "Seafood, Penicillin",
-  "chronic_diseases": "None",
+  "history_chronic_diseases": "None",
   "emergency_contact": "+6281234561790",
   "insurance_provider": "BPJS Kesehatan",
   "insurance_number": "0001234567891",

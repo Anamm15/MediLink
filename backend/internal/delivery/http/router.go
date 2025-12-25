@@ -41,7 +41,9 @@ func ClinicRoute(server *gin.Engine, clinicHandler handler.ClinicHandler) {
 		clinic.GET("/find", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.Find)
 		clinic.POST("/", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.Create)
 		clinic.PUT("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.Update)
-		clinic.PATCH("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.Update)
+		clinic.PATCH("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("clinic"), clinicHandler.Update)
+		// clinic.POST("/assign-doctor", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.AssignDoctor)
+		// clinic.DELETE("/remove-doctor", middlewares.Authenticate(), middlewares.AuthorizeRole("clinic"), clinicHandler.RemoveDoctor)
 		clinic.DELETE("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.Delete)
 	}
 }
@@ -66,6 +68,20 @@ func MedicineRoute(server *gin.Engine, medicineHandler handler.MedicineHandler) 
 		medicine.POST("/", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), medicineHandler.Create)
 		medicine.PUT("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), medicineHandler.Update)
 		medicine.DELETE("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), medicineHandler.Delete)
+	}
+}
+
+func AppointmentRoute(server *gin.Engine, appointmentHandler handler.AppointmentHandler) {
+	appointment := server.Group("/api/v1/appointments")
+	{
+		appointment.GET("/", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), appointmentHandler.GetAll)
+		appointment.GET("/:id", middlewares.Authenticate(), appointmentHandler.GetDetailByID)
+		appointment.GET("/doctor/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), appointmentHandler.GetByDoctor)
+		appointment.GET("/patient/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("patient"), appointmentHandler.GetByPatient)
+		appointment.POST("/", middlewares.Authenticate(), appointmentHandler.Create)
+		appointment.PATCH("/:id/cancel", middlewares.Authenticate(), appointmentHandler.CancelBooking)
+		appointment.PATCH("/:id/complete", middlewares.Authenticate(), appointmentHandler.CompleteConsultation)
+		appointment.DELETE("/:id", middlewares.Authenticate(), appointmentHandler.Delete)
 	}
 }
 
