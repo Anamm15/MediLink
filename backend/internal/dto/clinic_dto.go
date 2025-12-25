@@ -68,6 +68,18 @@ type ClinicUpdateRequestDTO struct {
 	Accreditation *string `json:"accreditation"`
 }
 
+type AssignDoctorRequest struct {
+	ClinicID        uuid.UUID `json:"clinic_id" validate:"required"`
+	DoctorID        uuid.UUID `json:"doctor_id" validate:"required"`
+	ConsultationFee float64   `json:"consultation_fee" validate:"required"`
+	IsActive        *bool     `json:"is_active"`
+}
+
+type RemoveDoctorRequest struct {
+	ClinicID uuid.UUID `json:"clinic_id" validate:"required"`
+	DoctorID uuid.UUID `json:"doctor_id" validate:"required"`
+}
+
 func ToClinicResponseDTO(clinic *entity.Clinic) ClinicResponseDTO {
 	return ClinicResponseDTO{
 		ID:      clinic.ID,
@@ -148,4 +160,11 @@ func (dto *ClinicUpdateRequestDTO) AssignToEntity(clinic *entity.Clinic) {
 	if dto.Accreditation != nil {
 		clinic.Accreditation = dto.Accreditation
 	}
+}
+
+func (dto *AssignDoctorRequest) ToModel(doctor *entity.DoctorClinicPlacement) {
+	doctor.ClinicID = dto.ClinicID
+	doctor.DoctorID = dto.DoctorID
+	doctor.ConsultationFee = dto.ConsultationFee
+	doctor.IsActive = utils.GetBoolOrDefault(dto.IsActive, true)
 }

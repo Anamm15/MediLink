@@ -13,12 +13,17 @@ import (
 )
 
 type clinicUsecase struct {
-	clinicRepo repository.ClinicRepository
+	clinicRepo                  repository.ClinicRepository
+	doctorClinicReplacementRepo repository.DoctorClinicPlacementRepository
 }
 
-func NewClinicUsecase(clinicRepo repository.ClinicRepository) usecase.ClinicUsecase {
+func NewClinicUsecase(
+	clinicRepo repository.ClinicRepository,
+	doctorClinicReplacementRepo repository.DoctorClinicPlacementRepository,
+) usecase.ClinicUsecase {
 	return &clinicUsecase{
-		clinicRepo: clinicRepo,
+		clinicRepo:                  clinicRepo,
+		doctorClinicReplacementRepo: doctorClinicReplacementRepo,
 	}
 }
 
@@ -85,4 +90,14 @@ func (c *clinicUsecase) Update(ctx context.Context, id uuid.UUID, data dto.Clini
 
 func (c *clinicUsecase) Delete(ctx context.Context, id uuid.UUID) error {
 	return c.clinicRepo.Delete(ctx, id)
+}
+
+func (cu *clinicUsecase) AssignDoctor(ctx context.Context, data dto.AssignDoctorRequest) error {
+	doctorClinicModel := &entity.DoctorClinicPlacement{}
+	data.ToModel(doctorClinicModel)
+	return cu.doctorClinicReplacementRepo.Add(ctx, doctorClinicModel)
+}
+
+func (cu *clinicUsecase) RemoveDoctor(ctx context.Context, data dto.RemoveDoctorRequest) error {
+	return cu.doctorClinicReplacementRepo.Delete(ctx, data.DoctorID, data.ClinicID)
 }

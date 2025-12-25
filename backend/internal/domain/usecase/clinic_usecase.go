@@ -15,4 +15,6 @@ type ClinicUsecase interface {
 	Create(ctx context.Context, data dto.ClinicCreateRequestDTO) (dto.ClinicResponseDTO, error)
 	Update(ctx context.Context, id uuid.UUID, data dto.ClinicUpdateRequestDTO) error
 	Delete(ctx context.Context, id uuid.UUID) error
+	AssignDoctor(ctx context.Context, data dto.AssignDoctorRequest) error
+	RemoveDoctor(ctx context.Context, data dto.RemoveDoctorRequest) error
 }

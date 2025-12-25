@@ -41,10 +41,10 @@ func ClinicRoute(server *gin.Engine, clinicHandler handler.ClinicHandler) {
 		clinic.GET("/find", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.Find)
 		clinic.POST("/", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.Create)
 		clinic.PUT("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.Update)
-		clinic.PATCH("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("clinic"), clinicHandler.Update)
-		// clinic.POST("/assign-doctor", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.AssignDoctor)
-		// clinic.DELETE("/remove-doctor", middlewares.Authenticate(), middlewares.AuthorizeRole("clinic"), clinicHandler.RemoveDoctor)
+		clinic.PATCH("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.Update)
+		clinic.POST("/assign-doctor", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.AssignDoctor)
 		clinic.DELETE("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.Delete)
+		clinic.DELETE("/remove-doctor", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.RemoveDoctor)
 	}
 }
 

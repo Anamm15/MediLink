@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:5000/api/v1/clinics
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzAwYzg4NzQtMTM3MS00ZWQzLTllMzgtNjFlODYwYTQ3MjM1Iiwicm9sZSI6ImFkbWluIiwiaXNzIjoibWVkaWxpbmstYXBwIiwiZXhwIjoxNzY2NzExMDgzLCJpYXQiOjE3NjY2MjQ2ODN9.EfOAl45EtGMRqxrWJnkRp9Hf_6d8UkU5fqv7C8e48MI
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzAwYzg4NzQtMTM3MS00ZWQzLTllMzgtNjFlODYwYTQ3MjM1Iiwicm9sZSI6ImFkbWluIiwiaXNzIjoibWVkaWxpbmstYXBwIiwiZXhwIjoxNzY2NzI5NzA2LCJpYXQiOjE3NjY2NDMzMDZ9.-IOzldiiMylTT6dBd5-xZka8UDwi5mMf1WP7-IroMok
 
 ###
 POST http://localhost:5000/api/v1/users/login
@@ -69,3 +69,24 @@ Content-Type: application/json
 ###
 DELETE {{baseUrl}}/944e7b0e-f8cc-48ef-83f2-44a9b5eff75f
 Authorization: Bearer {{token}}
+
+###
+POST {{baseUrl}}/assign-doctor
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "doctor_id": "d3acd040-75b4-46dc-9cc0-1cbebe986a2b",
+  "clinic_id": "253889e5-bacf-4c61-a032-54a340c772f4",
+  "consultation_fee": 50000
+}
+
+###
+DELETE {{baseUrl}}/remove-doctor
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "doctor_id": "d3acd040-75b4-46dc-9cc0-1cbebe986a2b",
+  "clinic_id": "253889e5-bacf-4c61-a032-54a340c772f4"
+}

@@ -135,3 +135,41 @@ func (c *clinicHandler) Delete(ctx *gin.Context) {
 	res := utils.BuildResponseSuccess("Clinic deleted successfully", nil)
 	ctx.JSON(http.StatusNoContent, res)
 }
+
+func (c *clinicHandler) AssignDoctor(ctx *gin.Context) {
+	var req dto.AssignDoctorRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	err := c.clinicUsecase.AssignDoctor(ctx, req)
+	if err != nil {
+		res := utils.BuildResponseFailed("Failed to assign doctor", err.Error(), nil)
+		ctx.JSON(http.StatusInternalServerError, res)
+		return
+	}
+
+	res := utils.BuildResponseSuccess("Doctor assigned successfully", nil)
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (c *clinicHandler) RemoveDoctor(ctx *gin.Context) {
+	var req dto.RemoveDoctorRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	err := c.clinicUsecase.RemoveDoctor(ctx, req)
+	if err != nil {
+		res := utils.BuildResponseFailed("Failed to unassign doctor", err.Error(), nil)
+		ctx.JSON(http.StatusInternalServerError, res)
+		return
+	}
+
+	res := utils.BuildResponseSuccess("Doctor unassigned successfully", nil)
+	ctx.JSON(http.StatusNoContent, res)
+}

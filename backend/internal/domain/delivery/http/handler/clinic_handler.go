@@ -9,4 +9,6 @@ type ClinicHandler interface {
 	Create(ctx *gin.Context)
 	Update(ctx *gin.Context)
 	Delete(ctx *gin.Context)
+	AssignDoctor(ctx *gin.Context)
+	RemoveDoctor(ctx *gin.Context)
 }
