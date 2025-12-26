@@ -1,0 +1,45 @@
+@baseUrl = http://localhost:5000/api/v1/clinics/253889e5-bacf-4c61-a032-54a340c772f4/inventories
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzAwYzg4NzQtMTM3MS00ZWQzLTllMzgtNjFlODYwYTQ3MjM1Iiwicm9sZSI6ImFkbWluIiwiaXNzIjoibWVkaWxpbmstYXBwIiwiZXhwIjoxNzY2ODAyOTQwLCJpYXQiOjE3NjY3MTY1NDB9.P5eT-nPB6P56miYBrGTwTBZ_KF8WrbRVMMybIi4dAI0
+
+###
+POST http://localhost:5000/api/v1/users/login
+Content-Type: application/json
+
+{
+   "email": "irulxartal@gmail.com",
+   "password": "SecurePass123"
+}
+
+###
+GET {{baseUrl}}
+Authorization: Bearer {{token}}
+
+###
+GET {{baseUrl}}/7e89f973-d559-4897-be23-2ead87ba903f
+Authorization: Bearer {{token}}
+
+###
+POST {{baseUrl}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+   "clinic_id": "253889e5-bacf-4c61-a032-54a340c772f4",
+   "medicine_id": "e8e7c15d-a37a-4abf-aa0b-cdf85fc46898",
+   "current_stock": 2,
+   "low_stock_threshold": 10,
+   "price": 15000
+}
+
+###
+PUT {{baseUrl}}/7e89f973-d559-4897-be23-2ead87ba903f
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+   "current_stock": 4
+}
+
+###
+DELETE {{baseUrl}}/7e89f973-d559-4897-be23-2ead87ba903f
+Authorization: Bearer {{token}}

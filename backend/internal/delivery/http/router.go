@@ -33,18 +33,36 @@ func PatientRoute(server *gin.Engine, patientHandler handler.PatientHandler) {
 	}
 }
 
-func ClinicRoute(server *gin.Engine, clinicHandler handler.ClinicHandler) {
-	clinic := server.Group("/api/v1/clinics")
+func ClinicRoute(
+	server *gin.Engine,
+	clinicHandler handler.ClinicHandler,
+	clinicInventoryHandler handler.ClinicInventoryHandler,
+) {
+	api := server.Group("/api/v1", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"))
+
+	clinics := api.Group("/clinics")
 	{
-		clinic.GET("/", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.GetAll)
-		clinic.GET("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.GetByID)
-		clinic.GET("/find", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.Find)
-		clinic.POST("/", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.Create)
-		clinic.PUT("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.Update)
-		clinic.PATCH("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.Update)
-		clinic.POST("/assign-doctor", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.AssignDoctor)
-		clinic.DELETE("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.Delete)
-		clinic.DELETE("/remove-doctor", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.RemoveDoctor)
+		clinics.GET("", clinicHandler.GetAll)
+		clinics.POST("", clinicHandler.Create)
+
+		clinic := clinics.Group("/:clinic_id")
+		{
+			clinic.GET("", clinicHandler.GetByID)
+			clinic.PUT("", clinicHandler.Update)
+			clinic.DELETE("", clinicHandler.Delete)
+
+			clinic.POST("/doctors", clinicHandler.AssignDoctor)
+			clinic.DELETE("/doctors/:doctor_id", clinicHandler.RemoveDoctor)
+
+			inventories := clinic.Group("/inventories")
+			{
+				inventories.GET("", clinicInventoryHandler.GetByClinic)
+				inventories.GET("/:id", clinicInventoryHandler.GetByID)
+				inventories.POST("", clinicInventoryHandler.Create)
+				inventories.PUT("/:id", clinicInventoryHandler.Update)
+				inventories.DELETE("/:id", clinicInventoryHandler.Delete)
+			}
+		}
 	}
 }
 

@@ -1,15 +1,14 @@
 @baseUrl = http://localhost:5000/api/v1/medicines
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYjBiNmMyYTItNzIwYy00NGVlLTgxNmQtNGFhOTYwYTA1YzdiIiwicm9sZSI6ImFkbWluIiwiaXNzIjoibWVkaWxpbmstYXBwIiwiZXhwIjoxNzY2NjIzNDY5LCJpYXQiOjE3NjY1MzcwNjl9.zvEy_As7O6zmN67PxrG2f8bGm8L-5fjFyfl4_q9utm4
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzAwYzg4NzQtMTM3MS00ZWQzLTllMzgtNjFlODYwYTQ3MjM1Iiwicm9sZSI6ImFkbWluIiwiaXNzIjoibWVkaWxpbmstYXBwIiwiZXhwIjoxNzY2ODAzMjc4LCJpYXQiOjE3NjY3MTY4Nzh9.7x_MHw7C2PhaiPjFFxmdYMgT8v1pHZbL3rru3TapS8Y
 
 ###
 POST http://localhost:5000/api/v1/users/login
 Content-Type: application/json
 
 {
-   "email": "oblolovina@gmail.com",
+   "email": "irulxartal@gmail.com",
    "password": "SecurePass123"
 }
-
 ###
 GET {{baseUrl}}
 
@@ -25,12 +24,13 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-   "name": "Cetirizine 10mg",
-   "description": "Obat antihistamin untuk meredakan gejala alergi.",
-   "dosage": "1 tablet, 1 kali sehari sebelum tidur",
-   "price": 8000,
-   "stock": 90,
-   "requires_prescription": false
+   "name": "Vitamin C 1000mg",
+   "description": null,
+   "generic_name": "Ascorbic Acid",
+   "category": "Supplement",
+   "manufacturer": null,
+   "base_price": 8000,
+   "is_prescription_required": false
 }
 
 ###

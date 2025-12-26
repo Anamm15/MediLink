@@ -1,6 +1,8 @@
 package entity
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
@@ -16,5 +18,8 @@ type ClinicInventory struct {
 	BatchNumber *string `gorm:"type:varchar(100);"`
 	ExpiryDate  *string `gorm:"type:date;"`
 
-	updatedAt int64 `gorm:"autoUpdateTime"`
+	UpdatedAt time.Time `gorm:"type:timestamptz;default:now()"`
+
+	Clinic   Clinic   `gorm:"foreignKey:ClinicID"`
+	Medicine Medicine `gorm:"foreignKey:MedicineID"`
 }

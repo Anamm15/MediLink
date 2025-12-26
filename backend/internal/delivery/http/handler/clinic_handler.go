@@ -35,7 +35,7 @@ func (c *clinicHandler) GetAll(ctx *gin.Context) {
 }
 
 func (c *clinicHandler) GetByID(ctx *gin.Context) {
-	id := ctx.Param("id")
+	id := ctx.Param("clinic_id")
 	parsedID, err := uuid.Parse(id)
 	if err != nil {
 		res := utils.BuildResponseFailed("Invalid clinic ID", err.Error(), nil)
@@ -89,7 +89,7 @@ func (c *clinicHandler) Create(ctx *gin.Context) {
 }
 
 func (c *clinicHandler) Update(ctx *gin.Context) {
-	id := ctx.Param("id")
+	id := ctx.Param("clinic_id")
 	var req dto.ClinicUpdateRequestDTO
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
@@ -116,7 +116,7 @@ func (c *clinicHandler) Update(ctx *gin.Context) {
 }
 
 func (c *clinicHandler) Delete(ctx *gin.Context) {
-	id := ctx.Param("id")
+	id := ctx.Param("clinic_id")
 
 	parsedID, err := uuid.Parse(id)
 	if err != nil {
