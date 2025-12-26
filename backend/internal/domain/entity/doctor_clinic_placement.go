@@ -11,4 +11,7 @@ type DoctorClinicPlacement struct {
 
 	ConsultationFee float64 `gorm:"type:numeric(12,2);not null"`
 	IsActive        bool    `gorm:"default:true"`
+
+	Doctor Doctor `gorm:"foreignKey:DoctorID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Clinic Clinic `gorm:"foreignKey:ClinicID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }

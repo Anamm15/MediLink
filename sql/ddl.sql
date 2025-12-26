@@ -295,8 +295,46 @@ CREATE TABLE payments (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============================================
+-- SECTION 7: OTHER TABLE
+-- ============================================
+
+CREATE TABLE reviews (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    patient_id UUID NOT NULL REFERENCES patients(id),
+    doctor_id UUID REFERENCES doctors(id), -- Can be null if reviewing a clinic
+    clinic_id UUID REFERENCES clinics(id), -- Can be null if reviewing a doctor
+    rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    comment TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    CONSTRAINT chk_review_target CHECK (doctor_id IS NOT NULL OR clinic_id IS NOT NULL) -- A review must be for a doctor OR a clinic
+);
+
+CREATE TABLE notifications (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE, -- Penerima
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    type VARCHAR(100), -- 'APPOINTMENT_REMINDER', 'PRESCRIPTION_READY'
+    priority VARCHAR(20) DEFAULT 'normal',
+    read_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Polymorphic Table for Files (CENTRAL)
+CREATE TABLE files (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    file_name VARCHAR(255) NOT NULL,
+    url TEXT NOT NULL, -- URL dari cloud storage (S3, GCS, dll)
+    fileable_id UUID NOT NULL,
+    fileable_type VARCHAR(100) NOT NULL, -- e.g., 'User', 'Medicine', 'MedicalRecord'
+    mime_type VARCHAR(100),
+    size_bytes INT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- =============================================
--- SECTION 7: INDEXING (Performance)
+-- SECTION 8: INDEXING (Performance)
 -- Add indexes on columns frequently used in WHERE, JOIN, and ORDER BY
 -- =============================================
 

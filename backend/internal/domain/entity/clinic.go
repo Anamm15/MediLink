@@ -25,9 +25,9 @@ type Clinic struct {
 	IsActive      bool    `gorm:"default:true"`
 	Accreditation *string `gorm:"type:varchar(100)"`
 
-	Doctors      []Doctor      `gorm:"foreignKey:ClinicID"`
-	Appointments []Appointment `gorm:"foreignKey:ClinicID"`
-	Inventories  []ClinicInventory
+	DoctorClinicPlacements []DoctorClinicPlacement `gorm:"foreignKey:ClinicID"`
+	Appointments           []Appointment           `gorm:"foreignKey:ClinicID"`
+	Inventories            []ClinicInventory
 
 	CreatedAt time.Time `gorm:"type:timestamptz;default:now()"`
 	UpdatedAt time.Time `gorm:"type:timestamptz;default:now()"`

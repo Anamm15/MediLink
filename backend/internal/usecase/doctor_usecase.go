@@ -61,19 +61,13 @@ func (u *doctorUsecase) Update(ctx context.Context, userID uuid.UUID, doctorID u
 		return errors.New("Your id is not match")
 	}
 
-	data.AssignToEntity(doctor)
+	data.ToModel(doctor)
 	return u.doctorRepo.Update(ctx, doctor)
 }
 
-func (u *doctorUsecase) AddSchedule(ctx context.Context, userID uuid.UUID, data dto.DoctorCreateScheduleRequestDTO) (dto.DoctorScheduleResponseDTO, error) {
+func (u *doctorUsecase) AddSchedule(ctx context.Context, data dto.DoctorCreateScheduleRequestDTO) (dto.DoctorScheduleResponseDTO, error) {
 	schedule := &entity.DoctorSchedule{}
-	doctor, err := u.doctorRepo.GetByUserID(ctx, userID)
-	if err != nil {
-		return dto.DoctorScheduleResponseDTO{}, err
-	}
-
-	schedule.DoctorID = doctor.ID
-	data.AssignToEntity(schedule)
+	data.ToModel(schedule)
 	createdSchedule, err := u.doctorScheduleRepo.Create(ctx, schedule)
 	if err != nil {
 		return dto.DoctorScheduleResponseDTO{}, err
@@ -96,6 +90,6 @@ func (u *doctorUsecase) UpdateSchedule(ctx context.Context, userID uuid.UUID, sc
 		return errors.New("Your id is not match")
 	}
 
-	data.AssignToEntity(schedule)
+	data.ToModel(schedule)
 	return u.doctorScheduleRepo.Update(ctx, schedule)
 }

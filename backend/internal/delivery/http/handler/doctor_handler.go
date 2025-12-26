@@ -82,7 +82,6 @@ func (dh *doctorHandler) Update(ctx *gin.Context) {
 }
 
 func (dh *doctorHandler) AddSchedule(ctx *gin.Context) {
-	userID := ctx.MustGet("user_id").(uuid.UUID)
 	var req dto.DoctorCreateScheduleRequestDTO
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
@@ -90,7 +89,7 @@ func (dh *doctorHandler) AddSchedule(ctx *gin.Context) {
 		return
 	}
 
-	createdSchedule, err := dh.doctorUsecase.AddSchedule(ctx, userID, req)
+	createdSchedule, err := dh.doctorUsecase.AddSchedule(ctx, req)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to add schedule", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)

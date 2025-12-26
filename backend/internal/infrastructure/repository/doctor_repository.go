@@ -21,12 +21,12 @@ func NewDoctorRepository(db *gorm.DB) repository.DoctorRepository {
 func (r *doctorRepository) GetWithSchedule(ctx context.Context, id uuid.UUID) (*entity.Doctor, error) {
 	var doctor entity.Doctor
 	if err := r.db.WithContext(ctx).
-		Preload("DoctorSchedule").
+		Preload("DoctorSchedules").
 		Preload("User", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "name", "email", "phone_number")
 		}).
-		Preload("Clinic", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "name", "address")
+		Preload("DoctorClinicPlacements.Clinic", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id", "name", "address", "city", "is_active")
 		}).
 		First(&doctor, id).Error; err != nil {
 		return nil, err
@@ -57,12 +57,12 @@ func (r *doctorRepository) Find(ctx context.Context, name string, limit int, off
 	var doctors []entity.Doctor
 	if err := r.db.WithContext(ctx).
 		Model(&entity.Doctor{}).
-		Preload("DoctorSchedule").
+		Preload("DoctorSchedules").
 		Preload("User", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "name", "email", "phone_number")
 		}).
-		Preload("Clinic", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "name", "address")
+		Preload("DoctorClinicPlacements.Clinic", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id", "name", "address", "city", "is_active")
 		}).
 		Joins("JOIN users u ON u.id = doctors.user_id").
 		Where("u.name ILIKE ?", "%"+name+"%").

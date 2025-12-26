@@ -22,11 +22,11 @@ type Doctor struct {
 	RatingTotal float64 `gorm:"type:numeric(3,2);default:0"`
 	ReviewCount int     `gorm:"default:0"`
 
-	DoctorSchedule []DoctorSchedule `gorm:"foreignKey:DoctorID"`
-	User           User             `gorm:"foreignKey:UserID"`
-	Clinic         *Clinic          `gorm:"foreignKey:ClinicID"`
-	Appointments   []Appointment    `gorm:"foreignKey:DoctorID"`
-	MedicalRecords []MedicalRecord  `gorm:"foreignKey:DoctorID"`
+	DoctorClinicPlacements []DoctorClinicPlacement `gorm:"foreignKey:DoctorID"`
+	DoctorSchedules        []DoctorSchedule        `gorm:"foreignKey:DoctorID"`
+	User                   User                    `gorm:"foreignKey:UserID"`
+	Appointments           []Appointment           `gorm:"foreignKey:DoctorID"`
+	MedicalRecords         []MedicalRecord         `gorm:"foreignKey:DoctorID"`
 
 	CreatedAt time.Time `gorm:"type:timestamptz;default:now()"`
 	UpdatedAt time.Time `gorm:"type:timestamptz;default:now()"`

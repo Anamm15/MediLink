@@ -10,13 +10,19 @@ import (
 	"gorm.io/datatypes"
 )
 
+type DoctorClinicResponse struct {
+	ID       uuid.UUID `json:"id"`
+	Name     string    `json:"name"`
+	Address  string    `json:"address"`
+	City     string    `json:"city"`
+	IsActive bool      `json:"is_active"`
+}
+
 type DoctorProfileResponseDTO struct {
-	DoctorID     uuid.UUID `json:"doctor_id" gorm:"column:id"`
-	Name         string    `json:"name"`
-	Email        string    `json:"email"`
-	PhoneNumber  string    `json:"phone_number"`
-	ClinicName   *string   `json:"clinic_name"`
-	ClinicAdress *string   `json:"clinic_address"`
+	ID          uuid.UUID `json:"id" gorm:"column:id"`
+	Name        string    `json:"name"`
+	Email       string    `json:"email"`
+	PhoneNumber string    `json:"phone_number"`
 
 	Specialization  string         `json:"specialization"`
 	LicenseNumber   string         `json:"license_number"`
@@ -28,6 +34,7 @@ type DoctorProfileResponseDTO struct {
 	RatingTotal float64 `json:"rating_total"`
 	ReviewCount int     `json:"review_count"`
 
+	Clinic   []DoctorClinicResponse      `json:"clinic"`
 	Schedule []DoctorScheduleResponseDTO `json:"schedule"`
 }
 
@@ -51,6 +58,7 @@ type DoctorScheduleResponseDTO struct {
 
 type DoctorCreateScheduleRequestDTO struct {
 	DoctorID  uuid.UUID        `json:"doctor_id" binding:"required" validate:"required"`
+	ClinicID  *uuid.UUID       `json:"clinic_id"`
 	DayOfWeek enum.ScheduleDay `json:"day_of_week" binding:"required" validate:"required"`
 	StartTime time.Time        `json:"start_time" binding:"required" validate:"required"`
 	EndTime   time.Time        `json:"end_time" binding:"required" validate:"required"`
@@ -67,13 +75,22 @@ type DoctorUpdateScheduleRequestDTO struct {
 }
 
 func MapEntityToDoctorResponseDTO(entity *entity.Doctor) DoctorProfileResponseDTO {
+	var clinic []DoctorClinicResponse
+	for _, clinicEntity := range entity.DoctorClinicPlacements {
+		clinic = append(clinic, DoctorClinicResponse{
+			ID:       clinicEntity.ClinicID,
+			Name:     clinicEntity.Clinic.Name,
+			Address:  clinicEntity.Clinic.Address,
+			City:     clinicEntity.Clinic.City,
+			IsActive: clinicEntity.IsActive,
+		})
+	}
+
 	return DoctorProfileResponseDTO{
-		DoctorID:     entity.ID,
-		Name:         entity.User.Name,
-		Email:        entity.User.Email,
-		PhoneNumber:  entity.User.PhoneNumber,
-		ClinicName:   &entity.Clinic.Name,
-		ClinicAdress: &entity.Clinic.Address,
+		ID:          entity.ID,
+		Name:        entity.User.Name,
+		Email:       entity.User.Email,
+		PhoneNumber: entity.User.PhoneNumber,
 
 		Specialization:  entity.Specialization,
 		LicenseNumber:   entity.LicenseNumber,
@@ -85,12 +102,14 @@ func MapEntityToDoctorResponseDTO(entity *entity.Doctor) DoctorProfileResponseDT
 		RatingTotal: entity.RatingTotal,
 		ReviewCount: entity.ReviewCount,
 
-		Schedule: MapListEntityDoctorScheduleToResponseDTO(entity.DoctorSchedule),
+		Schedule: MapListEntityDoctorScheduleToResponseDTO(entity.DoctorSchedules),
 	}
 }
 
 func MapCreateScheduleRequestToEntity(dto *DoctorCreateScheduleRequestDTO) entity.DoctorSchedule {
 	return entity.DoctorSchedule{
+		DoctorID:  dto.DoctorID,
+		ClinicID:  dto.ClinicID,
 		DayOfWeek: dto.DayOfWeek,
 		StartTime: dto.StartTime,
 		EndTime:   dto.EndTime,
@@ -118,7 +137,7 @@ func MapListEntityDoctorScheduleToResponseDTO(entity []entity.DoctorSchedule) []
 	return result
 }
 
-func (dto *DoctorUpdateRequestDTO) AssignToEntity(doctor *entity.Doctor) {
+func (dto *DoctorUpdateRequestDTO) ToModel(doctor *entity.Doctor) {
 	if dto.Specialization != nil {
 		doctor.Specialization = *dto.Specialization
 	}
@@ -136,7 +155,9 @@ func (dto *DoctorUpdateRequestDTO) AssignToEntity(doctor *entity.Doctor) {
 	}
 }
 
-func (dto *DoctorCreateScheduleRequestDTO) AssignToEntity(doctor *entity.DoctorSchedule) {
+func (dto *DoctorCreateScheduleRequestDTO) ToModel(doctor *entity.DoctorSchedule) {
+	doctor.DoctorID = dto.DoctorID
+	doctor.ClinicID = dto.ClinicID
 	doctor.DayOfWeek = dto.DayOfWeek
 	doctor.StartTime = dto.StartTime
 	doctor.EndTime = dto.EndTime
@@ -144,7 +165,7 @@ func (dto *DoctorCreateScheduleRequestDTO) AssignToEntity(doctor *entity.DoctorS
 	doctor.MaxQuota = dto.MaxQuota
 }
 
-func (dto *DoctorUpdateScheduleRequestDTO) AssignToEntity(doctor *entity.DoctorSchedule) {
+func (dto *DoctorUpdateScheduleRequestDTO) ToModel(doctor *entity.DoctorSchedule) {
 	if dto.DayOfWeek != nil {
 		doctor.DayOfWeek = *dto.DayOfWeek
 	}
