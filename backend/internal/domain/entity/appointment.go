@@ -29,9 +29,10 @@ type Appointment struct {
 	SymptomComplaint *string `gorm:"type:text;"`
 	DoctorNotes      *string `gorm:"type:text;"`
 
-	Patient Patient `gorm:"foreignKey:PatientID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Doctor  Doctor  `gorm:"foreignKey:DoctorID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Clinic  Clinic  `gorm:"foreignKey:ClinicID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Patient        Patient         `gorm:"foreignKey:PatientID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Doctor         Doctor          `gorm:"foreignKey:DoctorID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Clinic         Clinic          `gorm:"foreignKey:ClinicID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	MedicalRecords []MedicalRecord `gorm:"foreignKey:AppointmentID"`
 
 	CreatedAt time.Time `gorm:"type:timestamptz;default:now()"`
 	UpdatedAt time.Time `gorm:"type:timestamptz;default:now()"`

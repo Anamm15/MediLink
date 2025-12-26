@@ -26,6 +26,7 @@ type Doctor struct {
 	User           User             `gorm:"foreignKey:UserID"`
 	Clinic         *Clinic          `gorm:"foreignKey:ClinicID"`
 	Appointments   []Appointment    `gorm:"foreignKey:DoctorID"`
+	MedicalRecords []MedicalRecord  `gorm:"foreignKey:DoctorID"`
 
 	CreatedAt time.Time `gorm:"type:timestamptz;default:now()"`
 	UpdatedAt time.Time `gorm:"type:timestamptz;default:now()"`

@@ -37,6 +37,7 @@ func main() {
 	medicineRepository := repository.NewMedicineRepository(db)
 	clinicInventoryRepository := repository.NewClinicInventoryRepository(db)
 	appointmentRepository := repository.NewAppointmentRepository(db)
+	medicalRecordRepository := repository.NewMedicalRecordRepository(db)
 	prescriptionRepository := repository.NewPrescriptionRepository(db)
 	prescriptionItemRepository := repository.NewPrescriptionItemRepository(db)
 
@@ -47,6 +48,7 @@ func main() {
 	medicineUsecase := usecase.NewMedicineUsecase(medicineRepository)
 	clinicInventoryUsecase := usecase.NewClinicInventoryUsecase(clinicInventoryRepository)
 	appointmentUsecase := usecase.NewAppointmentUseCase(appointmentRepository)
+	medicalRecordUsecase := usecase.NewMedicalRecordUsecase(medicalRecordRepository)
 	prescriptionUsecase := usecase.NewPrescriptionUsecase(prescriptionRepository, prescriptionItemRepository)
 
 	userHandler := handler.NewUserHandler(userUsecase)
@@ -56,6 +58,7 @@ func main() {
 	medicineHandler := handler.NewMedicineHandler(medicineUsecase)
 	clinicInventoryHandler := handler.NewClinicInventoryHandler(clinicInventoryUsecase)
 	appointmentHandler := handler.NewAppointmentHandler(appointmentUsecase)
+	medicalRecordHandler := handler.NewMedicalRecordHandler(medicalRecordUsecase)
 	prescriptionHandler := handler.NewPrescriptionHandler(prescriptionUsecase)
 
 	http.UserRoute(server, userHandler)
@@ -64,6 +67,7 @@ func main() {
 	http.DoctorRoute(server, doctorHandler)
 	http.MedicineRoute(server, medicineHandler)
 	http.AppointmentRoute(server, appointmentHandler)
+	http.MedicalRecordRoute(server, medicalRecordHandler)
 	http.PrescriptionRoute(server, prescriptionHandler)
 
 	port := os.Getenv("PORT")

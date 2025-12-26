@@ -103,6 +103,18 @@ func AppointmentRoute(server *gin.Engine, appointmentHandler handler.Appointment
 	}
 }
 
+func MedicalRecordRoute(server *gin.Engine, medicalRecordHandler handler.MedicalRecordHandler) {
+	medicalRecord := server.Group("/api/v1/medical-records")
+	{
+		medicalRecord.GET("/patient/:patient_id", middlewares.Authenticate(), middlewares.AuthorizeRole("patient", "admin"), medicalRecordHandler.GetByPatient)
+		medicalRecord.GET("/doctor/:doctor_id", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor", "admin"), medicalRecordHandler.GetByDoctor)
+		medicalRecord.GET("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("patient", "doctor", "admin"), medicalRecordHandler.GetDetailByID)
+		medicalRecord.POST("/", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), medicalRecordHandler.Create)
+		medicalRecord.PUT("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), medicalRecordHandler.Update)
+		medicalRecord.DELETE("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), medicalRecordHandler.Delete)
+	}
+}
+
 func PrescriptionRoute(server *gin.Engine, prescriptionHandler handler.PrescriptionHandler) {
 	prescriptions := server.Group("/api/v1/prescriptions")
 	{

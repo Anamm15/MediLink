@@ -13,10 +13,15 @@ type MedicalRecord struct {
 	DoctorID      uuid.UUID  `gorm:"type:uuid;not null"`
 	AppointmentID *uuid.UUID `gorm:"type:uuid"`
 
+	Title      string  `gorm:"type:varchar(255);not null"`
 	Subjective *string `gorm:"type:text"` // Patient's reported symptoms and complaints
 	Objective  *string `gorm:"type:text"` // Clinician's observations and findings
 	Assessment *string `gorm:"type:text"` // Diagnosis or clinical impression
 	Plan       *string `gorm:"type:text"` // Treatment plan, prescriptions, follow-ups
+
+	Appointment Appointment `gorm:"foreignKey:AppointmentID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Patient     Patient     `gorm:"foreignKey:PatientID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Doctor      Doctor      `gorm:"foreignKey:DoctorID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 
 	CreatedAt time.Time `gorm:"type:timestamptz;default:now()"`
 }

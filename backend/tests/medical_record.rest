@@ -1,0 +1,67 @@
+@baseUrl = http://localhost:5000/api/v1/medical-records
+@tokenDoctor = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZWUzYjUzNzItNmNlYy00YjdkLWE5OWEtZGZlNDcxMzYwOWI2Iiwicm9sZSI6ImRvY3RvciIsImlzcyI6Im1lZGlsaW5rLWFwcCIsImV4cCI6MTc2NjgwNzE4OCwiaWF0IjoxNzY2NzIwNzg4fQ.m4npQE8ljg40dF2yIv1vAXofGw7lbKfU1otPJVokTJE
+@tokenPatient = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDJhNDEyNzktZTliNy00MjBjLTljYmYtMjUyNTQzYzExN2U0Iiwicm9sZSI6InBhdGllbnQiLCJpc3MiOiJtZWRpbGluay1hcHAiLCJleHAiOjE3NjY4MDcyMDAsImlhdCI6MTc2NjcyMDgwMH0.n01F-1cAVPrJ1fRtoqUhBknP6xleyNGw7l4KiG_0Z8c
+
+###
+POST http://localhost:5000/api/v1/users/login
+Content-Type: application/json
+
+{
+   "email": "muhajir@gmail.com",
+   "password": "SecurePass123"
+}
+
+###
+POST http://localhost:5000/api/v1/users/login
+Content-Type: application/json
+
+{
+   "email": "sdeviation4@gmail.com",
+   "password": "SecurePass123"
+}
+
+###
+GET {{baseUrl}}/doctor/d3acd040-75b4-46dc-9cc0-1cbebe986a2b
+Authorization: Bearer {{tokenDoctor}}
+
+###
+GET {{baseUrl}}/patient/d6dcf46a-6320-4468-8bbc-489e0d2acc19
+Authorization: Bearer {{tokenPatient}}
+
+###
+GET {{baseUrl}}/2fc3afb4-1828-4656-b954-588599a41fd9
+Authorization: Bearer {{tokenPatient}}
+
+###
+POST {{baseUrl}}
+Authorization: Bearer {{tokenDoctor}}
+Content-Type: application/json
+
+{
+  "doctor_id": "d3acd040-75b4-46dc-9cc0-1cbebe986a2b",
+  "patient_id": "d6dcf46a-6320-4468-8bbc-489e0d2acc19",
+  "appointment_id": "fb206715-cea7-4c3c-b473-35d0e6635414",
+  "title": "Gastritis",
+  "subjective": "Patient reports epigastric pain, nausea, and bloating for the past 2 days, worsened after meals.",
+  "objective": "Vital signs stable. Mild tenderness noted in the epigastric region. No guarding or rebound tenderness.",
+  "assessment": "Acute gastritis, possibly related to dietary factors or stress.",
+  "plan": "Prescribe antacid and proton pump inhibitor. Advise patient to avoid spicy foods, caffeine, and to eat smaller frequent meals."
+}
+
+###
+PUT {{baseUrl}}/2fc3afb4-1828-4656-b954-588599a41fd9
+Authorization: Bearer {{tokenDoctor}}
+Content-Type: application/json
+
+{
+   "title": "Updated Grastritis"
+}
+
+###
+DELETE {{baseUrl}}/738a2651-1b3b-4f36-950d-24c3553e18c3
+Authorization: Bearer {{tokenDoctor}}
+Content-Type: application/json
+
+{
+   "doctor_id": "d3acd040-75b4-46dc-9cc0-1cbebe986a2b"
+}
