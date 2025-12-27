@@ -21,10 +21,9 @@ type MedicalRecordResponse struct {
 }
 
 type MedicalRecordCreateRequest struct {
-	DoctorID      uuid.UUID  `json:"doctor_id"`
-	PatientID     uuid.UUID  `json:"patient_id"`
+	PatientID     uuid.UUID  `json:"patient_id" binding:"required"`
 	AppointmentID *uuid.UUID `json:"appointment_id"`
-	Title         string     `json:"title"`
+	Title         string     `json:"title" binding:"required"`
 	Subjective    *string    `json:"subjective"`
 	Objective     *string    `json:"objective"`
 	Assessment    *string    `json:"assessment"`
@@ -32,7 +31,7 @@ type MedicalRecordCreateRequest struct {
 }
 
 type MedicalRecordUpdateRequest struct {
-	Title      string  `json:"title"`
+	Title      *string `json:"title"`
 	Subjective *string `json:"subjective"`
 	Objective  *string `json:"objective"`
 	Assessment *string `json:"assessment"`
@@ -66,7 +65,6 @@ func ToListMedicalRecordResponse(medicalRecords []entity.MedicalRecord) []Medica
 }
 
 func (medicalRecord *MedicalRecordCreateRequest) ToModel(entity *entity.MedicalRecord) {
-	entity.DoctorID = medicalRecord.DoctorID
 	entity.PatientID = medicalRecord.PatientID
 	entity.AppointmentID = medicalRecord.AppointmentID
 	entity.Title = medicalRecord.Title
@@ -77,8 +75,8 @@ func (medicalRecord *MedicalRecordCreateRequest) ToModel(entity *entity.MedicalR
 }
 
 func (medicalRecord *MedicalRecordUpdateRequest) ToModel(entity *entity.MedicalRecord) {
-	if medicalRecord.Title != "" {
-		entity.Title = medicalRecord.Title
+	if medicalRecord.Title != nil {
+		entity.Title = *medicalRecord.Title
 	}
 	if medicalRecord.Subjective != nil {
 		entity.Subjective = medicalRecord.Subjective

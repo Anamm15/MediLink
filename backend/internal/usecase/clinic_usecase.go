@@ -66,9 +66,9 @@ func (u *clinicUsecase) Find(ctx context.Context, name string, page int) ([]dto.
 	return clinicDTOs, nil
 }
 
-func (u *clinicUsecase) Create(ctx context.Context, data dto.ClinicCreateRequest) (dto.ClinicResponse, error) {
+func (u *clinicUsecase) Create(ctx context.Context, request dto.ClinicCreateRequest) (dto.ClinicResponse, error) {
 	var clinicEntity entity.Clinic
-	data.ToModel(&clinicEntity)
+	request.ToModel(&clinicEntity)
 
 	createdClinic, err := u.clinicRepo.Create(ctx, &clinicEntity)
 	if err != nil {
@@ -78,13 +78,13 @@ func (u *clinicUsecase) Create(ctx context.Context, data dto.ClinicCreateRequest
 	return dto.ToClinicResponse(createdClinic), nil
 }
 
-func (u *clinicUsecase) Update(ctx context.Context, id uuid.UUID, data dto.ClinicUpdateRequest) error {
+func (u *clinicUsecase) Update(ctx context.Context, id uuid.UUID, request dto.ClinicUpdateRequest) error {
 	clinic, err := u.clinicRepo.GetByID(ctx, id)
 	if err != nil {
 		return err
 	}
 
-	data.ToModel(clinic)
+	request.ToModel(clinic)
 	return u.clinicRepo.Update(ctx, clinic)
 }
 
@@ -92,12 +92,12 @@ func (u *clinicUsecase) Delete(ctx context.Context, id uuid.UUID) error {
 	return u.clinicRepo.Delete(ctx, id)
 }
 
-func (u *clinicUsecase) AssignDoctor(ctx context.Context, data dto.AssignDoctorRequest) error {
+func (u *clinicUsecase) AssignDoctor(ctx context.Context, request dto.AssignDoctorRequest) error {
 	doctorClinicModel := &entity.DoctorClinicPlacement{}
-	data.ToModel(doctorClinicModel)
+	request.ToModel(doctorClinicModel)
 	return u.doctorClinicReplacementRepo.Add(ctx, doctorClinicModel)
 }
 
-func (u *clinicUsecase) RemoveDoctor(ctx context.Context, data dto.RemoveDoctorRequest) error {
-	return u.doctorClinicReplacementRepo.Delete(ctx, data.DoctorID, data.ClinicID)
+func (u *clinicUsecase) RemoveDoctor(ctx context.Context, request dto.RemoveDoctorRequest) error {
+	return u.doctorClinicReplacementRepo.Delete(ctx, request.DoctorID, request.ClinicID)
 }

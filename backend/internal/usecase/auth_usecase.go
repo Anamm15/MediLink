@@ -36,13 +36,13 @@ func NewAuthUsecase(
 	}
 }
 
-func (u *AuthUsecase) Login(ctx context.Context, data dto.LoginRequest) (string, string, error) {
-	user, err := u.userRepository.GetByEmail(ctx, data.Email)
+func (u *AuthUsecase) Login(ctx context.Context, request dto.LoginRequest) (string, string, error) {
+	user, err := u.userRepository.GetByEmail(ctx, request.Email)
 	if err != nil {
 		return "", "", errs.ErrEmailOrPass
 	}
 
-	if err := utils.ComparePassword(user.Password, data.Password); err != nil {
+	if err := utils.ComparePassword(user.Password, request.Password); err != nil {
 		return "", "", errs.ErrEmailOrPass
 	}
 
@@ -75,16 +75,16 @@ func (u *AuthUsecase) Login(ctx context.Context, data dto.LoginRequest) (string,
 	return accessToken, refreshTokenStr, nil
 }
 
-func (u *AuthUsecase) Register(ctx context.Context, data dto.RegistrationRequest) (dto.RegistrationResponse, error) {
-	hashedPassword, err := utils.HashPassword(data.Password)
+func (u *AuthUsecase) Register(ctx context.Context, request dto.RegistrationRequest) (dto.RegistrationResponse, error) {
+	hashedPassword, err := utils.HashPassword(request.Password)
 	if err != nil {
 		return dto.RegistrationResponse{}, err
 	}
 
 	user := &entity.User{
-		Name:        data.Name,
-		Email:       data.Email,
-		PhoneNumber: data.PhoneNumber,
+		Name:        request.Name,
+		Email:       request.Email,
+		PhoneNumber: request.PhoneNumber,
 		Password:    hashedPassword,
 	}
 	createdUser, err := u.userRepository.Create(ctx, user)
@@ -94,7 +94,7 @@ func (u *AuthUsecase) Register(ctx context.Context, data dto.RegistrationRequest
 
 	return dto.RegistrationResponse{
 		ID:                  createdUser.ID,
-		RegistrationRequest: data,
+		RegistrationRequest: request,
 	}, nil
 }
 
@@ -155,17 +155,17 @@ func (u *AuthUsecase) Logout(ctx context.Context, token string) error {
 	return u.authRepository.RevokeToken(ctx, token)
 }
 
-func (u *AuthUsecase) ChangePassword(ctx context.Context, userID uuid.UUID, data dto.ChangePasswordRequest) error {
+func (u *AuthUsecase) ChangePassword(ctx context.Context, userID uuid.UUID, request dto.ChangePasswordRequest) error {
 	user, err := u.userRepository.GetByID(ctx, userID)
 	if err != nil {
 		return err
 	}
 
-	if err := utils.ComparePassword(user.Password, *data.OldPassword); err != nil {
+	if err := utils.ComparePassword(user.Password, *request.OldPassword); err != nil {
 		return errs.ErrOldPassIncorrect
 	}
 
-	newHashedPassword, err := utils.HashPassword(*data.NewPassword)
+	newHashedPassword, err := utils.HashPassword(*request.NewPassword)
 	if err != nil {
 		return err
 	}
@@ -186,23 +186,23 @@ func (u *AuthUsecase) RequestResetPassword(ctx context.Context, email string) er
 	return nil
 }
 
-func (u *AuthUsecase) ResetPassword(ctx context.Context, data dto.ResetPasswordRequest) error {
-	key := "reset-password:" + data.Email
+func (u *AuthUsecase) ResetPassword(ctx context.Context, request dto.ResetPasswordRequest) error {
+	key := "reset-password:" + request.Email
 	storedOTP, err := u.cacheRepository.Get(ctx, key)
 	if err != nil {
 		return errors.New("OTP has expired or does not exist")
 	}
 
-	if storedOTP != data.OTP {
+	if storedOTP != request.OTP {
 		return errors.New("Invalid OTP code")
 	}
 
-	user, err := u.userRepository.GetByEmail(ctx, data.Email)
+	user, err := u.userRepository.GetByEmail(ctx, request.Email)
 	if err != nil {
 		return err
 	}
 
-	newHashedPassword, err := utils.HashPassword(data.NewPassword)
+	newHashedPassword, err := utils.HashPassword(request.NewPassword)
 	if err != nil {
 		return err
 	}

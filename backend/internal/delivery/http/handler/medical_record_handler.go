@@ -81,6 +81,7 @@ func (h *MedicalRecordHandler) GetDetailByID(c *gin.Context) {
 }
 
 func (h *MedicalRecordHandler) Create(c *gin.Context) {
+	userID := c.MustGet("user_id").(uuid.UUID)
 	var req dto.MedicalRecordCreateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
@@ -88,7 +89,7 @@ func (h *MedicalRecordHandler) Create(c *gin.Context) {
 		return
 	}
 
-	medicalRecord, err := h.medicalRecordUsecase.Create(c.Request.Context(), &req)
+	medicalRecord, err := h.medicalRecordUsecase.Create(c.Request.Context(), userID, &req)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to create medical record", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, res)
@@ -100,6 +101,7 @@ func (h *MedicalRecordHandler) Create(c *gin.Context) {
 }
 
 func (h *MedicalRecordHandler) Update(c *gin.Context) {
+	userID := c.MustGet("user_id").(uuid.UUID)
 	idParam := c.Param("id")
 	id, err := uuid.Parse(idParam)
 	if err != nil {
@@ -115,7 +117,7 @@ func (h *MedicalRecordHandler) Update(c *gin.Context) {
 		return
 	}
 
-	medicalRecord, err := h.medicalRecordUsecase.Update(c.Request.Context(), id, &req)
+	medicalRecord, err := h.medicalRecordUsecase.Update(c.Request.Context(), id, userID, &req)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to update medical record", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, res)

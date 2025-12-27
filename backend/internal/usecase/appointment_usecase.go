@@ -3,6 +3,8 @@ package usecase
 import (
 	"context"
 	"errors"
+	"fmt"
+	"time"
 
 	"MediLink/internal/domain/entity"
 	"MediLink/internal/domain/repository"
@@ -16,11 +18,19 @@ import (
 
 type AppointmentUsecase struct {
 	appointmentRepo repository.AppointmentRepository
+	patientRepo     repository.PatientRepository
+	cacheRepo       repository.CacheRepository
 }
 
-func NewAppointmentUseCase(appointmentRepo repository.AppointmentRepository) usecase.AppointmentUsecase {
+func NewAppointmentUseCase(
+	appointmentRepo repository.AppointmentRepository,
+	patientRepo repository.PatientRepository,
+	cacheRepo repository.CacheRepository,
+) usecase.AppointmentUsecase {
 	return &AppointmentUsecase{
 		appointmentRepo: appointmentRepo,
+		patientRepo:     patientRepo,
+		cacheRepo:       cacheRepo,
 	}
 }
 
@@ -70,8 +80,29 @@ func (u *AppointmentUsecase) GetByPatient(ctx context.Context, patientID uuid.UU
 	return appointmentResponses, nil
 }
 
-func (u *AppointmentUsecase) Create(ctx context.Context, request dto.AppointmentCreateRequest) (dto.AppointmentDetailResponse, error) {
+func (u *AppointmentUsecase) Create(ctx context.Context, userID uuid.UUID, request dto.AppointmentCreateRequest) (dto.AppointmentDetailResponse, error) {
+	key := fmt.Sprintf(constants.RedisKeyPatient, userID.String())
 	appointment := &entity.Appointment{}
+	var patientID uuid.UUID
+
+	patientIDStr, err := u.cacheRepo.Get(ctx, key)
+	if err == nil {
+		patientID, _ = uuid.Parse(patientIDStr)
+		request.PatientID = patientID
+	} else {
+		patient, err := u.patientRepo.GetByUserID(ctx, userID)
+		if err != nil {
+			return dto.AppointmentDetailResponse{}, err
+		}
+		request.PatientID = patient.ID
+		_ = u.cacheRepo.Set(
+			ctx,
+			key,
+			patient.ID.String(),
+			time.Hour,
+		)
+	}
+
 	request.ToModel(appointment)
 	if err := u.appointmentRepo.Create(ctx, appointment); err != nil {
 		return dto.AppointmentDetailResponse{}, err

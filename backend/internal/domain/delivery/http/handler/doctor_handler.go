@@ -8,4 +8,6 @@ type DoctorHandler interface {
 	Update(ctx *gin.Context)
 	AddSchedule(ctx *gin.Context)
 	UpdateSchedule(ctx *gin.Context)
+	UpdateScheduleStatus(ctx *gin.Context)
+	DeleteSchedule(ctx *gin.Context)
 }

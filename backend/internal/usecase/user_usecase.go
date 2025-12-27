@@ -94,13 +94,13 @@ func (u *userUsecase) GetProfile(ctx context.Context, userID uuid.UUID) (dto.Use
 	return response, nil
 }
 
-func (u *userUsecase) UpdateProfile(ctx context.Context, userID uuid.UUID, data dto.UserUpdateProfileRequest) error {
+func (u *userUsecase) UpdateProfile(ctx context.Context, userID uuid.UUID, request dto.UserUpdateProfileRequest) error {
 	user, err := u.userRepo.GetByID(ctx, userID)
 	if err != nil {
 		return err
 	}
 
-	data.ToModel(user)
+	request.ToModel(user)
 	return u.userRepo.Update(ctx, user)
 }
 
@@ -150,7 +150,7 @@ func (u *userUsecase) VerifyUser(ctx context.Context, userID uuid.UUID, inputOTP
 	return nil
 }
 
-func (u *userUsecase) OnBoardPatient(ctx context.Context, userID uuid.UUID, data dto.PatientCreateRequest) error {
+func (u *userUsecase) OnBoardPatient(ctx context.Context, userID uuid.UUID, request dto.PatientCreateRequest) error {
 	user, err := u.userRepo.GetByID(ctx, userID)
 	if err != nil {
 		return err
@@ -162,7 +162,7 @@ func (u *userUsecase) OnBoardPatient(ctx context.Context, userID uuid.UUID, data
 
 	var patient entity.Patient
 	patient.UserID = userID
-	data.ToModel(&patient)
+	request.ToModel(&patient)
 	_, err = u.patientRepo.Create(ctx, &patient)
 	if err != nil {
 		return err

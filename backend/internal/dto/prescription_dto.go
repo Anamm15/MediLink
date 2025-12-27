@@ -37,7 +37,6 @@ type PrescriptionResponse struct {
 
 type PrescriptionCreate struct {
 	PatientID       uuid.UUID                     `json:"patient_id" binding:"required"`
-	DoctorID        uuid.UUID                     `json:"doctor_id" binding:"required"`
 	ClinicID        uuid.UUID                     `json:"clinic_id,omitempty"`
 	MedicalRecordID uuid.UUID                     `json:"medical_record_id" binding:"required"`
 	Notes           *string                       `json:"notes,omitempty"`
@@ -101,7 +100,6 @@ func ToListPrescriptionResponseDTO(prescriptions []entity.Prescription) []Prescr
 
 func (dto *PrescriptionCreate) ToModel(prescription *entity.Prescription) {
 	prescription.PatientID = dto.PatientID
-	prescription.DoctorID = dto.DoctorID
 	prescription.ClinicID = dto.ClinicID
 	prescription.Notes = dto.Notes
 	prescription.MedicalRecordID = dto.MedicalRecordID

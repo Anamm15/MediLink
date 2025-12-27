@@ -55,8 +55,8 @@ func (u *MedicineUsecase) Search(ctx context.Context, name string, page int) ([]
 	return result, nil
 }
 
-func (u *MedicineUsecase) Create(ctx context.Context, data dto.MedicineCreate) (dto.MedicineResponse, error) {
-	medicine := data.ToModel()
+func (u *MedicineUsecase) Create(ctx context.Context, request dto.MedicineCreate) (dto.MedicineResponse, error) {
+	medicine := request.ToModel()
 
 	err := u.medicineRepo.Create(ctx, medicine)
 	if err != nil {
@@ -67,13 +67,13 @@ func (u *MedicineUsecase) Create(ctx context.Context, data dto.MedicineCreate) (
 	return *response, nil
 }
 
-func (u *MedicineUsecase) Update(ctx context.Context, id uuid.UUID, data *dto.MedicineUpdate) (dto.MedicineResponse, error) {
+func (u *MedicineUsecase) Update(ctx context.Context, id uuid.UUID, request *dto.MedicineUpdate) (dto.MedicineResponse, error) {
 	medicine, err := u.medicineRepo.GetByID(ctx, id)
 	if err != nil {
 		return dto.MedicineResponse{}, err
 	}
 
-	updatedMedicine := data.ToModel(medicine)
+	updatedMedicine := request.ToModel(medicine)
 
 	err = u.medicineRepo.Update(ctx, updatedMedicine)
 	if err != nil {

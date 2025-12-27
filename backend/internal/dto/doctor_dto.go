@@ -57,7 +57,6 @@ type DoctorScheduleResponse struct {
 }
 
 type DoctorCreateScheduleRequest struct {
-	DoctorID  uuid.UUID        `json:"doctor_id" binding:"required" validate:"required"`
 	ClinicID  *uuid.UUID       `json:"clinic_id"`
 	DayOfWeek enum.ScheduleDay `json:"day_of_week" binding:"required" validate:"required"`
 	StartTime time.Time        `json:"start_time" binding:"required" validate:"required"`
@@ -144,7 +143,6 @@ func (dto *DoctorUpdateRequest) ToModel(doctor *entity.Doctor) {
 }
 
 func (dto *DoctorCreateScheduleRequest) ToModel(doctor *entity.DoctorSchedule) {
-	doctor.DoctorID = dto.DoctorID
 	doctor.ClinicID = dto.ClinicID
 	doctor.DayOfWeek = dto.DayOfWeek
 	doctor.StartTime = dto.StartTime

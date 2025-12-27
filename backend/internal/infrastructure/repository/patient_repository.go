@@ -18,6 +18,17 @@ func NewPatientRepository(db *gorm.DB) repository.PatientRepository {
 	return &PatientRepository{db: db}
 }
 
+func (r *PatientRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity.Patient, error) {
+	var patient entity.Patient
+	if err := r.db.WithContext(ctx).
+		Where("id = ?", id).
+		First(&patient).Error; err != nil {
+		return nil, err
+	}
+
+	return &patient, nil
+}
+
 func (r *PatientRepository) Create(ctx context.Context, patient *entity.Patient) (*entity.Patient, error) {
 	if err := r.db.WithContext(ctx).
 		Create(patient).Error; err != nil {

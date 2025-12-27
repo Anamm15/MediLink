@@ -2,11 +2,14 @@ package usecase
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"MediLink/internal/domain/entity"
 	"MediLink/internal/domain/repository"
 	"MediLink/internal/domain/usecase"
 	"MediLink/internal/dto"
+	"MediLink/internal/helpers/constants"
 
 	"github.com/google/uuid"
 )
@@ -14,15 +17,21 @@ import (
 type PrescriptionUsecase struct {
 	prescriptionRepository     repository.PrescriptionRepository
 	prescriptionItemRepository repository.PrescriptionItemRepository
+	doctorRepository           repository.DoctorRepository
+	cacheRepository            repository.CacheRepository
 }
 
 func NewPrescriptionUsecase(
 	prescriptionRepository repository.PrescriptionRepository,
 	prescriptionItemRepository repository.PrescriptionItemRepository,
+	doctorRepository repository.DoctorRepository,
+	cacheRepository repository.CacheRepository,
 ) usecase.PrescriptionUsecase {
 	return &PrescriptionUsecase{
 		prescriptionRepository:     prescriptionRepository,
 		prescriptionItemRepository: prescriptionItemRepository,
+		doctorRepository:           doctorRepository,
+		cacheRepository:            cacheRepository,
 	}
 }
 
@@ -50,24 +59,71 @@ func (u *PrescriptionUsecase) GetDetailByID(ctx context.Context, id uuid.UUID) (
 	return dto.ToPrescriptionResponse(prescription), nil
 }
 
-func (u *PrescriptionUsecase) Create(ctx context.Context, data *dto.PrescriptionCreate) (dto.PrescriptionResponse, error) {
+func (u *PrescriptionUsecase) Create(ctx context.Context, userID uuid.UUID, request *dto.PrescriptionCreate) (dto.PrescriptionResponse, error) {
+	key := fmt.Sprintf(constants.RedisKeyDoctor, userID.String())
+	var doctorID uuid.UUID
 	prescription := &entity.Prescription{}
-	data.ToModel(prescription)
 
-	err := u.prescriptionRepository.Create(ctx, prescription)
+	doctorIDStr, err := u.cacheRepository.Get(ctx, key)
+	if err == nil {
+		doctorID, _ = uuid.Parse(doctorIDStr)
+		prescription.DoctorID = doctorID
+	} else {
+		doctor, err := u.doctorRepository.GetByUserID(ctx, userID)
+		if err != nil {
+			return dto.PrescriptionResponse{}, err
+		}
+		prescription.DoctorID = doctor.ID
+		_ = u.cacheRepository.Set(
+			ctx,
+			key,
+			doctor.ID.String(),
+			time.Hour,
+		)
+	}
+
+	request.ToModel(prescription)
+
+	err = u.prescriptionRepository.Create(ctx, prescription)
 	if err != nil {
 		return dto.PrescriptionResponse{}, err
 	}
 	return *dto.ToPrescriptionResponse(prescription), nil
 }
 
-func (u *PrescriptionUsecase) Update(ctx context.Context, id uuid.UUID, data *dto.PrescriptionUpdate) (dto.PrescriptionResponse, error) {
-	prescription, err := u.prescriptionRepository.GetByID(ctx, id)
+func (u *PrescriptionUsecase) Update(ctx context.Context, id uuid.UUID, userID uuid.UUID, request *dto.PrescriptionUpdate) (dto.PrescriptionResponse, error) {
+	key := fmt.Sprintf(constants.RedisKeyDoctor, userID.String())
+	var doctorID uuid.UUID
+	prescription := &entity.Prescription{}
+
+	doctorIDStr, err := u.cacheRepository.Get(ctx, key)
+	if err == nil {
+		doctorID, _ = uuid.Parse(doctorIDStr)
+		prescription.DoctorID = doctorID
+	} else {
+		doctor, err := u.doctorRepository.GetByUserID(ctx, userID)
+		if err != nil {
+			return dto.PrescriptionResponse{}, err
+		}
+		prescription.DoctorID = doctor.ID
+		_ = u.cacheRepository.Set(
+			ctx,
+			key,
+			doctor.ID.String(),
+			time.Hour,
+		)
+	}
+
+	prescription, err = u.prescriptionRepository.GetByID(ctx, id)
 	if err != nil {
 		return dto.PrescriptionResponse{}, err
 	}
 
-	data.ToModel(prescription)
+	if prescription.DoctorID != doctorID {
+		return dto.PrescriptionResponse{}, fmt.Errorf("you are not allowed to update this prescription")
+	}
+
+	request.ToModel(prescription)
 	err = u.prescriptionRepository.Update(ctx, prescription)
 	if err != nil {
 		return dto.PrescriptionResponse{}, err
@@ -79,9 +135,9 @@ func (u *PrescriptionUsecase) Delete(ctx context.Context, id uuid.UUID) error {
 	return u.prescriptionRepository.Delete(ctx, id)
 }
 
-func (u *PrescriptionUsecase) AddMedicine(ctx context.Context, prescriptionID uuid.UUID, data *dto.PrescriptionItemCreate) (dto.PrescriptionItemResponse, error) {
+func (u *PrescriptionUsecase) AddMedicine(ctx context.Context, prescriptionID uuid.UUID, request *dto.PrescriptionItemCreate) (dto.PrescriptionItemResponse, error) {
 	prescription := &entity.PrescriptionItem{}
-	data.ToModel(prescription)
+	request.ToModel(prescription)
 	err := u.prescriptionItemRepository.Add(ctx, prescription)
 	if err != nil {
 		return dto.PrescriptionItemResponse{}, err

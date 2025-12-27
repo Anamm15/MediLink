@@ -55,7 +55,6 @@ func (h *doctorHandler) Find(ctx *gin.Context) {
 }
 
 func (h *doctorHandler) Update(ctx *gin.Context) {
-	doctorID := ctx.Param("id")
 	userID := ctx.MustGet("user_id").(uuid.UUID)
 	var req dto.DoctorUpdateRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -64,14 +63,7 @@ func (h *doctorHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	parsedID, err := uuid.Parse(doctorID)
-	if err != nil {
-		res := utils.BuildResponseFailed("Invalid doctor ID", err.Error(), nil)
-		ctx.JSON(http.StatusBadRequest, res)
-		return
-	}
-
-	err = h.doctorUsecase.Update(ctx, userID, parsedID, req)
+	err := h.doctorUsecase.Update(ctx, userID, req)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to update profile", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -82,6 +74,7 @@ func (h *doctorHandler) Update(ctx *gin.Context) {
 }
 
 func (h *doctorHandler) AddSchedule(ctx *gin.Context) {
+	userID := ctx.MustGet("user_id").(uuid.UUID)
 	var req dto.DoctorCreateScheduleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
@@ -89,7 +82,7 @@ func (h *doctorHandler) AddSchedule(ctx *gin.Context) {
 		return
 	}
 
-	createdSchedule, err := h.doctorUsecase.AddSchedule(ctx, req)
+	createdSchedule, err := h.doctorUsecase.AddSchedule(ctx, userID, req)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to add schedule", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -125,3 +118,7 @@ func (h *doctorHandler) UpdateSchedule(ctx *gin.Context) {
 	res := utils.BuildResponseSuccess("Schedule updated successfully", nil)
 	ctx.JSON(http.StatusOK, res)
 }
+
+func (h *doctorHandler) UpdateScheduleStatus(ctx *gin.Context)
+
+func (h *doctorHandler) DeleteSchedule(ctx *gin.Context)

@@ -31,7 +31,7 @@ type AppointmentDetailResponse struct {
 
 type AppointmentCreateRequest struct {
 	DoctorID        uuid.UUID            `json:"doctor_id" binding:"required"`
-	PatientID       uuid.UUID            `json:"patient_id" binding:"required"`
+	PatientID       uuid.UUID            `json:"patient_id"`
 	ClinicID        uuid.UUID            `json:"clinic_id" binding:"required"`
 	AppointmentDate time.Time            `json:"appointment_date" binding:"required"`
 	StartTime       time.Time            `json:"start_time" binding:"required"`

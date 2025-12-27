@@ -2,28 +2,58 @@ package usecase
 
 import (
 	"context"
+	"fmt"
+	"time"
 
+	"MediLink/internal/domain/entity"
 	"MediLink/internal/domain/repository"
 	"MediLink/internal/domain/usecase"
 	"MediLink/internal/dto"
+	"MediLink/internal/helpers/constants"
 
 	"github.com/google/uuid"
 )
 
 type patientUsecase struct {
 	patientRepository repository.PatientRepository
+	cacheRepository   repository.CacheRepository
 }
 
-func NewPatientUsecase(patientRepository repository.PatientRepository) usecase.PatientUsecase {
-	return &patientUsecase{patientRepository: patientRepository}
+func NewPatientUsecase(
+	patientRepository repository.PatientRepository,
+	cacheRepository repository.CacheRepository,
+) usecase.PatientUsecase {
+	return &patientUsecase{
+		patientRepository: patientRepository,
+		cacheRepository:   cacheRepository,
+	}
 }
 
-func (u *patientUsecase) Update(ctx context.Context, patientID uuid.UUID, data dto.PatientUpdateRequest) error {
-	patient, err := u.patientRepository.GetByUserID(ctx, patientID)
-	if err != nil {
-		return err
+func (u *patientUsecase) Update(ctx context.Context, userID uuid.UUID, request dto.PatientUpdateRequest) error {
+	key := fmt.Sprintf(constants.RedisKeyPatient, userID.String())
+	var patient *entity.Patient
+
+	patientIDStr, err := u.cacheRepository.Get(ctx, key)
+	if err == nil {
+		patientID, _ := uuid.Parse(patientIDStr)
+		patient, err = u.patientRepository.GetByID(ctx, patientID)
+		if err != nil {
+			return err
+		}
+	} else {
+		patient, err = u.patientRepository.GetByUserID(ctx, userID)
+		if err != nil {
+			return err
+		}
+
+		_ = u.cacheRepository.Set(
+			ctx,
+			key,
+			patient.ID.String(),
+			time.Hour,
+		)
 	}
 
-	data.ToModel(patient)
+	request.ToModel(patient)
 	return u.patientRepository.Update(ctx, patient)
 }

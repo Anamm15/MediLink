@@ -3,6 +3,8 @@ package usecase
 import (
 	"context"
 	"errors"
+	"fmt"
+	"time"
 
 	"MediLink/internal/domain/entity"
 	"MediLink/internal/domain/repository"
@@ -14,22 +16,25 @@ import (
 )
 
 type doctorUsecase struct {
-	doctorRepo         repository.DoctorRepository
-	doctorScheduleRepo repository.DoctorScheduleRepository
+	doctorRepository         repository.DoctorRepository
+	doctorScheduleRepository repository.DoctorScheduleRepository
+	cacheRepository          repository.CacheRepository
 }
 
 func NewDoctorUsecase(
-	doctorRepo repository.DoctorRepository,
-	doctorScheduleRepo repository.DoctorScheduleRepository,
+	doctorRepository repository.DoctorRepository,
+	doctorScheduleRepository repository.DoctorScheduleRepository,
+	cacheRepository repository.CacheRepository,
 ) usecase.DoctorUsecase {
 	return &doctorUsecase{
-		doctorRepo:         doctorRepo,
-		doctorScheduleRepo: doctorScheduleRepo,
+		doctorRepository:         doctorRepository,
+		doctorScheduleRepository: doctorScheduleRepository,
+		cacheRepository:          cacheRepository,
 	}
 }
 
 func (u *doctorUsecase) GetProfile(ctx context.Context, userID uuid.UUID) (dto.DoctorProfileResponse, error) {
-	doctor, err := u.doctorRepo.GetWithSchedule(ctx, userID)
+	doctor, err := u.doctorRepository.GetWithSchedule(ctx, userID)
 	if err != nil {
 		return dto.DoctorProfileResponse{}, err
 	}
@@ -39,7 +44,7 @@ func (u *doctorUsecase) GetProfile(ctx context.Context, userID uuid.UUID) (dto.D
 func (u *doctorUsecase) Find(ctx context.Context, name string, page int) ([]dto.DoctorProfileResponse, error) {
 	limit := constants.PAGE_LIMIT_DEFAULT
 	offset := (page - 1) * limit
-	doctors, err := u.doctorRepo.Find(ctx, name, limit, offset)
+	doctors, err := u.doctorRepository.Find(ctx, name, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -51,45 +56,81 @@ func (u *doctorUsecase) Find(ctx context.Context, name string, page int) ([]dto.
 	return results, nil
 }
 
-func (u *doctorUsecase) Update(ctx context.Context, userID uuid.UUID, doctorID uuid.UUID, data dto.DoctorUpdateRequest) error {
-	doctor, err := u.doctorRepo.GetByID(ctx, doctorID)
-	if err != nil {
-		return err
+func (u *doctorUsecase) Update(ctx context.Context, userID uuid.UUID, request dto.DoctorUpdateRequest) error {
+	key := fmt.Sprintf(constants.RedisKeyDoctor, userID.String())
+	var doctor *entity.Doctor
+
+	doctorIDStr, err := u.cacheRepository.Get(ctx, key)
+	if err == nil {
+		doctorID, _ := uuid.Parse(doctorIDStr)
+		doctor, err = u.doctorRepository.GetByID(ctx, doctorID)
+		if err != nil {
+			return err
+		}
+	} else {
+		doctor, err := u.doctorRepository.GetByUserID(ctx, userID)
+		if err != nil {
+			return err
+		}
+
+		_ = u.cacheRepository.Set(
+			ctx,
+			key,
+			doctor.ID.String(),
+			time.Hour,
+		)
 	}
 
-	if doctor.UserID != userID {
-		return errors.New("Your id is not match")
-	}
-
-	data.ToModel(doctor)
-	return u.doctorRepo.Update(ctx, doctor)
+	request.ToModel(doctor)
+	return u.doctorRepository.Update(ctx, doctor)
 }
 
-func (u *doctorUsecase) AddSchedule(ctx context.Context, data dto.DoctorCreateScheduleRequest) (dto.DoctorScheduleResponse, error) {
+func (u *doctorUsecase) AddSchedule(ctx context.Context, userID uuid.UUID, request dto.DoctorCreateScheduleRequest) (dto.DoctorScheduleResponse, error) {
+	key := fmt.Sprintf(constants.RedisKeyDoctor, userID.String())
 	schedule := &entity.DoctorSchedule{}
-	data.ToModel(schedule)
-	createdSchedule, err := u.doctorScheduleRepo.Create(ctx, schedule)
+
+	doctorIDStr, err := u.cacheRepository.Get(ctx, key)
+	if err == nil {
+		doctorID, _ := uuid.Parse(doctorIDStr)
+		schedule.DoctorID = doctorID
+	} else {
+		doctor, err := u.doctorRepository.GetByUserID(ctx, userID)
+		if err != nil {
+			return dto.DoctorScheduleResponse{}, err
+		}
+		schedule.DoctorID = doctor.ID
+
+		_ = u.cacheRepository.Set(
+			ctx,
+			key,
+			doctor.ID.String(),
+			time.Hour,
+		)
+	}
+
+	request.ToModel(schedule)
+	createdSchedule, err := u.doctorScheduleRepository.Create(ctx, schedule)
 	if err != nil {
 		return dto.DoctorScheduleResponse{}, err
 	}
 	return dto.ToDoctorScheduleResponse(createdSchedule), nil
 }
 
-func (u *doctorUsecase) UpdateSchedule(ctx context.Context, userID uuid.UUID, scheduleID uuid.UUID, data dto.DoctorUpdateScheduleRequest) error {
-	schedule, err := u.doctorScheduleRepo.GetByID(ctx, scheduleID)
+func (u *doctorUsecase) UpdateSchedule(ctx context.Context, userID uuid.UUID, scheduleID uuid.UUID, request dto.DoctorUpdateScheduleRequest) error {
+	schedule, err := u.doctorScheduleRepository.GetByID(ctx, scheduleID)
 	if err != nil {
 		return err
 	}
 
-	doctor, err := u.doctorRepo.GetByUserID(ctx, userID)
+	doctor, err := u.doctorRepository.GetByUserID(ctx, userID)
 	if err != nil {
 		return err
 	}
 
 	if schedule.DoctorID != doctor.ID {
-		return errors.New("Your id is not match")
+		return errors.New("You do not have permission to update this schedule")
 	}
 
-	data.ToModel(schedule)
-	return u.doctorScheduleRepo.Update(ctx, schedule)
+	request.ToModel(schedule)
+	return u.doctorScheduleRepository.Update(ctx, schedule)
 }
