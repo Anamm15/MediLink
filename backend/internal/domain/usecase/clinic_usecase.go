@@ -9,11 +9,11 @@ import (
 )
 
 type ClinicUsecase interface {
-	GetAll(ctx context.Context, page int) ([]dto.ClinicResponseDTO, error)
-	GetByID(ctx context.Context, id uuid.UUID) (dto.ClinicResponseDTO, error)
-	Find(ctx context.Context, name string, page int) ([]dto.ClinicResponseDTO, error)
-	Create(ctx context.Context, data dto.ClinicCreateRequestDTO) (dto.ClinicResponseDTO, error)
-	Update(ctx context.Context, id uuid.UUID, data dto.ClinicUpdateRequestDTO) error
+	GetAll(ctx context.Context, page int) ([]dto.ClinicResponse, error)
+	GetByID(ctx context.Context, id uuid.UUID) (dto.ClinicResponse, error)
+	Find(ctx context.Context, name string, page int) ([]dto.ClinicResponse, error)
+	Create(ctx context.Context, data dto.ClinicCreateRequest) (dto.ClinicResponse, error)
+	Update(ctx context.Context, id uuid.UUID, data dto.ClinicUpdateRequest) error
 	Delete(ctx context.Context, id uuid.UUID) error
 	AssignDoctor(ctx context.Context, data dto.AssignDoctorRequest) error
 	RemoveDoctor(ctx context.Context, data dto.RemoveDoctorRequest) error

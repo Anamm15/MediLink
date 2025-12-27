@@ -20,7 +20,7 @@ func NewDoctorHandler(doctorUsecase usecase.DoctorUsecase) handler.DoctorHandler
 	return &doctorHandler{doctorUsecase: doctorUsecase}
 }
 
-func (dh *doctorHandler) GetProfile(ctx *gin.Context) {
+func (h *doctorHandler) GetProfile(ctx *gin.Context) {
 	doctorId := ctx.Param("id")
 
 	parsedID, err := uuid.Parse(doctorId)
@@ -30,7 +30,7 @@ func (dh *doctorHandler) GetProfile(ctx *gin.Context) {
 		return
 	}
 
-	profile, err := dh.doctorUsecase.GetProfile(ctx, parsedID)
+	profile, err := h.doctorUsecase.GetProfile(ctx, parsedID)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve profile", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -40,11 +40,11 @@ func (dh *doctorHandler) GetProfile(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (dh *doctorHandler) Find(ctx *gin.Context) {
+func (h *doctorHandler) Find(ctx *gin.Context) {
 	name := ctx.Query("name")
 	pageQuery := ctx.Query("page")
 	page := utils.StringToInt(pageQuery)
-	doctors, err := dh.doctorUsecase.Find(ctx, name, page)
+	doctors, err := h.doctorUsecase.Find(ctx, name, page)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to find doctors", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -54,10 +54,10 @@ func (dh *doctorHandler) Find(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (dh *doctorHandler) Update(ctx *gin.Context) {
+func (h *doctorHandler) Update(ctx *gin.Context) {
 	doctorID := ctx.Param("id")
 	userID := ctx.MustGet("user_id").(uuid.UUID)
-	var req dto.DoctorUpdateRequestDTO
+	var req dto.DoctorUpdateRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
 		ctx.JSON(http.StatusBadRequest, res)
@@ -71,7 +71,7 @@ func (dh *doctorHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	err = dh.doctorUsecase.Update(ctx, userID, parsedID, req)
+	err = h.doctorUsecase.Update(ctx, userID, parsedID, req)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to update profile", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -81,15 +81,15 @@ func (dh *doctorHandler) Update(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (dh *doctorHandler) AddSchedule(ctx *gin.Context) {
-	var req dto.DoctorCreateScheduleRequestDTO
+func (h *doctorHandler) AddSchedule(ctx *gin.Context) {
+	var req dto.DoctorCreateScheduleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
 		ctx.JSON(http.StatusBadRequest, res)
 		return
 	}
 
-	createdSchedule, err := dh.doctorUsecase.AddSchedule(ctx, req)
+	createdSchedule, err := h.doctorUsecase.AddSchedule(ctx, req)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to add schedule", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -99,10 +99,10 @@ func (dh *doctorHandler) AddSchedule(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (dh *doctorHandler) UpdateSchedule(ctx *gin.Context) {
+func (h *doctorHandler) UpdateSchedule(ctx *gin.Context) {
 	scheduleID := ctx.Param("id")
 	userID := ctx.MustGet("user_id").(uuid.UUID)
-	var req dto.DoctorUpdateScheduleRequestDTO
+	var req dto.DoctorUpdateScheduleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
 		ctx.JSON(http.StatusBadRequest, res)
@@ -116,7 +116,7 @@ func (dh *doctorHandler) UpdateSchedule(ctx *gin.Context) {
 		return
 	}
 
-	err = dh.doctorUsecase.UpdateSchedule(ctx, userID, parsedID, req)
+	err = h.doctorUsecase.UpdateSchedule(ctx, userID, parsedID, req)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to update schedule", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)

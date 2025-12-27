@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type PatientResponseDTO struct {
+type PatientResponse struct {
 	PatientID uuid.UUID `json:"patient_id"`
 
 	BirthDate      time.Time   `json:"birth_date"`
@@ -29,7 +29,7 @@ type PatientResponseDTO struct {
 	Occupation        *string `json:"occupation"`
 }
 
-type PatientCreateRequestDTO struct {
+type PatientCreateRequest struct {
 	IdentityNumber string      `json:"identity_number" binding:"required"`
 	BirthDate      string      `json:"birth_date" binding:"required"`
 	Gender         enum.Gender `json:"gender" binding:"required"`
@@ -46,7 +46,7 @@ type PatientCreateRequestDTO struct {
 	Occupation        *string `json:"occupation,omitempty"`
 }
 
-type PatientUpdateRequestDTO struct {
+type PatientUpdateRequest struct {
 	BirthDate *string      `json:"birth_date"`
 	Gender    *enum.Gender `json:"gender"`
 	BloodType *string      `json:"blood_type,omitempty"`
@@ -62,8 +62,8 @@ type PatientUpdateRequestDTO struct {
 	Occupation        *string `json:"occupation,omitempty"`
 }
 
-func MapPatientToPatientResponseDTO(patient *entity.Patient) PatientResponseDTO {
-	return PatientResponseDTO{
+func ToPatientResponse(patient *entity.Patient) PatientResponse {
+	return PatientResponse{
 		PatientID:              patient.ID,
 		IdentityNumber:         patient.IdentityNumber,
 		BirthDate:              patient.BirthDate,
@@ -80,7 +80,7 @@ func MapPatientToPatientResponseDTO(patient *entity.Patient) PatientResponseDTO 
 	}
 }
 
-func (dto *PatientCreateRequestDTO) AssignToEntity(patient *entity.Patient) {
+func (dto *PatientCreateRequest) ToModel(patient *entity.Patient) {
 	patient.IdentityNumber = dto.IdentityNumber
 	patient.BirthDate = *utils.ConvertStringToTime(dto.BirthDate)
 	patient.Gender = dto.Gender
@@ -95,7 +95,7 @@ func (dto *PatientCreateRequestDTO) AssignToEntity(patient *entity.Patient) {
 	patient.Occupation = dto.Occupation
 }
 
-func (dto *PatientUpdateRequestDTO) AssignToEntity(patient *entity.Patient) {
+func (dto *PatientUpdateRequest) ToModel(patient *entity.Patient) {
 	if dto.BirthDate != nil {
 		patient.BirthDate = *utils.ConvertStringToTime(*dto.BirthDate)
 	}

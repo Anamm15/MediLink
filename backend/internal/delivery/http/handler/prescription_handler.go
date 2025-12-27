@@ -20,9 +20,9 @@ func NewPrescriptionHandler(prescriptionUsecase usecase.PrescriptionUsecase) han
 	return &PrescriptionHandler{prescriptionUsecase: prescriptionUsecase}
 }
 
-func (ph *PrescriptionHandler) GetByPatient(c *gin.Context) {
+func (h *PrescriptionHandler) GetByPatient(c *gin.Context) {
 	userID := c.MustGet("user_id").(uuid.UUID)
-	prescriptions, err := ph.prescriptionUsecase.GetByPatient(c.Request.Context(), userID)
+	prescriptions, err := h.prescriptionUsecase.GetByPatient(c.Request.Context(), userID)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve prescriptions", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, res)
@@ -32,9 +32,9 @@ func (ph *PrescriptionHandler) GetByPatient(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func (ph *PrescriptionHandler) GetByDoctor(c *gin.Context) {
+func (h *PrescriptionHandler) GetByDoctor(c *gin.Context) {
 	userID := c.MustGet("user_id").(uuid.UUID)
-	prescriptions, err := ph.prescriptionUsecase.GetByDoctor(c.Request.Context(), userID)
+	prescriptions, err := h.prescriptionUsecase.GetByDoctor(c.Request.Context(), userID)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve prescriptions", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, res)
@@ -44,7 +44,7 @@ func (ph *PrescriptionHandler) GetByDoctor(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func (ph *PrescriptionHandler) GetDetailByID(c *gin.Context) {
+func (h *PrescriptionHandler) GetDetailByID(c *gin.Context) {
 	id := c.Param("id")
 	parsedID, err := uuid.Parse(id)
 	if err != nil {
@@ -52,7 +52,7 @@ func (ph *PrescriptionHandler) GetDetailByID(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, res)
 		return
 	}
-	prescription, err := ph.prescriptionUsecase.GetDetailByID(c.Request.Context(), parsedID)
+	prescription, err := h.prescriptionUsecase.GetDetailByID(c.Request.Context(), parsedID)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve prescription", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, res)
@@ -62,14 +62,14 @@ func (ph *PrescriptionHandler) GetDetailByID(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func (ph *PrescriptionHandler) Create(c *gin.Context) {
-	var req dto.PrescriptionCreateDTO
+func (h *PrescriptionHandler) Create(c *gin.Context) {
+	var req dto.PrescriptionCreate
 	if err := c.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
 		c.JSON(http.StatusBadRequest, res)
 		return
 	}
-	prescription, err := ph.prescriptionUsecase.Create(c.Request.Context(), &req)
+	prescription, err := h.prescriptionUsecase.Create(c.Request.Context(), &req)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to create prescription", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, res)
@@ -79,7 +79,7 @@ func (ph *PrescriptionHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, res)
 }
 
-func (ph *PrescriptionHandler) Update(c *gin.Context) {
+func (h *PrescriptionHandler) Update(c *gin.Context) {
 	prescriptionIDParam := c.Param("id")
 	prescriptionID, err := uuid.Parse(prescriptionIDParam)
 	if err != nil {
@@ -88,14 +88,14 @@ func (ph *PrescriptionHandler) Update(c *gin.Context) {
 		return
 	}
 
-	var req dto.PrescriptionUpdateDTO
+	var req dto.PrescriptionUpdate
 	if err := c.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
 		c.JSON(http.StatusBadRequest, res)
 		return
 	}
 
-	updatedPrescription, err := ph.prescriptionUsecase.Update(c.Request.Context(), prescriptionID, &req)
+	updatedPrescription, err := h.prescriptionUsecase.Update(c.Request.Context(), prescriptionID, &req)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to update prescription", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, res)
@@ -106,7 +106,7 @@ func (ph *PrescriptionHandler) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func (ph *PrescriptionHandler) Delete(c *gin.Context) {
+func (h *PrescriptionHandler) Delete(c *gin.Context) {
 	prescriptionIDParam := c.Param("id")
 	prescriptionID, err := uuid.Parse(prescriptionIDParam)
 	if err != nil {
@@ -115,7 +115,7 @@ func (ph *PrescriptionHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	err = ph.prescriptionUsecase.Delete(c.Request.Context(), prescriptionID)
+	err = h.prescriptionUsecase.Delete(c.Request.Context(), prescriptionID)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to delete prescription", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, res)
@@ -126,7 +126,7 @@ func (ph *PrescriptionHandler) Delete(c *gin.Context) {
 	c.JSON(http.StatusNoContent, res)
 }
 
-func (ph *PrescriptionHandler) AddMedicine(c *gin.Context) {
+func (h *PrescriptionHandler) AddMedicine(c *gin.Context) {
 	prescriptionIDParam := c.Param("id")
 	prescriptionID, err := uuid.Parse(prescriptionIDParam)
 	if err != nil {
@@ -135,14 +135,14 @@ func (ph *PrescriptionHandler) AddMedicine(c *gin.Context) {
 		return
 	}
 
-	var req dto.PrescriptionItemCreateDTO
+	var req dto.PrescriptionItemCreate
 	if err := c.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
 		c.JSON(http.StatusBadRequest, res)
 		return
 	}
 
-	medicine, err := ph.prescriptionUsecase.AddMedicine(c.Request.Context(), prescriptionID, &req)
+	medicine, err := h.prescriptionUsecase.AddMedicine(c.Request.Context(), prescriptionID, &req)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to add medicine to prescription", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, res)
@@ -153,7 +153,7 @@ func (ph *PrescriptionHandler) AddMedicine(c *gin.Context) {
 	c.JSON(http.StatusCreated, res)
 }
 
-func (ph *PrescriptionHandler) UpdateMedicine(c *gin.Context) {
+func (h *PrescriptionHandler) UpdateMedicine(c *gin.Context) {
 	prescriptionMedicineIDParam := c.Param("prescription_medicine_id")
 	prescriptionMedicineID, err := uuid.Parse(prescriptionMedicineIDParam)
 	if err != nil {
@@ -162,14 +162,14 @@ func (ph *PrescriptionHandler) UpdateMedicine(c *gin.Context) {
 		return
 	}
 
-	var req dto.PrescriptionItemUpdateDTO
+	var req dto.PrescriptionItemUpdate
 	if err := c.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
 		c.JSON(http.StatusBadRequest, res)
 		return
 	}
 
-	err = ph.prescriptionUsecase.UpdateMedicine(c.Request.Context(), prescriptionMedicineID, req.Quantity)
+	err = h.prescriptionUsecase.UpdateMedicine(c.Request.Context(), prescriptionMedicineID, req.Quantity)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to update medicine in prescription", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, res)
@@ -180,7 +180,7 @@ func (ph *PrescriptionHandler) UpdateMedicine(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func (ph *PrescriptionHandler) RemoveMedicine(c *gin.Context) {
+func (h *PrescriptionHandler) RemoveMedicine(c *gin.Context) {
 	prescriptionMedicineIDParam := c.Param("prescription_medicine_id")
 	prescriptionMedicineID, err := uuid.Parse(prescriptionMedicineIDParam)
 	if err != nil {
@@ -189,7 +189,7 @@ func (ph *PrescriptionHandler) RemoveMedicine(c *gin.Context) {
 		return
 	}
 
-	err = ph.prescriptionUsecase.RemoveMedicine(c.Request.Context(), prescriptionMedicineID)
+	err = h.prescriptionUsecase.RemoveMedicine(c.Request.Context(), prescriptionMedicineID)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to remove medicine from prescription", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, res)

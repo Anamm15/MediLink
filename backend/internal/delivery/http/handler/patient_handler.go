@@ -20,17 +20,17 @@ func NewPatientHandler(patientUsecase usecase.PatientUsecase) handler.PatientHan
 	return &patientHandler{patientUsecase: patientUsecase}
 }
 
-func (p *patientHandler) Update(ctx *gin.Context) {
+func (h *patientHandler) Update(ctx *gin.Context) {
 	userId := ctx.MustGet("user_id").(uuid.UUID)
 
-	var data dto.PatientUpdateRequestDTO
+	var data dto.PatientUpdateRequest
 	if err := ctx.ShouldBindJSON(&data); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
 		ctx.JSON(http.StatusBadRequest, res)
 		return
 	}
 
-	err := p.patientUsecase.Update(ctx.Request.Context(), userId, data)
+	err := h.patientUsecase.Update(ctx.Request.Context(), userId, data)
 	if err != nil {
 		res := utils.BuildResponseSuccess("Patient updated succesfully", nil)
 		ctx.JSON(http.StatusOK, res)

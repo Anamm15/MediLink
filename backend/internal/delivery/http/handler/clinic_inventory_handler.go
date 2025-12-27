@@ -20,7 +20,7 @@ func NewClinicInventoryHandler(clinicInventoryUsecase usecase.ClinicInventoryUse
 	return &ClinicInventoryHandler{clinicInventoryUsecase: clinicInventoryUsecase}
 }
 
-func (cih *ClinicInventoryHandler) GetByClinic(ctx *gin.Context) {
+func (h *ClinicInventoryHandler) GetByClinic(ctx *gin.Context) {
 	clinicIDParam := ctx.Param("clinic_id")
 	clinicID, err := uuid.Parse(clinicIDParam)
 	if err != nil {
@@ -29,7 +29,7 @@ func (cih *ClinicInventoryHandler) GetByClinic(ctx *gin.Context) {
 		return
 	}
 
-	inventories, err := cih.clinicInventoryUsecase.GetByClinic(ctx, clinicID)
+	inventories, err := h.clinicInventoryUsecase.GetByClinic(ctx, clinicID)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve clinic inventories", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -40,7 +40,7 @@ func (cih *ClinicInventoryHandler) GetByClinic(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (cih *ClinicInventoryHandler) GetByID(ctx *gin.Context) {
+func (h *ClinicInventoryHandler) GetByID(ctx *gin.Context) {
 	inventoryIDParam := ctx.Param("id")
 	inventoryID, err := uuid.Parse(inventoryIDParam)
 	if err != nil {
@@ -49,7 +49,7 @@ func (cih *ClinicInventoryHandler) GetByID(ctx *gin.Context) {
 		return
 	}
 
-	inventory, err := cih.clinicInventoryUsecase.GetByID(ctx, inventoryID)
+	inventory, err := h.clinicInventoryUsecase.GetByID(ctx, inventoryID)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve clinic inventory", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -60,7 +60,7 @@ func (cih *ClinicInventoryHandler) GetByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (cih *ClinicInventoryHandler) Create(ctx *gin.Context) {
+func (h *ClinicInventoryHandler) Create(ctx *gin.Context) {
 	var req dto.ClinicInventoryCreateRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
@@ -68,7 +68,7 @@ func (cih *ClinicInventoryHandler) Create(ctx *gin.Context) {
 		return
 	}
 
-	createdinventory, err := cih.clinicInventoryUsecase.Create(ctx, req)
+	createdinventory, err := h.clinicInventoryUsecase.Create(ctx, req)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to create clinic inventory", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -79,7 +79,7 @@ func (cih *ClinicInventoryHandler) Create(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, res)
 }
 
-func (cih *ClinicInventoryHandler) Update(ctx *gin.Context) {
+func (h *ClinicInventoryHandler) Update(ctx *gin.Context) {
 	inventoryIDParam := ctx.Param("id")
 	inventoryID, err := uuid.Parse(inventoryIDParam)
 	if err != nil {
@@ -95,7 +95,7 @@ func (cih *ClinicInventoryHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	createdinventory, err := cih.clinicInventoryUsecase.Update(ctx, inventoryID, req)
+	createdinventory, err := h.clinicInventoryUsecase.Update(ctx, inventoryID, req)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to create clinic inventory", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -106,7 +106,7 @@ func (cih *ClinicInventoryHandler) Update(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, res)
 }
 
-func (cih *ClinicInventoryHandler) Delete(ctx *gin.Context) {
+func (h *ClinicInventoryHandler) Delete(ctx *gin.Context) {
 	inventoryIDParam := ctx.Param("id")
 	inventoryID, err := uuid.Parse(inventoryIDParam)
 	if err != nil {
@@ -115,7 +115,7 @@ func (cih *ClinicInventoryHandler) Delete(ctx *gin.Context) {
 		return
 	}
 
-	err = cih.clinicInventoryUsecase.Delete(ctx, inventoryID)
+	err = h.clinicInventoryUsecase.Delete(ctx, inventoryID)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to delete clinic inventory", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)

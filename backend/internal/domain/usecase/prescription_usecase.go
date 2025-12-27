@@ -9,13 +9,13 @@ import (
 )
 
 type PrescriptionUsecase interface {
-	GetByPatient(ctx context.Context, userID uuid.UUID) ([]dto.PrescriptionResponseDTO, error)
-	GetByDoctor(ctx context.Context, userID uuid.UUID) ([]dto.PrescriptionResponseDTO, error)
-	GetDetailByID(ctx context.Context, id uuid.UUID) (*dto.PrescriptionResponseDTO, error)
-	Create(ctx context.Context, dto *dto.PrescriptionCreateDTO) (dto.PrescriptionResponseDTO, error)
-	Update(ctx context.Context, id uuid.UUID, dto *dto.PrescriptionUpdateDTO) (dto.PrescriptionResponseDTO, error)
+	GetByPatient(ctx context.Context, userID uuid.UUID) ([]dto.PrescriptionResponse, error)
+	GetByDoctor(ctx context.Context, userID uuid.UUID) ([]dto.PrescriptionResponse, error)
+	GetDetailByID(ctx context.Context, id uuid.UUID) (*dto.PrescriptionResponse, error)
+	Create(ctx context.Context, dto *dto.PrescriptionCreate) (dto.PrescriptionResponse, error)
+	Update(ctx context.Context, id uuid.UUID, dto *dto.PrescriptionUpdate) (dto.PrescriptionResponse, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	AddMedicine(ctx context.Context, prescriptionID uuid.UUID, data *dto.PrescriptionItemCreateDTO) (dto.PrescriptionItemResponseDTO, error)
+	AddMedicine(ctx context.Context, prescriptionID uuid.UUID, data *dto.PrescriptionItemCreate) (dto.PrescriptionItemResponse, error)
 	UpdateMedicine(ctx context.Context, id uuid.UUID, quantity int) error
 	RemoveMedicine(ctx context.Context, id uuid.UUID) error
 }

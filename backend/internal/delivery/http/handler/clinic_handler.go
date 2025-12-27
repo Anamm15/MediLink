@@ -20,10 +20,10 @@ func NewClinicHandler(clinicUsecase usecase.ClinicUsecase) handler.ClinicHandler
 	return &clinicHandler{clinicUsecase: clinicUsecase}
 }
 
-func (c *clinicHandler) GetAll(ctx *gin.Context) {
+func (h *clinicHandler) GetAll(ctx *gin.Context) {
 	pageQuery := ctx.DefaultQuery("page", "1")
 	page := utils.StringToInt(pageQuery)
-	clinics, err := c.clinicUsecase.GetAll(ctx, page)
+	clinics, err := h.clinicUsecase.GetAll(ctx, page)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve clinics", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -34,7 +34,7 @@ func (c *clinicHandler) GetAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (c *clinicHandler) GetByID(ctx *gin.Context) {
+func (h *clinicHandler) GetByID(ctx *gin.Context) {
 	id := ctx.Param("clinic_id")
 	parsedID, err := uuid.Parse(id)
 	if err != nil {
@@ -43,7 +43,7 @@ func (c *clinicHandler) GetByID(ctx *gin.Context) {
 		return
 	}
 
-	clinic, err := c.clinicUsecase.GetByID(ctx, parsedID)
+	clinic, err := h.clinicUsecase.GetByID(ctx, parsedID)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve clinic", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -54,11 +54,11 @@ func (c *clinicHandler) GetByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (c *clinicHandler) Find(ctx *gin.Context) {
+func (h *clinicHandler) Find(ctx *gin.Context) {
 	name := ctx.Query("name")
 	pageQuery := ctx.Query("page")
 	page := utils.StringToInt(pageQuery)
-	clinics, err := c.clinicUsecase.Find(ctx, name, page)
+	clinics, err := h.clinicUsecase.Find(ctx, name, page)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to find clinics", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -69,15 +69,15 @@ func (c *clinicHandler) Find(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (c *clinicHandler) Create(ctx *gin.Context) {
-	var req dto.ClinicCreateRequestDTO
+func (h *clinicHandler) Create(ctx *gin.Context) {
+	var req dto.ClinicCreateRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
 		ctx.JSON(http.StatusBadRequest, res)
 		return
 	}
 
-	clinic, err := c.clinicUsecase.Create(ctx, req)
+	clinic, err := h.clinicUsecase.Create(ctx, req)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to create clinic", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -88,9 +88,9 @@ func (c *clinicHandler) Create(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, res)
 }
 
-func (c *clinicHandler) Update(ctx *gin.Context) {
+func (h *clinicHandler) Update(ctx *gin.Context) {
 	id := ctx.Param("clinic_id")
-	var req dto.ClinicUpdateRequestDTO
+	var req dto.ClinicUpdateRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
 		ctx.JSON(http.StatusBadRequest, res)
@@ -104,7 +104,7 @@ func (c *clinicHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	err = c.clinicUsecase.Update(ctx, parsedID, req)
+	err = h.clinicUsecase.Update(ctx, parsedID, req)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to update clinic", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -115,7 +115,7 @@ func (c *clinicHandler) Update(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (c *clinicHandler) Delete(ctx *gin.Context) {
+func (h *clinicHandler) Delete(ctx *gin.Context) {
 	id := ctx.Param("clinic_id")
 
 	parsedID, err := uuid.Parse(id)
@@ -125,7 +125,7 @@ func (c *clinicHandler) Delete(ctx *gin.Context) {
 		return
 	}
 
-	err = c.clinicUsecase.Delete(ctx, parsedID)
+	err = h.clinicUsecase.Delete(ctx, parsedID)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to delete clinic", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -136,7 +136,7 @@ func (c *clinicHandler) Delete(ctx *gin.Context) {
 	ctx.JSON(http.StatusNoContent, res)
 }
 
-func (c *clinicHandler) AssignDoctor(ctx *gin.Context) {
+func (h *clinicHandler) AssignDoctor(ctx *gin.Context) {
 	var req dto.AssignDoctorRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
@@ -144,7 +144,7 @@ func (c *clinicHandler) AssignDoctor(ctx *gin.Context) {
 		return
 	}
 
-	err := c.clinicUsecase.AssignDoctor(ctx, req)
+	err := h.clinicUsecase.AssignDoctor(ctx, req)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to assign doctor", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -155,7 +155,7 @@ func (c *clinicHandler) AssignDoctor(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (c *clinicHandler) RemoveDoctor(ctx *gin.Context) {
+func (h *clinicHandler) RemoveDoctor(ctx *gin.Context) {
 	var req dto.RemoveDoctorRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
@@ -163,7 +163,7 @@ func (c *clinicHandler) RemoveDoctor(ctx *gin.Context) {
 		return
 	}
 
-	err := c.clinicUsecase.RemoveDoctor(ctx, req)
+	err := h.clinicUsecase.RemoveDoctor(ctx, req)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to unassign doctor", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)

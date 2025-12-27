@@ -28,15 +28,15 @@ func NewDoctorUsecase(
 	}
 }
 
-func (u *doctorUsecase) GetProfile(ctx context.Context, userID uuid.UUID) (dto.DoctorProfileResponseDTO, error) {
+func (u *doctorUsecase) GetProfile(ctx context.Context, userID uuid.UUID) (dto.DoctorProfileResponse, error) {
 	doctor, err := u.doctorRepo.GetWithSchedule(ctx, userID)
 	if err != nil {
-		return dto.DoctorProfileResponseDTO{}, err
+		return dto.DoctorProfileResponse{}, err
 	}
-	return dto.MapEntityToDoctorResponseDTO(doctor), nil
+	return dto.ToDoctorResponse(doctor), nil
 }
 
-func (u *doctorUsecase) Find(ctx context.Context, name string, page int) ([]dto.DoctorProfileResponseDTO, error) {
+func (u *doctorUsecase) Find(ctx context.Context, name string, page int) ([]dto.DoctorProfileResponse, error) {
 	limit := constants.PAGE_LIMIT_DEFAULT
 	offset := (page - 1) * limit
 	doctors, err := u.doctorRepo.Find(ctx, name, limit, offset)
@@ -44,14 +44,14 @@ func (u *doctorUsecase) Find(ctx context.Context, name string, page int) ([]dto.
 		return nil, err
 	}
 
-	var results []dto.DoctorProfileResponseDTO
+	var results []dto.DoctorProfileResponse
 	for _, doctor := range doctors {
-		results = append(results, dto.MapEntityToDoctorResponseDTO(&doctor))
+		results = append(results, dto.ToDoctorResponse(&doctor))
 	}
 	return results, nil
 }
 
-func (u *doctorUsecase) Update(ctx context.Context, userID uuid.UUID, doctorID uuid.UUID, data dto.DoctorUpdateRequestDTO) error {
+func (u *doctorUsecase) Update(ctx context.Context, userID uuid.UUID, doctorID uuid.UUID, data dto.DoctorUpdateRequest) error {
 	doctor, err := u.doctorRepo.GetByID(ctx, doctorID)
 	if err != nil {
 		return err
@@ -65,17 +65,17 @@ func (u *doctorUsecase) Update(ctx context.Context, userID uuid.UUID, doctorID u
 	return u.doctorRepo.Update(ctx, doctor)
 }
 
-func (u *doctorUsecase) AddSchedule(ctx context.Context, data dto.DoctorCreateScheduleRequestDTO) (dto.DoctorScheduleResponseDTO, error) {
+func (u *doctorUsecase) AddSchedule(ctx context.Context, data dto.DoctorCreateScheduleRequest) (dto.DoctorScheduleResponse, error) {
 	schedule := &entity.DoctorSchedule{}
 	data.ToModel(schedule)
 	createdSchedule, err := u.doctorScheduleRepo.Create(ctx, schedule)
 	if err != nil {
-		return dto.DoctorScheduleResponseDTO{}, err
+		return dto.DoctorScheduleResponse{}, err
 	}
-	return dto.MapEntityDoctorScheduleToResponseDTO(createdSchedule), nil
+	return dto.ToDoctorScheduleResponse(createdSchedule), nil
 }
 
-func (u *doctorUsecase) UpdateSchedule(ctx context.Context, userID uuid.UUID, scheduleID uuid.UUID, data dto.DoctorUpdateScheduleRequestDTO) error {
+func (u *doctorUsecase) UpdateSchedule(ctx context.Context, userID uuid.UUID, scheduleID uuid.UUID, data dto.DoctorUpdateScheduleRequest) error {
 	schedule, err := u.doctorScheduleRepo.GetByID(ctx, scheduleID)
 	if err != nil {
 		return err

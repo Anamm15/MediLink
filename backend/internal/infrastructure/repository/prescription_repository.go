@@ -22,11 +22,11 @@ func NewPrescriptionRepository(db *gorm.DB) repository.PrescriptionRepository {
 	}
 }
 
-func (pr *PrescriptionRepository) GetByPatient(ctx context.Context, userID uuid.UUID,
+func (r *PrescriptionRepository) GetByPatient(ctx context.Context, userID uuid.UUID,
 ) ([]entity.Prescription, error) {
 	var prescriptions []entity.Prescription
 
-	err := pr.db.WithContext(ctx).
+	err := r.db.WithContext(ctx).
 		Joins("JOIN patients ON patients.id = prescriptions.patient_id").
 		Where("patients.user_id = ?", userID).
 		Preload("Doctor", func(db *gorm.DB) *gorm.DB {
@@ -45,10 +45,10 @@ func (pr *PrescriptionRepository) GetByPatient(ctx context.Context, userID uuid.
 	return prescriptions, nil
 }
 
-func (pr *PrescriptionRepository) GetByDoctor(ctx context.Context, userID uuid.UUID) ([]entity.Prescription, error) {
+func (r *PrescriptionRepository) GetByDoctor(ctx context.Context, userID uuid.UUID) ([]entity.Prescription, error) {
 	var prescriptions []entity.Prescription
 
-	err := pr.db.WithContext(ctx).
+	err := r.db.WithContext(ctx).
 		Joins("JOIN doctors ON doctors.id = prescriptions.doctor_id").
 		Where("doctors.user_id = ?", userID).
 		Preload("Patient", func(db *gorm.DB) *gorm.DB {
@@ -67,10 +67,10 @@ func (pr *PrescriptionRepository) GetByDoctor(ctx context.Context, userID uuid.U
 	return prescriptions, nil
 }
 
-func (pr *PrescriptionRepository) GetDetailByID(ctx context.Context, id uuid.UUID) (*entity.Prescription, error) {
+func (r *PrescriptionRepository) GetDetailByID(ctx context.Context, id uuid.UUID) (*entity.Prescription, error) {
 	var prescription entity.Prescription
 
-	err := pr.db.WithContext(ctx).
+	err := r.db.WithContext(ctx).
 		Preload("Patient", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "user_id")
 		}).
@@ -93,10 +93,10 @@ func (pr *PrescriptionRepository) GetDetailByID(ctx context.Context, id uuid.UUI
 	return &prescription, nil
 }
 
-func (pr *PrescriptionRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity.Prescription, error) {
+func (r *PrescriptionRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity.Prescription, error) {
 	var prescription entity.Prescription
 
-	err := pr.db.WithContext(ctx).
+	err := r.db.WithContext(ctx).
 		Find(&prescription, "id = ?", id).Error
 	if err != nil {
 		return nil, err
@@ -105,9 +105,9 @@ func (pr *PrescriptionRepository) GetByID(ctx context.Context, id uuid.UUID) (*e
 	return &prescription, nil
 }
 
-func (pr *PrescriptionRepository) Create(ctx context.Context, prescription *entity.Prescription) error {
+func (r *PrescriptionRepository) Create(ctx context.Context, prescription *entity.Prescription) error {
 	// Start a transaction
-	return pr.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		// 1. Loop through medicines to Check Stock and Deduct
 		for _, item := range prescription.Medicines {
 			var medicine entity.Medicine
@@ -128,8 +128,8 @@ func (pr *PrescriptionRepository) Create(ctx context.Context, prescription *enti
 	})
 }
 
-func (pr *PrescriptionRepository) Update(ctx context.Context, prescription *entity.Prescription) error {
-	if err := pr.db.WithContext(ctx).
+func (r *PrescriptionRepository) Update(ctx context.Context, prescription *entity.Prescription) error {
+	if err := r.db.WithContext(ctx).
 		Model(&entity.Prescription{}).
 		Where("id = ?", prescription.ID).
 		Omit("id", "Doctor", "Patient", "Medicines", "created_at").
@@ -142,8 +142,8 @@ func (pr *PrescriptionRepository) Update(ctx context.Context, prescription *enti
 	return nil
 }
 
-func (pr *PrescriptionRepository) Delete(ctx context.Context, id uuid.UUID) error {
-	if err := pr.db.WithContext(ctx).
+func (r *PrescriptionRepository) Delete(ctx context.Context, id uuid.UUID) error {
+	if err := r.db.WithContext(ctx).
 		Delete(&entity.Prescription{}, "id = ?", id).Error; err != nil {
 		return err
 	}

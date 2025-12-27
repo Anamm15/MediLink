@@ -26,73 +26,73 @@ func NewPrescriptionUsecase(
 	}
 }
 
-func (pu *PrescriptionUsecase) GetByPatient(ctx context.Context, userID uuid.UUID) ([]dto.PrescriptionResponseDTO, error) {
-	prescriptions, err := pu.prescriptionRepository.GetByPatient(ctx, userID)
+func (u *PrescriptionUsecase) GetByPatient(ctx context.Context, userID uuid.UUID) ([]dto.PrescriptionResponse, error) {
+	prescriptions, err := u.prescriptionRepository.GetByPatient(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
-	return dto.ToPrescriptionListResponseDTO(prescriptions), nil
+	return dto.ToListPrescriptionResponseDTO(prescriptions), nil
 }
 
-func (pu *PrescriptionUsecase) GetByDoctor(ctx context.Context, userID uuid.UUID) ([]dto.PrescriptionResponseDTO, error) {
-	prescriptions, err := pu.prescriptionRepository.GetByDoctor(ctx, userID)
+func (u *PrescriptionUsecase) GetByDoctor(ctx context.Context, userID uuid.UUID) ([]dto.PrescriptionResponse, error) {
+	prescriptions, err := u.prescriptionRepository.GetByDoctor(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
-	return dto.ToPrescriptionListResponseDTO(prescriptions), nil
+	return dto.ToListPrescriptionResponseDTO(prescriptions), nil
 }
 
-func (pu *PrescriptionUsecase) GetDetailByID(ctx context.Context, id uuid.UUID) (*dto.PrescriptionResponseDTO, error) {
-	prescription, err := pu.prescriptionRepository.GetByID(ctx, id)
+func (u *PrescriptionUsecase) GetDetailByID(ctx context.Context, id uuid.UUID) (*dto.PrescriptionResponse, error) {
+	prescription, err := u.prescriptionRepository.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	return dto.ToPrescriptionResponseDTO(prescription), nil
+	return dto.ToPrescriptionResponse(prescription), nil
 }
 
-func (pu *PrescriptionUsecase) Create(ctx context.Context, data *dto.PrescriptionCreateDTO) (dto.PrescriptionResponseDTO, error) {
+func (u *PrescriptionUsecase) Create(ctx context.Context, data *dto.PrescriptionCreate) (dto.PrescriptionResponse, error) {
 	prescription := &entity.Prescription{}
 	data.ToModel(prescription)
 
-	err := pu.prescriptionRepository.Create(ctx, prescription)
+	err := u.prescriptionRepository.Create(ctx, prescription)
 	if err != nil {
-		return dto.PrescriptionResponseDTO{}, err
+		return dto.PrescriptionResponse{}, err
 	}
-	return *dto.ToPrescriptionResponseDTO(prescription), nil
+	return *dto.ToPrescriptionResponse(prescription), nil
 }
 
-func (pu *PrescriptionUsecase) Update(ctx context.Context, id uuid.UUID, data *dto.PrescriptionUpdateDTO) (dto.PrescriptionResponseDTO, error) {
-	prescription, err := pu.prescriptionRepository.GetByID(ctx, id)
+func (u *PrescriptionUsecase) Update(ctx context.Context, id uuid.UUID, data *dto.PrescriptionUpdate) (dto.PrescriptionResponse, error) {
+	prescription, err := u.prescriptionRepository.GetByID(ctx, id)
 	if err != nil {
-		return dto.PrescriptionResponseDTO{}, err
+		return dto.PrescriptionResponse{}, err
 	}
 
 	data.ToModel(prescription)
-	err = pu.prescriptionRepository.Update(ctx, prescription)
+	err = u.prescriptionRepository.Update(ctx, prescription)
 	if err != nil {
-		return dto.PrescriptionResponseDTO{}, err
+		return dto.PrescriptionResponse{}, err
 	}
-	return *dto.ToPrescriptionResponseDTO(prescription), nil
+	return *dto.ToPrescriptionResponse(prescription), nil
 }
 
-func (pu *PrescriptionUsecase) Delete(ctx context.Context, id uuid.UUID) error {
-	return pu.prescriptionRepository.Delete(ctx, id)
+func (u *PrescriptionUsecase) Delete(ctx context.Context, id uuid.UUID) error {
+	return u.prescriptionRepository.Delete(ctx, id)
 }
 
-func (pu *PrescriptionUsecase) AddMedicine(ctx context.Context, prescriptionID uuid.UUID, data *dto.PrescriptionItemCreateDTO) (dto.PrescriptionItemResponseDTO, error) {
+func (u *PrescriptionUsecase) AddMedicine(ctx context.Context, prescriptionID uuid.UUID, data *dto.PrescriptionItemCreate) (dto.PrescriptionItemResponse, error) {
 	prescription := &entity.PrescriptionItem{}
 	data.ToModel(prescription)
-	err := pu.prescriptionItemRepository.Add(ctx, prescription)
+	err := u.prescriptionItemRepository.Add(ctx, prescription)
 	if err != nil {
-		return dto.PrescriptionItemResponseDTO{}, err
+		return dto.PrescriptionItemResponse{}, err
 	}
-	return dto.ToPrescriptionItemResponseDTO(prescription), nil
+	return dto.ToPrescriptionItemResponse(prescription), nil
 }
 
-func (pu *PrescriptionUsecase) UpdateMedicine(ctx context.Context, id uuid.UUID, quantity int) error {
-	return pu.prescriptionItemRepository.Update(ctx, id, quantity)
+func (u *PrescriptionUsecase) UpdateMedicine(ctx context.Context, id uuid.UUID, quantity int) error {
+	return u.prescriptionItemRepository.Update(ctx, id, quantity)
 }
 
-func (pu *PrescriptionUsecase) RemoveMedicine(ctx context.Context, id uuid.UUID) error {
-	return pu.prescriptionItemRepository.Delete(ctx, id)
+func (u *PrescriptionUsecase) RemoveMedicine(ctx context.Context, id uuid.UUID) error {
+	return u.prescriptionItemRepository.Delete(ctx, id)
 }

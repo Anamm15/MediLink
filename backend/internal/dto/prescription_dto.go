@@ -9,7 +9,7 @@ import (
 )
 
 type MedicineItem struct {
-	MedicineResponseDTO
+	MedicineResponse
 	Quantity int `json:"quantity"`
 }
 
@@ -18,7 +18,7 @@ type PrescriptionMedicinesCreate struct {
 	Quantity   int       `json:"quantity" binding:"required"`
 }
 
-type PrescriptionResponseDTO struct {
+type PrescriptionResponse struct {
 	ID              uuid.UUID `json:"id"`
 	PatientID       uuid.UUID `json:"patient_id"`
 	DoctorID        uuid.UUID `json:"doctor_id"`
@@ -35,7 +35,7 @@ type PrescriptionResponseDTO struct {
 	Medicines       []MedicineItem `json:"medicines"`
 }
 
-type PrescriptionCreateDTO struct {
+type PrescriptionCreate struct {
 	PatientID       uuid.UUID                     `json:"patient_id" binding:"required"`
 	DoctorID        uuid.UUID                     `json:"doctor_id" binding:"required"`
 	ClinicID        uuid.UUID                     `json:"clinic_id,omitempty"`
@@ -44,12 +44,12 @@ type PrescriptionCreateDTO struct {
 	Medicines       []PrescriptionMedicinesCreate `json:"medicines" binding:"required"`
 }
 
-type PrescriptionUpdateDTO struct {
+type PrescriptionUpdate struct {
 	Notes      *string `json:"notes,omitempty"`
 	IsRedeemed *bool   `json:"is_redeemed,omitempty"`
 }
 
-func ToPrescriptionResponseDTO(prescription *entity.Prescription) *PrescriptionResponseDTO {
+func ToPrescriptionResponse(prescription *entity.Prescription) *PrescriptionResponse {
 	var doctorName *string
 	var doctorSpecialty *string
 	var patientName *string
@@ -69,13 +69,13 @@ func ToPrescriptionResponseDTO(prescription *entity.Prescription) *PrescriptionR
 
 	for _, medicine := range prescription.Medicines {
 		medicineItem := MedicineItem{
-			MedicineResponseDTO: *ToMedicineResponseDTO(&medicine.Medicine),
-			Quantity:            medicine.Quantity,
+			MedicineResponse: *ToMedicineResponse(&medicine.Medicine),
+			Quantity:         medicine.Quantity,
 		}
 		items = append(items, medicineItem)
 	}
 
-	return &PrescriptionResponseDTO{
+	return &PrescriptionResponse{
 		ID:              prescription.ID,
 		PatientID:       prescription.PatientID,
 		DoctorID:        prescription.DoctorID,
@@ -91,15 +91,15 @@ func ToPrescriptionResponseDTO(prescription *entity.Prescription) *PrescriptionR
 	}
 }
 
-func ToPrescriptionListResponseDTO(prescriptions []entity.Prescription) []PrescriptionResponseDTO {
-	var prescriptionsDTO []PrescriptionResponseDTO
+func ToListPrescriptionResponseDTO(prescriptions []entity.Prescription) []PrescriptionResponse {
+	var prescriptionsDTO []PrescriptionResponse
 	for _, prescription := range prescriptions {
-		prescriptionsDTO = append(prescriptionsDTO, *ToPrescriptionResponseDTO(&prescription))
+		prescriptionsDTO = append(prescriptionsDTO, *ToPrescriptionResponse(&prescription))
 	}
 	return prescriptionsDTO
 }
 
-func (dto *PrescriptionCreateDTO) ToModel(prescription *entity.Prescription) {
+func (dto *PrescriptionCreate) ToModel(prescription *entity.Prescription) {
 	prescription.PatientID = dto.PatientID
 	prescription.DoctorID = dto.DoctorID
 	prescription.ClinicID = dto.ClinicID
@@ -114,7 +114,7 @@ func (dto *PrescriptionCreateDTO) ToModel(prescription *entity.Prescription) {
 	}
 }
 
-func (dto *PrescriptionUpdateDTO) ToModel(prescription *entity.Prescription) *entity.Prescription {
+func (dto *PrescriptionUpdate) ToModel(prescription *entity.Prescription) *entity.Prescription {
 	if dto.Notes != nil {
 		prescription.Notes = dto.Notes
 	}

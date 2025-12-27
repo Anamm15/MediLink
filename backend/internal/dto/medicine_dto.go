@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type MedicineResponseDTO struct {
+type MedicineResponse struct {
 	ID           uuid.UUID `json:"id"`
 	Name         string    `json:"name"`
 	GenericName  *string   `json:"generic_name,omitempty"`
@@ -20,7 +20,7 @@ type MedicineResponseDTO struct {
 	CreatedAt string `json:"created_at"`
 }
 
-type MedicineCreateDTO struct {
+type MedicineCreate struct {
 	Name         string  `json:"name" binding:"required"`
 	Description  *string `json:"description"`
 	GenericName  *string `json:"generic_name"`
@@ -31,7 +31,7 @@ type MedicineCreateDTO struct {
 	IsPrescriptionRequired bool    `json:"is_prescription_required"`
 }
 
-type MedicineUpdateDTO struct {
+type MedicineUpdate struct {
 	Name         *string `json:"name"`
 	GenericName  *string `json:"generic_name"`
 	Description  *string `json:"description"`
@@ -42,7 +42,7 @@ type MedicineUpdateDTO struct {
 	IsPrescriptionRequired *bool    `json:"is_prescription_required"`
 }
 
-func (m *MedicineCreateDTO) ToModel() *entity.Medicine {
+func (m *MedicineCreate) ToModel() *entity.Medicine {
 	return &entity.Medicine{
 		Name:                   m.Name,
 		Description:            m.Description,
@@ -54,7 +54,7 @@ func (m *MedicineCreateDTO) ToModel() *entity.Medicine {
 	}
 }
 
-func (m *MedicineUpdateDTO) ToModel(existing *entity.Medicine) *entity.Medicine {
+func (m *MedicineUpdate) ToModel(existing *entity.Medicine) *entity.Medicine {
 	if m.Name != nil {
 		existing.Name = *m.Name
 	}
@@ -79,8 +79,8 @@ func (m *MedicineUpdateDTO) ToModel(existing *entity.Medicine) *entity.Medicine 
 	return existing
 }
 
-func ToMedicineResponseDTO(m *entity.Medicine) *MedicineResponseDTO {
-	return &MedicineResponseDTO{
+func ToMedicineResponse(m *entity.Medicine) *MedicineResponse {
+	return &MedicineResponse{
 		ID:                     m.ID,
 		Name:                   m.Name,
 		Description:            m.Description,
@@ -92,10 +92,10 @@ func ToMedicineResponseDTO(m *entity.Medicine) *MedicineResponseDTO {
 	}
 }
 
-func ToListMedicineResponseDTO(medicines []entity.Medicine) []MedicineResponseDTO {
-	response := make([]MedicineResponseDTO, 0, len(medicines))
+func ToListMedicineResponse(medicines []entity.Medicine) []MedicineResponse {
+	response := make([]MedicineResponse, 0, len(medicines))
 	for _, m := range medicines {
-		response = append(response, *ToMedicineResponseDTO(&m))
+		response = append(response, *ToMedicineResponse(&m))
 	}
 	return response
 }

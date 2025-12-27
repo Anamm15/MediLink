@@ -19,9 +19,9 @@ func NewAppointmentRepository(db *gorm.DB) repository.AppointmentRepository {
 	return &AppointmentRepository{db: db}
 }
 
-func (ar *AppointmentRepository) GetAll(ctx context.Context, limit int, offset int) ([]entity.Appointment, error) {
+func (r *AppointmentRepository) GetAll(ctx context.Context, limit int, offset int) ([]entity.Appointment, error) {
 	var appointments []entity.Appointment
-	if err := ar.db.WithContext(ctx).
+	if err := r.db.WithContext(ctx).
 		Limit(limit).
 		Offset(offset).
 		Preload("Doctor", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id", "specialization") }).
@@ -34,9 +34,9 @@ func (ar *AppointmentRepository) GetAll(ctx context.Context, limit int, offset i
 	return appointments, nil
 }
 
-func (ar *AppointmentRepository) GetByID(ctx context.Context, appointmentID uuid.UUID) (*entity.Appointment, error) {
+func (r *AppointmentRepository) GetByID(ctx context.Context, appointmentID uuid.UUID) (*entity.Appointment, error) {
 	var appointment entity.Appointment
-	if err := ar.db.WithContext(ctx).
+	if err := r.db.WithContext(ctx).
 		Preload("Doctor", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id", "specialization") }).
 		Preload("Doctor.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name", "phone_number") }).
 		Preload("Patient", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id") }).
@@ -47,9 +47,9 @@ func (ar *AppointmentRepository) GetByID(ctx context.Context, appointmentID uuid
 	return &appointment, nil
 }
 
-func (ar *AppointmentRepository) GetByDoctorID(ctx context.Context, doctorID uuid.UUID, limit int, offset int) ([]entity.Appointment, error) {
+func (r *AppointmentRepository) GetByDoctorID(ctx context.Context, doctorID uuid.UUID, limit int, offset int) ([]entity.Appointment, error) {
 	var appointments []entity.Appointment
-	if err := ar.db.WithContext(ctx).
+	if err := r.db.WithContext(ctx).
 		Where("doctor_id = ?", doctorID).
 		Limit(limit).
 		Offset(offset).
@@ -63,9 +63,9 @@ func (ar *AppointmentRepository) GetByDoctorID(ctx context.Context, doctorID uui
 	return appointments, nil
 }
 
-func (ar *AppointmentRepository) GetByPatientID(ctx context.Context, patientID uuid.UUID, limit int, offset int) ([]entity.Appointment, error) {
+func (r *AppointmentRepository) GetByPatientID(ctx context.Context, patientID uuid.UUID, limit int, offset int) ([]entity.Appointment, error) {
 	var appointments []entity.Appointment
-	if err := ar.db.WithContext(ctx).
+	if err := r.db.WithContext(ctx).
 		Where("patient_id = ?", patientID).
 		Limit(limit).
 		Offset(offset).
@@ -79,15 +79,15 @@ func (ar *AppointmentRepository) GetByPatientID(ctx context.Context, patientID u
 	return appointments, nil
 }
 
-func (ar *AppointmentRepository) Create(ctx context.Context, appointment *entity.Appointment) error {
-	if err := ar.db.WithContext(ctx).Create(appointment).Error; err != nil {
+func (r *AppointmentRepository) Create(ctx context.Context, appointment *entity.Appointment) error {
+	if err := r.db.WithContext(ctx).Create(appointment).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (ar *AppointmentRepository) UpdateStatus(ctx context.Context, appointmentID uuid.UUID, status enum.AppointmentStatus) error {
-	if err := ar.db.WithContext(ctx).Model(&entity.Appointment{}).
+func (r *AppointmentRepository) UpdateStatus(ctx context.Context, appointmentID uuid.UUID, status enum.AppointmentStatus) error {
+	if err := r.db.WithContext(ctx).Model(&entity.Appointment{}).
 		Where("id = ?", appointmentID).
 		Update("status", status).Error; err != nil {
 		return err
@@ -95,8 +95,8 @@ func (ar *AppointmentRepository) UpdateStatus(ctx context.Context, appointmentID
 	return nil
 }
 
-func (ar *AppointmentRepository) Delete(ctx context.Context, appointmentID uuid.UUID) error {
-	if err := ar.db.WithContext(ctx).
+func (r *AppointmentRepository) Delete(ctx context.Context, appointmentID uuid.UUID) error {
+	if err := r.db.WithContext(ctx).
 		Delete(&entity.Appointment{}, "id = ?", appointmentID).Error; err != nil {
 		return err
 	}

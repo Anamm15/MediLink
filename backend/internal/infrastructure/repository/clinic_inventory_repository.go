@@ -18,9 +18,9 @@ func NewClinicInventoryRepository(db *gorm.DB) repository.ClinicInventoryReposit
 	return &ClinicInventoryRepository{db: db}
 }
 
-func (cir *ClinicInventoryRepository) GetAll(ctx context.Context) ([]entity.ClinicInventory, error) {
+func (r *ClinicInventoryRepository) GetAll(ctx context.Context) ([]entity.ClinicInventory, error) {
 	var clinicInventories []entity.ClinicInventory
-	if err := cir.db.
+	if err := r.db.
 		WithContext(ctx).
 		Preload("Medicine", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "name")
@@ -34,9 +34,9 @@ func (cir *ClinicInventoryRepository) GetAll(ctx context.Context) ([]entity.Clin
 	return clinicInventories, nil
 }
 
-func (cir *ClinicInventoryRepository) GetByClinicID(ctx context.Context, clinicID uuid.UUID) ([]entity.ClinicInventory, error) {
+func (r *ClinicInventoryRepository) GetByClinicID(ctx context.Context, clinicID uuid.UUID) ([]entity.ClinicInventory, error) {
 	var clinicInventories []entity.ClinicInventory
-	if err := cir.db.
+	if err := r.db.
 		WithContext(ctx).
 		Preload("Medicine", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "name")
@@ -51,9 +51,9 @@ func (cir *ClinicInventoryRepository) GetByClinicID(ctx context.Context, clinicI
 	return clinicInventories, nil
 }
 
-func (cir *ClinicInventoryRepository) GetByID(ctx context.Context, id uuid.UUID) (entity.ClinicInventory, error) {
+func (r *ClinicInventoryRepository) GetByID(ctx context.Context, id uuid.UUID) (entity.ClinicInventory, error) {
 	var clinicInventories entity.ClinicInventory
-	if err := cir.db.
+	if err := r.db.
 		WithContext(ctx).
 		Preload("Medicine", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "name")
@@ -68,15 +68,15 @@ func (cir *ClinicInventoryRepository) GetByID(ctx context.Context, id uuid.UUID)
 	return clinicInventories, nil
 }
 
-func (cir *ClinicInventoryRepository) Create(ctx context.Context, clinicInventory *entity.ClinicInventory) error {
-	if err := cir.db.WithContext(ctx).Create(clinicInventory).Error; err != nil {
+func (r *ClinicInventoryRepository) Create(ctx context.Context, clinicInventory *entity.ClinicInventory) error {
+	if err := r.db.WithContext(ctx).Create(clinicInventory).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (cir *ClinicInventoryRepository) Update(ctx context.Context, clinicInventory *entity.ClinicInventory) error {
-	if err := cir.db.WithContext(ctx).
+func (r *ClinicInventoryRepository) Update(ctx context.Context, clinicInventory *entity.ClinicInventory) error {
+	if err := r.db.WithContext(ctx).
 		Model(clinicInventory).
 		Omit("id", "clinic_id", "medicine_id").
 		Updates(clinicInventory).Error; err != nil {
@@ -85,8 +85,8 @@ func (cir *ClinicInventoryRepository) Update(ctx context.Context, clinicInventor
 	return nil
 }
 
-func (cir *ClinicInventoryRepository) Delete(ctx context.Context, id uuid.UUID) error {
-	if err := cir.db.WithContext(ctx).
+func (r *ClinicInventoryRepository) Delete(ctx context.Context, id uuid.UUID) error {
+	if err := r.db.WithContext(ctx).
 		Delete(&entity.ClinicInventory{}, "id = ?", id).Error; err != nil {
 		return err
 	}

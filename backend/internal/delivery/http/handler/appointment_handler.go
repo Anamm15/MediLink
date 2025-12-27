@@ -20,10 +20,10 @@ func NewAppointmentHandler(appointmentUsecase usecase.AppointmentUsecase) handle
 	return &AppointmentHandler{appointmentUsecase: appointmentUsecase}
 }
 
-func (ah *AppointmentHandler) GetAll(ctx *gin.Context) {
+func (h *AppointmentHandler) GetAll(ctx *gin.Context) {
 	queryPage := ctx.Query("page")
 	page := utils.StringToInt(queryPage)
-	appointments, err := ah.appointmentUsecase.GetAll(ctx, page)
+	appointments, err := h.appointmentUsecase.GetAll(ctx, page)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve appointments", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -34,7 +34,7 @@ func (ah *AppointmentHandler) GetAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (ah *AppointmentHandler) GetDetailByID(ctx *gin.Context) {
+func (h *AppointmentHandler) GetDetailByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 	parsedID, err := uuid.Parse(id)
 	if err != nil {
@@ -43,7 +43,7 @@ func (ah *AppointmentHandler) GetDetailByID(ctx *gin.Context) {
 		return
 	}
 
-	appointment, err := ah.appointmentUsecase.GetDetailByID(ctx, parsedID)
+	appointment, err := h.appointmentUsecase.GetDetailByID(ctx, parsedID)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve appointment", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -54,7 +54,7 @@ func (ah *AppointmentHandler) GetDetailByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (ah *AppointmentHandler) GetByDoctor(ctx *gin.Context) {
+func (h *AppointmentHandler) GetByDoctor(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 	doctorID, err := uuid.Parse(idParam)
 	if err != nil {
@@ -65,7 +65,7 @@ func (ah *AppointmentHandler) GetByDoctor(ctx *gin.Context) {
 
 	pageQuery := ctx.Query("page")
 	page := utils.StringToInt(pageQuery)
-	appointments, err := ah.appointmentUsecase.GetByDoctor(ctx, doctorID, page)
+	appointments, err := h.appointmentUsecase.GetByDoctor(ctx, doctorID, page)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve appointments", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -76,7 +76,7 @@ func (ah *AppointmentHandler) GetByDoctor(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (ah *AppointmentHandler) GetByPatient(ctx *gin.Context) {
+func (h *AppointmentHandler) GetByPatient(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 	patientID, err := uuid.Parse(idParam)
 	if err != nil {
@@ -87,7 +87,7 @@ func (ah *AppointmentHandler) GetByPatient(ctx *gin.Context) {
 
 	pageQuery := ctx.Query("page")
 	page := utils.StringToInt(pageQuery)
-	appointments, err := ah.appointmentUsecase.GetByPatient(ctx, patientID, page)
+	appointments, err := h.appointmentUsecase.GetByPatient(ctx, patientID, page)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve appointments", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -98,7 +98,7 @@ func (ah *AppointmentHandler) GetByPatient(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (ah *AppointmentHandler) Create(ctx *gin.Context) {
+func (h *AppointmentHandler) Create(ctx *gin.Context) {
 	var appointmentDTO dto.AppointmentCreateRequest
 	if err := ctx.ShouldBindJSON(&appointmentDTO); err != nil {
 		res := utils.BuildResponseFailed("Invalid request body", err.Error(), nil)
@@ -106,7 +106,7 @@ func (ah *AppointmentHandler) Create(ctx *gin.Context) {
 		return
 	}
 
-	appointment, err := ah.appointmentUsecase.Create(ctx, appointmentDTO)
+	appointment, err := h.appointmentUsecase.Create(ctx, appointmentDTO)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to create appointment", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -117,7 +117,7 @@ func (ah *AppointmentHandler) Create(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, res)
 }
 
-func (ah *AppointmentHandler) CancelBooking(ctx *gin.Context) {
+func (h *AppointmentHandler) CancelBooking(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 	id, err := uuid.Parse(idParam)
 	if err != nil {
@@ -126,7 +126,7 @@ func (ah *AppointmentHandler) CancelBooking(ctx *gin.Context) {
 		return
 	}
 
-	err = ah.appointmentUsecase.CancelBooking(ctx, id)
+	err = h.appointmentUsecase.CancelBooking(ctx, id)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to update appointment", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -137,7 +137,7 @@ func (ah *AppointmentHandler) CancelBooking(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (ah *AppointmentHandler) CompleteConsultation(ctx *gin.Context) {
+func (h *AppointmentHandler) CompleteConsultation(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 	id, err := uuid.Parse(idParam)
 	if err != nil {
@@ -146,7 +146,7 @@ func (ah *AppointmentHandler) CompleteConsultation(ctx *gin.Context) {
 		return
 	}
 
-	err = ah.appointmentUsecase.CompleteConsultation(ctx, id)
+	err = h.appointmentUsecase.CompleteConsultation(ctx, id)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to update appointment", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -157,7 +157,7 @@ func (ah *AppointmentHandler) CompleteConsultation(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (ah *AppointmentHandler) Delete(ctx *gin.Context) {
+func (h *AppointmentHandler) Delete(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 	id, err := uuid.Parse(idParam)
 	if err != nil {
@@ -166,7 +166,7 @@ func (ah *AppointmentHandler) Delete(ctx *gin.Context) {
 		return
 	}
 
-	err = ah.appointmentUsecase.Delete(ctx, id)
+	err = h.appointmentUsecase.Delete(ctx, id)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to delete appointment", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)

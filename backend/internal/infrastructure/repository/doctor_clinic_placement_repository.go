@@ -18,15 +18,15 @@ func NewDoctorClinicPlacementRepository(db *gorm.DB) repository.DoctorClinicPlac
 	return &DoctorClinicPlacementRepository{db: db}
 }
 
-func (dcpr *DoctorClinicPlacementRepository) Add(ctx context.Context, DoctorClinicPlacement *entity.DoctorClinicPlacement) error {
-	if err := dcpr.db.Create(DoctorClinicPlacement).Error; err != nil {
+func (r *DoctorClinicPlacementRepository) Add(ctx context.Context, DoctorClinicPlacement *entity.DoctorClinicPlacement) error {
+	if err := r.db.Create(DoctorClinicPlacement).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (dcpr *DoctorClinicPlacementRepository) Delete(ctx context.Context, doctorID uuid.UUID, clinicID uuid.UUID) error {
-	if err := dcpr.db.Delete(&entity.DoctorClinicPlacement{}, "doctor_id = ? AND clinic_id = ?", doctorID, clinicID).Error; err != nil {
+func (r *DoctorClinicPlacementRepository) Delete(ctx context.Context, doctorID uuid.UUID, clinicID uuid.UUID) error {
+	if err := r.db.Delete(&entity.DoctorClinicPlacement{}, "doctor_id = ? AND clinic_id = ?", doctorID, clinicID).Error; err != nil {
 		return err
 	}
 	return nil

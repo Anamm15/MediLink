@@ -18,12 +18,12 @@ func NewPatientUsecase(patientRepository repository.PatientRepository) usecase.P
 	return &patientUsecase{patientRepository: patientRepository}
 }
 
-func (p *patientUsecase) Update(ctx context.Context, patientID uuid.UUID, data dto.PatientUpdateRequestDTO) error {
-	patient, err := p.patientRepository.GetByUserID(ctx, patientID)
+func (u *patientUsecase) Update(ctx context.Context, patientID uuid.UUID, data dto.PatientUpdateRequest) error {
+	patient, err := u.patientRepository.GetByUserID(ctx, patientID)
 	if err != nil {
 		return err
 	}
 
-	data.AssignToEntity(patient)
-	return p.patientRepository.Update(ctx, patient)
+	data.ToModel(patient)
+	return u.patientRepository.Update(ctx, patient)
 }

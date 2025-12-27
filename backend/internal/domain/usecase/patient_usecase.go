@@ -9,5 +9,5 @@ import (
 )
 
 type PatientUsecase interface {
-	Update(ctx context.Context, patientID uuid.UUID, data dto.PatientUpdateRequestDTO) error
+	Update(ctx context.Context, patientID uuid.UUID, data dto.PatientUpdateRequest) error
 }

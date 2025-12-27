@@ -39,21 +39,21 @@ func NewUserUsecase(
 	}
 }
 
-func (u *userUsecase) GetAll(ctx context.Context, page int) ([]dto.UserResponseDTO, error) {
+func (u *userUsecase) GetAll(ctx context.Context, page int) ([]dto.UserResponse, error) {
 	limit := constants.PAGE_LIMIT_DEFAULT
 	offset := (page - 1) * limit
 	users, err := u.userRepo.GetAll(ctx, limit, offset)
 	if err != nil {
 		return nil, err
 	}
-	var userDTOs []dto.UserResponseDTO
+	var userDTOs []dto.UserResponse
 	for _, user := range users {
-		userDTOs = append(userDTOs, dto.MapUserToUserResponseDTO(&user))
+		userDTOs = append(userDTOs, dto.ToUserResponse(&user))
 	}
 	return userDTOs, nil
 }
 
-func (u *userUsecase) GetProfile(ctx context.Context, userID uuid.UUID) (dto.UserProfileResponseDTO, error) {
+func (u *userUsecase) GetProfile(ctx context.Context, userID uuid.UUID) (dto.UserProfileResponse, error) {
 	var user *entity.User
 	var patient *entity.Patient
 
@@ -78,23 +78,23 @@ func (u *userUsecase) GetProfile(ctx context.Context, userID uuid.UUID) (dto.Use
 	})
 
 	if err := g.Wait(); err != nil {
-		return dto.UserProfileResponseDTO{}, err
+		return dto.UserProfileResponse{}, err
 	}
 
-	response := dto.UserProfileResponseDTO{
-		User: dto.MapUserToUserResponseDTO(user),
+	response := dto.UserProfileResponse{
+		User: dto.ToUserResponse(user),
 	}
 
 	// Hanya mapping patient jika datanya memang ditemukan
 	if patient != nil {
-		patientDTO := dto.MapPatientToPatientResponseDTO(patient)
+		patientDTO := dto.ToPatientResponse(patient)
 		response.Patient = patientDTO
 	}
 
 	return response, nil
 }
 
-func (u *userUsecase) UpdateProfile(ctx context.Context, userID uuid.UUID, data dto.UserUpdateProfileRequestDTO) error {
+func (u *userUsecase) UpdateProfile(ctx context.Context, userID uuid.UUID, data dto.UserUpdateProfileRequest) error {
 	user, err := u.userRepo.GetByID(ctx, userID)
 	if err != nil {
 		return err
@@ -150,7 +150,7 @@ func (u *userUsecase) VerifyUser(ctx context.Context, userID uuid.UUID, inputOTP
 	return nil
 }
 
-func (u *userUsecase) OnBoardPatient(ctx context.Context, userID uuid.UUID, data dto.PatientCreateRequestDTO) error {
+func (u *userUsecase) OnBoardPatient(ctx context.Context, userID uuid.UUID, data dto.PatientCreateRequest) error {
 	user, err := u.userRepo.GetByID(ctx, userID)
 	if err != nil {
 		return err
@@ -162,7 +162,7 @@ func (u *userUsecase) OnBoardPatient(ctx context.Context, userID uuid.UUID, data
 
 	var patient entity.Patient
 	patient.UserID = userID
-	data.AssignToEntity(&patient)
+	data.ToModel(&patient)
 	_, err = u.patientRepo.Create(ctx, &patient)
 	if err != nil {
 		return err

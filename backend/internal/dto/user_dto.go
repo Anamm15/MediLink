@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type UserResponseDTO struct {
+type UserResponse struct {
 	ID    uuid.UUID     `json:"id"`
 	Email string        `json:"email"`
 	Role  enum.UserRole `json:"role"`
@@ -23,12 +23,12 @@ type UserResponseDTO struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type UserProfileResponseDTO struct {
-	User    UserResponseDTO    `json:"user"`
-	Patient PatientResponseDTO `json:"patient"`
+type UserProfileResponse struct {
+	User    UserResponse    `json:"user"`
+	Patient PatientResponse `json:"patient"`
 }
 
-type UserUpdateProfileRequestDTO struct {
+type UserUpdateProfileRequest struct {
 	Name        *string `json:"name"`
 	Email       *string `json:"email"`
 	PhoneNumber *string `json:"phone_number" binding:"e164"`
@@ -38,12 +38,12 @@ type VerifyUserRequest struct {
 	OTP string `json:"otp" binding:"required"`
 }
 
-type OnBoardPatientRequestDTO struct {
+type OnBoardPatientRequest struct {
 	MedicalHistory string `json:"medical_history" binding:"required"`
 }
 
-func MapUserToUserResponseDTO(user *entity.User) UserResponseDTO {
-	return UserResponseDTO{
+func ToUserResponse(user *entity.User) UserResponse {
+	return UserResponse{
 		ID:          user.ID,
 		Name:        user.Name,
 		PhoneNumber: user.PhoneNumber,
@@ -55,7 +55,7 @@ func MapUserToUserResponseDTO(user *entity.User) UserResponseDTO {
 	}
 }
 
-func MapUserResponseDTOToUser(dto UserResponseDTO) entity.User {
+func MapUserResponseDTOToUser(dto UserResponse) entity.User {
 	return entity.User{
 		ID:          dto.ID,
 		Name:        dto.Name,
@@ -68,7 +68,7 @@ func MapUserResponseDTOToUser(dto UserResponseDTO) entity.User {
 	}
 }
 
-func (req *UserUpdateProfileRequestDTO) ToModel(user *entity.User) {
+func (req *UserUpdateProfileRequest) ToModel(user *entity.User) {
 	if req.Name != nil {
 		user.Name = *req.Name
 	}

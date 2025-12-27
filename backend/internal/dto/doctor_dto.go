@@ -18,7 +18,7 @@ type DoctorClinicResponse struct {
 	IsActive bool      `json:"is_active"`
 }
 
-type DoctorProfileResponseDTO struct {
+type DoctorProfileResponse struct {
 	ID          uuid.UUID `json:"id" gorm:"column:id"`
 	Name        string    `json:"name"`
 	Email       string    `json:"email"`
@@ -34,11 +34,11 @@ type DoctorProfileResponseDTO struct {
 	RatingTotal float64 `json:"rating_total"`
 	ReviewCount int     `json:"review_count"`
 
-	Clinic   []DoctorClinicResponse      `json:"clinic"`
-	Schedule []DoctorScheduleResponseDTO `json:"schedule"`
+	Clinic   []DoctorClinicResponse   `json:"clinic"`
+	Schedule []DoctorScheduleResponse `json:"schedule"`
 }
 
-type DoctorUpdateRequestDTO struct {
+type DoctorUpdateRequest struct {
 	Specialization  *string         `json:"specialization"`
 	LicenseNumber   *string         `json:"license_number"`
 	ExperienceYears *int            `json:"experience_years"`
@@ -46,7 +46,7 @@ type DoctorUpdateRequestDTO struct {
 	Bio             *string         `json:"bio"`
 }
 
-type DoctorScheduleResponseDTO struct {
+type DoctorScheduleResponse struct {
 	ID        uuid.UUID        `json:"id"`
 	DayOfWeek enum.ScheduleDay `json:"day_of_week"`
 	StartTime time.Time        `json:"start_time"`
@@ -56,7 +56,7 @@ type DoctorScheduleResponseDTO struct {
 	MaxQuota *int `json:"max_quota"`
 }
 
-type DoctorCreateScheduleRequestDTO struct {
+type DoctorCreateScheduleRequest struct {
 	DoctorID  uuid.UUID        `json:"doctor_id" binding:"required" validate:"required"`
 	ClinicID  *uuid.UUID       `json:"clinic_id"`
 	DayOfWeek enum.ScheduleDay `json:"day_of_week" binding:"required" validate:"required"`
@@ -66,7 +66,7 @@ type DoctorCreateScheduleRequestDTO struct {
 	MaxQuota  *int             `json:"max_quota"`
 }
 
-type DoctorUpdateScheduleRequestDTO struct {
+type DoctorUpdateScheduleRequest struct {
 	DayOfWeek *enum.ScheduleDay `json:"day_of_week"`
 	StartTime *time.Time        `json:"start_time"`
 	EndTime   *time.Time        `json:"end_time"`
@@ -74,7 +74,7 @@ type DoctorUpdateScheduleRequestDTO struct {
 	MaxQuota  *int              `json:"max_quota"`
 }
 
-func MapEntityToDoctorResponseDTO(entity *entity.Doctor) DoctorProfileResponseDTO {
+func ToDoctorResponse(entity *entity.Doctor) DoctorProfileResponse {
 	var clinic []DoctorClinicResponse
 	for _, clinicEntity := range entity.DoctorClinicPlacements {
 		clinic = append(clinic, DoctorClinicResponse{
@@ -86,7 +86,7 @@ func MapEntityToDoctorResponseDTO(entity *entity.Doctor) DoctorProfileResponseDT
 		})
 	}
 
-	return DoctorProfileResponseDTO{
+	return DoctorProfileResponse{
 		ID:          entity.ID,
 		Name:        entity.User.Name,
 		Email:       entity.User.Email,
@@ -102,24 +102,12 @@ func MapEntityToDoctorResponseDTO(entity *entity.Doctor) DoctorProfileResponseDT
 		RatingTotal: entity.RatingTotal,
 		ReviewCount: entity.ReviewCount,
 
-		Schedule: MapListEntityDoctorScheduleToResponseDTO(entity.DoctorSchedules),
+		Schedule: ToListDoctorScheduleResponse(entity.DoctorSchedules),
 	}
 }
 
-func MapCreateScheduleRequestToEntity(dto *DoctorCreateScheduleRequestDTO) entity.DoctorSchedule {
-	return entity.DoctorSchedule{
-		DoctorID:  dto.DoctorID,
-		ClinicID:  dto.ClinicID,
-		DayOfWeek: dto.DayOfWeek,
-		StartTime: dto.StartTime,
-		EndTime:   dto.EndTime,
-		IsActive:  dto.IsActive,
-		MaxQuota:  dto.MaxQuota,
-	}
-}
-
-func MapEntityDoctorScheduleToResponseDTO(entity *entity.DoctorSchedule) DoctorScheduleResponseDTO {
-	return DoctorScheduleResponseDTO{
+func ToDoctorScheduleResponse(entity *entity.DoctorSchedule) DoctorScheduleResponse {
+	return DoctorScheduleResponse{
 		ID:        entity.ID,
 		DayOfWeek: entity.DayOfWeek,
 		StartTime: entity.StartTime,
@@ -129,15 +117,15 @@ func MapEntityDoctorScheduleToResponseDTO(entity *entity.DoctorSchedule) DoctorS
 	}
 }
 
-func MapListEntityDoctorScheduleToResponseDTO(entity []entity.DoctorSchedule) []DoctorScheduleResponseDTO {
-	var result []DoctorScheduleResponseDTO
+func ToListDoctorScheduleResponse(entity []entity.DoctorSchedule) []DoctorScheduleResponse {
+	var result []DoctorScheduleResponse
 	for _, schedule := range entity {
-		result = append(result, MapEntityDoctorScheduleToResponseDTO(&schedule))
+		result = append(result, ToDoctorScheduleResponse(&schedule))
 	}
 	return result
 }
 
-func (dto *DoctorUpdateRequestDTO) ToModel(doctor *entity.Doctor) {
+func (dto *DoctorUpdateRequest) ToModel(doctor *entity.Doctor) {
 	if dto.Specialization != nil {
 		doctor.Specialization = *dto.Specialization
 	}
@@ -155,7 +143,7 @@ func (dto *DoctorUpdateRequestDTO) ToModel(doctor *entity.Doctor) {
 	}
 }
 
-func (dto *DoctorCreateScheduleRequestDTO) ToModel(doctor *entity.DoctorSchedule) {
+func (dto *DoctorCreateScheduleRequest) ToModel(doctor *entity.DoctorSchedule) {
 	doctor.DoctorID = dto.DoctorID
 	doctor.ClinicID = dto.ClinicID
 	doctor.DayOfWeek = dto.DayOfWeek
@@ -165,7 +153,7 @@ func (dto *DoctorCreateScheduleRequestDTO) ToModel(doctor *entity.DoctorSchedule
 	doctor.MaxQuota = dto.MaxQuota
 }
 
-func (dto *DoctorUpdateScheduleRequestDTO) ToModel(doctor *entity.DoctorSchedule) {
+func (dto *DoctorUpdateScheduleRequest) ToModel(doctor *entity.DoctorSchedule) {
 	if dto.DayOfWeek != nil {
 		doctor.DayOfWeek = *dto.DayOfWeek
 	}

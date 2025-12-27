@@ -21,71 +21,71 @@ func NewMedicineUsecase(medicineRepo repository.MedicineRepository) usecase.Medi
 	}
 }
 
-func (mu *MedicineUsecase) GetAll(ctx context.Context, page int) ([]dto.MedicineResponseDTO, error) {
+func (u *MedicineUsecase) GetAll(ctx context.Context, page int) ([]dto.MedicineResponse, error) {
 	limit := constants.PAGE_LIMIT_DEFAULT
 	offset := (page - 1) * limit
 
-	medicines, err := mu.medicineRepo.GetAll(ctx, limit, offset)
+	medicines, err := u.medicineRepo.GetAll(ctx, limit, offset)
 	if err != nil {
 		return nil, err
 	}
 
-	result := dto.ToListMedicineResponseDTO(medicines)
+	result := dto.ToListMedicineResponse(medicines)
 	return result, nil
 }
 
-func (mu *MedicineUsecase) GetByID(ctx context.Context, id uuid.UUID) (dto.MedicineResponseDTO, error) {
-	medicine, err := mu.medicineRepo.GetByID(ctx, id)
+func (u *MedicineUsecase) GetByID(ctx context.Context, id uuid.UUID) (dto.MedicineResponse, error) {
+	medicine, err := u.medicineRepo.GetByID(ctx, id)
 	if err != nil {
-		return dto.MedicineResponseDTO{}, err
+		return dto.MedicineResponse{}, err
 	}
-	response := dto.ToMedicineResponseDTO(medicine)
+	response := dto.ToMedicineResponse(medicine)
 	return *response, nil
 }
 
-func (mu *MedicineUsecase) Search(ctx context.Context, name string, page int) ([]dto.MedicineResponseDTO, error) {
+func (u *MedicineUsecase) Search(ctx context.Context, name string, page int) ([]dto.MedicineResponse, error) {
 	limit := constants.PAGE_LIMIT_DEFAULT
 	offset := (page - 1) * limit
 
-	medicines, err := mu.medicineRepo.Search(ctx, name, limit, offset)
+	medicines, err := u.medicineRepo.Search(ctx, name, limit, offset)
 	if err != nil {
 		return nil, err
 	}
-	result := dto.ToListMedicineResponseDTO(medicines)
+	result := dto.ToListMedicineResponse(medicines)
 	return result, nil
 }
 
-func (mu *MedicineUsecase) Create(ctx context.Context, data dto.MedicineCreateDTO) (dto.MedicineResponseDTO, error) {
+func (u *MedicineUsecase) Create(ctx context.Context, data dto.MedicineCreate) (dto.MedicineResponse, error) {
 	medicine := data.ToModel()
 
-	err := mu.medicineRepo.Create(ctx, medicine)
+	err := u.medicineRepo.Create(ctx, medicine)
 	if err != nil {
-		return dto.MedicineResponseDTO{}, err
+		return dto.MedicineResponse{}, err
 	}
 
-	response := dto.ToMedicineResponseDTO(medicine)
+	response := dto.ToMedicineResponse(medicine)
 	return *response, nil
 }
 
-func (mu *MedicineUsecase) Update(ctx context.Context, id uuid.UUID, data *dto.MedicineUpdateDTO) (dto.MedicineResponseDTO, error) {
-	medicine, err := mu.medicineRepo.GetByID(ctx, id)
+func (u *MedicineUsecase) Update(ctx context.Context, id uuid.UUID, data *dto.MedicineUpdate) (dto.MedicineResponse, error) {
+	medicine, err := u.medicineRepo.GetByID(ctx, id)
 	if err != nil {
-		return dto.MedicineResponseDTO{}, err
+		return dto.MedicineResponse{}, err
 	}
 
 	updatedMedicine := data.ToModel(medicine)
 
-	err = mu.medicineRepo.Update(ctx, updatedMedicine)
+	err = u.medicineRepo.Update(ctx, updatedMedicine)
 	if err != nil {
-		return dto.MedicineResponseDTO{}, err
+		return dto.MedicineResponse{}, err
 	}
 
-	response := dto.ToMedicineResponseDTO(updatedMedicine)
+	response := dto.ToMedicineResponse(updatedMedicine)
 	return *response, nil
 }
 
-func (mu *MedicineUsecase) Delete(ctx context.Context, id uuid.UUID) error {
-	err := mu.medicineRepo.Delete(ctx, id)
+func (u *MedicineUsecase) Delete(ctx context.Context, id uuid.UUID) error {
+	err := u.medicineRepo.Delete(ctx, id)
 	if err != nil {
 		return err
 	}

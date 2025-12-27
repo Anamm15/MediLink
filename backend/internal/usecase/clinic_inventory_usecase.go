@@ -21,46 +21,46 @@ func NewClinicInventoryUsecase(clinicInventoryRepository repository.ClinicInvent
 	}
 }
 
-func (ciu *ClinicInventoryUsecase) GetByClinic(ctx context.Context, clinicID uuid.UUID) ([]dto.ClinicInventoryResponse, error) {
-	inventories, err := ciu.ClinicInventoryRepository.GetByClinicID(ctx, clinicID)
+func (u *ClinicInventoryUsecase) GetByClinic(ctx context.Context, clinicID uuid.UUID) ([]dto.ClinicInventoryResponse, error) {
+	inventories, err := u.ClinicInventoryRepository.GetByClinicID(ctx, clinicID)
 	if err != nil {
 		return nil, err
 	}
 	return dto.ToListClinicInventoryResponse(inventories), nil
 }
 
-func (ciu *ClinicInventoryUsecase) GetByID(ctx context.Context, id uuid.UUID) (dto.ClinicInventoryResponse, error) {
-	inventory, err := ciu.ClinicInventoryRepository.GetByID(ctx, id)
+func (u *ClinicInventoryUsecase) GetByID(ctx context.Context, id uuid.UUID) (dto.ClinicInventoryResponse, error) {
+	inventory, err := u.ClinicInventoryRepository.GetByID(ctx, id)
 	if err != nil {
 		return dto.ClinicInventoryResponse{}, err
 	}
 	return *dto.ToClinicInventoryResponse(&inventory), nil
 }
 
-func (ciu *ClinicInventoryUsecase) Create(ctx context.Context, request dto.ClinicInventoryCreateRequest) (dto.ClinicInventoryResponse, error) {
+func (u *ClinicInventoryUsecase) Create(ctx context.Context, request dto.ClinicInventoryCreateRequest) (dto.ClinicInventoryResponse, error) {
 	inventory := &entity.ClinicInventory{}
 	request.ToModel(inventory)
-	if err := ciu.ClinicInventoryRepository.Create(ctx, inventory); err != nil {
+	if err := u.ClinicInventoryRepository.Create(ctx, inventory); err != nil {
 		return dto.ClinicInventoryResponse{}, err
 	}
 	return *dto.ToClinicInventoryResponse(inventory), nil
 }
 
-func (ciu *ClinicInventoryUsecase) Update(ctx context.Context, id uuid.UUID, request dto.ClinicInventoryUpdateRequest) (dto.ClinicInventoryResponse, error) {
-	inventory, err := ciu.ClinicInventoryRepository.GetByID(ctx, id)
+func (u *ClinicInventoryUsecase) Update(ctx context.Context, id uuid.UUID, request dto.ClinicInventoryUpdateRequest) (dto.ClinicInventoryResponse, error) {
+	inventory, err := u.ClinicInventoryRepository.GetByID(ctx, id)
 	if err != nil {
 		return dto.ClinicInventoryResponse{}, err
 	}
 
 	request.ToModel(&inventory)
-	if err := ciu.ClinicInventoryRepository.Update(ctx, &inventory); err != nil {
+	if err := u.ClinicInventoryRepository.Update(ctx, &inventory); err != nil {
 		return dto.ClinicInventoryResponse{}, err
 	}
 	return *dto.ToClinicInventoryResponse(&inventory), nil
 }
 
-func (ciu *ClinicInventoryUsecase) Delete(ctx context.Context, id uuid.UUID) error {
-	if err := ciu.ClinicInventoryRepository.Delete(ctx, id); err != nil {
+func (u *ClinicInventoryUsecase) Delete(ctx context.Context, id uuid.UUID) error {
+	if err := u.ClinicInventoryRepository.Delete(ctx, id); err != nil {
 		return err
 	}
 	return nil

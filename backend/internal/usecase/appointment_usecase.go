@@ -24,10 +24,10 @@ func NewAppointmentUseCase(appointmentRepo repository.AppointmentRepository) use
 	}
 }
 
-func (au *AppointmentUsecase) GetAll(ctx context.Context, page int) ([]dto.AppointmentDetailResponse, error) {
+func (u *AppointmentUsecase) GetAll(ctx context.Context, page int) ([]dto.AppointmentDetailResponse, error) {
 	limit := constants.PAGE_LIMIT_DEFAULT
 	offset := (page - 1) * limit
-	appointments, err := au.appointmentRepo.GetAll(ctx, limit, offset)
+	appointments, err := u.appointmentRepo.GetAll(ctx, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -36,8 +36,8 @@ func (au *AppointmentUsecase) GetAll(ctx context.Context, page int) ([]dto.Appoi
 	return appointmentResponses, nil
 }
 
-func (au *AppointmentUsecase) GetDetailByID(ctx context.Context, appointmentID uuid.UUID) (dto.AppointmentDetailResponse, error) {
-	appointment, err := au.appointmentRepo.GetByID(ctx, appointmentID)
+func (u *AppointmentUsecase) GetDetailByID(ctx context.Context, appointmentID uuid.UUID) (dto.AppointmentDetailResponse, error) {
+	appointment, err := u.appointmentRepo.GetByID(ctx, appointmentID)
 	if err != nil {
 		return dto.AppointmentDetailResponse{}, err
 	}
@@ -46,10 +46,10 @@ func (au *AppointmentUsecase) GetDetailByID(ctx context.Context, appointmentID u
 	return *appointmentResponse, nil
 }
 
-func (au *AppointmentUsecase) GetByDoctor(ctx context.Context, doctorID uuid.UUID, page int) ([]dto.AppointmentDetailResponse, error) {
+func (u *AppointmentUsecase) GetByDoctor(ctx context.Context, doctorID uuid.UUID, page int) ([]dto.AppointmentDetailResponse, error) {
 	limit := constants.PAGE_LIMIT_DEFAULT
 	offset := (page - 1) * limit
-	appointments, err := au.appointmentRepo.GetByDoctorID(ctx, doctorID, limit, offset)
+	appointments, err := u.appointmentRepo.GetByDoctorID(ctx, doctorID, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -58,10 +58,10 @@ func (au *AppointmentUsecase) GetByDoctor(ctx context.Context, doctorID uuid.UUI
 	return appointmentResponses, nil
 }
 
-func (au *AppointmentUsecase) GetByPatient(ctx context.Context, patientID uuid.UUID, page int) ([]dto.AppointmentDetailResponse, error) {
+func (u *AppointmentUsecase) GetByPatient(ctx context.Context, patientID uuid.UUID, page int) ([]dto.AppointmentDetailResponse, error) {
 	limit := constants.PAGE_LIMIT_DEFAULT
 	offset := (page - 1) * limit
-	appointments, err := au.appointmentRepo.GetByPatientID(ctx, patientID, limit, offset)
+	appointments, err := u.appointmentRepo.GetByPatientID(ctx, patientID, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -70,10 +70,10 @@ func (au *AppointmentUsecase) GetByPatient(ctx context.Context, patientID uuid.U
 	return appointmentResponses, nil
 }
 
-func (au *AppointmentUsecase) Create(ctx context.Context, request dto.AppointmentCreateRequest) (dto.AppointmentDetailResponse, error) {
+func (u *AppointmentUsecase) Create(ctx context.Context, request dto.AppointmentCreateRequest) (dto.AppointmentDetailResponse, error) {
 	appointment := &entity.Appointment{}
 	request.ToModel(appointment)
-	if err := au.appointmentRepo.Create(ctx, appointment); err != nil {
+	if err := u.appointmentRepo.Create(ctx, appointment); err != nil {
 		return dto.AppointmentDetailResponse{}, err
 	}
 
@@ -81,8 +81,8 @@ func (au *AppointmentUsecase) Create(ctx context.Context, request dto.Appointmen
 	return *appointmentResponse, nil
 }
 
-func (au *AppointmentUsecase) CancelBooking(ctx context.Context, appointmentID uuid.UUID) error {
-	appointment, err := au.appointmentRepo.GetByID(ctx, appointmentID)
+func (u *AppointmentUsecase) CancelBooking(ctx context.Context, appointmentID uuid.UUID) error {
+	appointment, err := u.appointmentRepo.GetByID(ctx, appointmentID)
 	if err != nil {
 		return err
 	}
@@ -91,21 +91,21 @@ func (au *AppointmentUsecase) CancelBooking(ctx context.Context, appointmentID u
 		return errors.New("Appointment have already completed can not be canceled")
 	}
 
-	if err := au.appointmentRepo.UpdateStatus(ctx, appointmentID, enum.AppointmentCanceled); err != nil {
+	if err := u.appointmentRepo.UpdateStatus(ctx, appointmentID, enum.AppointmentCanceled); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (au *AppointmentUsecase) CompleteConsultation(ctx context.Context, appointmentID uuid.UUID) error {
-	if err := au.appointmentRepo.UpdateStatus(ctx, appointmentID, enum.AppointmentCompleted); err != nil {
+func (u *AppointmentUsecase) CompleteConsultation(ctx context.Context, appointmentID uuid.UUID) error {
+	if err := u.appointmentRepo.UpdateStatus(ctx, appointmentID, enum.AppointmentCompleted); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (au *AppointmentUsecase) Delete(ctx context.Context, appointmentID uuid.UUID) error {
-	if err := au.appointmentRepo.Delete(ctx, appointmentID); err != nil {
+func (u *AppointmentUsecase) Delete(ctx context.Context, appointmentID uuid.UUID) error {
+	if err := u.appointmentRepo.Delete(ctx, appointmentID); err != nil {
 		return err
 	}
 	return nil

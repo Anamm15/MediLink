@@ -68,7 +68,7 @@ func (h *MedicineHandler) Search(ctx *gin.Context) {
 }
 
 func (h *MedicineHandler) Create(ctx *gin.Context) {
-	var req dto.MedicineCreateDTO
+	var req dto.MedicineCreate
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
 		ctx.JSON(http.StatusBadRequest, res)
@@ -94,7 +94,7 @@ func (h *MedicineHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	var req dto.MedicineUpdateDTO
+	var req dto.MedicineUpdate
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
 		ctx.JSON(http.StatusBadRequest, res)
