@@ -1,10 +1,4 @@
-package utils
-
-import (
-	"crypto/rand"
-	"fmt"
-	"math/big"
-)
+package constants
 
 const EmailOTPTemplate = `
 <!DOCTYPE html>
@@ -25,7 +19,7 @@ const EmailOTPTemplate = `
             <h1>Verifikasi MediLink</h1>
         </div>
         <p>Halo <strong>%s</strong>,</p>
-        <p>Anda sedang melakukan proses verifikasi akun. Gunakan kode OTP di bawah ini untuk melanjutkan. Kode ini berlaku selama 5 menit.</p>
+        <p>Anda sedang melakukan proses verifikasi akun. Gunakan kode OTP di bawah ini untuk melanjutkan. Kode ini berlaku selama 3 menit.</p>
         
         <div class="otp-box">%s</div>
         
@@ -38,21 +32,3 @@ const EmailOTPTemplate = `
 </body>
 </html>
 `
-
-func BuildEmailBody(name, otp string) string {
-	return fmt.Sprintf(EmailOTPTemplate, name, otp)
-}
-
-func GenerateOTP(length int) (string, error) {
-	max := big.NewInt(1)
-	for i := 0; i < length; i++ {
-		max.Mul(max, big.NewInt(10))
-	}
-
-	n, err := rand.Int(rand.Reader, max)
-	if err != nil {
-		return "", err
-	}
-
-	return fmt.Sprintf("%0*d", length, n), nil
-}

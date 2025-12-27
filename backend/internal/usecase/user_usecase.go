@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	"MediLink/internal/domain/entity"
@@ -13,8 +12,6 @@ import (
 	"MediLink/internal/dto"
 	"MediLink/internal/helpers/constants"
 	"MediLink/internal/helpers/enum"
-	"MediLink/internal/infrastructure/mail"
-	"MediLink/internal/utils"
 
 	"github.com/google/uuid"
 	"golang.org/x/sync/errgroup"
@@ -22,71 +19,25 @@ import (
 )
 
 type userUsecase struct {
-	userRepo    repository.UserRepository
-	patientRepo repository.PatientRepository
-	cacheRepo   repository.CacheRepository
+	userRepo            repository.UserRepository
+	patientRepo         repository.PatientRepository
+	cacheRepo           repository.CacheRepository
+	notificationUsecase usecase.NotificationUsecase
 }
 
 func NewUserUsecase(
 	userRepo repository.UserRepository,
 	patientRepo repository.PatientRepository,
 	cacheRepo repository.CacheRepository,
+	notificationUsecase usecase.NotificationUsecase,
 ) usecase.UserUsecase {
 	return &userUsecase{
-		userRepo:    userRepo,
-		patientRepo: patientRepo,
-		cacheRepo:   cacheRepo,
+		userRepo:            userRepo,
+		patientRepo:         patientRepo,
+		cacheRepo:           cacheRepo,
+		notificationUsecase: notificationUsecase,
 	}
 }
-
-func (u *userUsecase) Register(ctx context.Context, data dto.UserRegistrationRequestDTO) (dto.UserRegistrationResponseDTO, error) {
-	hashedPassword, err := utils.HashPassword(data.Password)
-	if err != nil {
-		return dto.UserRegistrationResponseDTO{}, err
-	}
-
-	user := &entity.User{
-		Name:        data.Name,
-		Email:       data.Email,
-		PhoneNumber: data.PhoneNumber,
-		Password:    hashedPassword,
-	}
-	createdUser, err := u.userRepo.Create(ctx, user)
-	if err != nil {
-		return dto.UserRegistrationResponseDTO{}, err
-	}
-
-	return dto.UserRegistrationResponseDTO{
-		ID:                         createdUser.ID,
-		UserRegistrationRequestDTO: data,
-	}, nil
-}
-
-func (u *userUsecase) Login(ctx context.Context, data dto.UserLoginRequestDTO) (string, error) {
-	user, err := u.userRepo.GetByEmail(ctx, data.Email)
-	if err != nil {
-		return "", errs.ErrEmailOrPass
-	}
-
-	if err := utils.ComparePassword(user.Password, data.Password); err != nil {
-		return "", errs.ErrEmailOrPass
-	}
-
-	token, err := utils.GenerateJWT(user.ID, user.Role)
-	if err != nil {
-		return "", err
-	}
-
-	return token, nil
-}
-
-// func (u *userUsecase) RefreshToken(ctx context.Context, oldToken string) (string, error) {
-// 	return u.userRepo.RefreshToken(ctx, oldToken)
-// }
-
-// func (u *userUsecase) Logout(ctx context.Context, token string) error {
-// 	return u.userRepo.Logout(ctx, token)
-// }
 
 func (u *userUsecase) GetAll(ctx context.Context, page int) ([]dto.UserResponseDTO, error) {
 	limit := constants.PAGE_LIMIT_DEFAULT
@@ -149,26 +100,7 @@ func (u *userUsecase) UpdateProfile(ctx context.Context, userID uuid.UUID, data 
 		return err
 	}
 
-	data.AssignToEntity(user)
-	return u.userRepo.Update(ctx, user)
-}
-
-func (u *userUsecase) ChangePassword(ctx context.Context, userID uuid.UUID, data dto.UserChangePasswordRequestDTO) error {
-	user, err := u.userRepo.GetByID(ctx, userID)
-	if err != nil {
-		return err
-	}
-
-	if err := utils.ComparePassword(user.Password, *data.OldPassword); err != nil {
-		return errs.ErrOldPassIncorrect
-	}
-
-	newHashedPassword, err := utils.HashPassword(*data.NewPassword)
-	if err != nil {
-		return err
-	}
-	user.Password = newHashedPassword
-
+	data.ToModel(user)
 	return u.userRepo.Update(ctx, user)
 }
 
@@ -176,38 +108,18 @@ func (u *userUsecase) Delete(ctx context.Context, userID uuid.UUID) error {
 	return u.userRepo.Delete(ctx, userID)
 }
 
-func (u *userUsecase) SendOTP(ctx context.Context, userID uuid.UUID) error {
+func (u *userUsecase) SendVerificationUser(ctx context.Context, userID uuid.UUID) error {
 	user, err := u.userRepo.GetByID(ctx, userID)
 	if err != nil {
 		return err
 	}
-
-	otp, err := utils.GenerateOTP(6)
-	if err != nil {
-		return err
-	}
-
-	// 3. PENTING: Simpan OTP ke Storage (Redis/DB) dengan Expiration Time
-	// Key-nya bisa berupa "otp:userID" atau "otp:email"
-	// Contoh menggunakan interface repository cache/redis:
-	err = u.cacheRepo.Set(ctx, "otp:"+user.Email, otp, 5*time.Minute)
-	if err != nil {
-		return err
-	}
-
-	emailBody := utils.BuildEmailBody(user.Name, otp)
-
-	go func() {
-		err := mail.SendEmail(user.Email, "Kode Verifikasi Keamanan - MediLink", emailBody)
-		if err != nil {
-			fmt.Printf("Gagal mengirim email ke %s: %v\n", user.Email, err)
-		}
-	}()
-
+	key := "verify-user-otp:" + user.Email
+	expiration := 3 * time.Minute
+	u.notificationUsecase.SendOTP(ctx, key, user.Email, user.Name, expiration)
 	return nil
 }
 
-func (u *userUsecase) VerifyOTP(ctx context.Context, userID uuid.UUID, inputOTP string) error {
+func (u *userUsecase) VerifyUser(ctx context.Context, userID uuid.UUID, inputOTP string) error {
 	user, err := u.userRepo.GetByID(ctx, userID)
 	if err != nil {
 		return err
@@ -217,8 +129,7 @@ func (u *userUsecase) VerifyOTP(ctx context.Context, userID uuid.UUID, inputOTP 
 		return nil
 	}
 
-	key := "otp:" + user.Email
-
+	key := "verify-user-otp:" + user.Email
 	storedOTP, err := u.cacheRepo.Get(ctx, key)
 	if err != nil {
 		return errors.New("OTP has expired or does not exist")

@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:5000/api/v1/users
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDJhNDEyNzktZTliNy00MjBjLTljYmYtMjUyNTQzYzExN2U0Iiwicm9sZSI6InVzZXIiLCJpc3MiOiJtZWRpbGluay1hcHAiLCJleHAiOjE3NjY3MTEzNDksImlhdCI6MTc2NjYyNDk0OX0.m5w9tSddl5pvCTcnTHbrLty1gc279j7U5tyaGoQx1YQ
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZThkMzNiMTEtY2RlYS00N2ExLWIxZmUtMGE5YTZhYjhlMTA4Iiwicm9sZSI6InVzZXIiLCJpc3MiOiJtZWRpbGluay1hcHAiLCJleHAiOjE3NjY4NzgyODYsImlhdCI6MTc2Njc5MTg4Nn0.38T9WYQPMtF4aRCD2_cfrWiiyBMEWAHm7wZknbCB1Wk
 
 ###
 GET {{baseUrl}}/
@@ -8,26 +8,6 @@ Authorization: Bearer {{token}}
 ###
 GET {{baseUrl}}/me
 Authorization: Bearer {{token}}
-
-###
-POST {{baseUrl}}/register
-Content-Type: application/json
-
-{
-   "name": "John Cena",
-   "email": "john.cena@gmail.com",
-   "phone_number": "+6283098037109",
-   "password": "SecurePass123"
-}
-
-###
-POST {{baseUrl}}/login
-Content-Type: application/json
-
-{
-   "email": "rizaloblolovina@gmail.com",
-   "password": "SecurePass123"
-}
 
 ###
 PUT {{baseUrl}}/
@@ -41,30 +21,20 @@ Content-Type: application/json
 }
 
 ###
-PATCH {{baseUrl}}/password
-Authorization: Bearer {{token}}
-Content-Type: application/json
-
-{
-   "old_password": "SecurePass123",
-   "new_password": "NewSecurePass456"
-}
-
-###
 DELETE {{baseUrl}}/
 Authorization: Bearer {{token}}
 
 ###
-POST {{baseUrl}}/send-otp
+POST {{baseUrl}}/send-verification
 Authorization: Bearer {{token}}
 
 ###
-POST {{baseUrl}}/verify-otp
+POST {{baseUrl}}/verify
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-   "otp": "171443"
+   "otp": "299557"
 }
 
 ###

@@ -9,17 +9,12 @@ import (
 )
 
 type UserUsecase interface {
-	Register(ctx context.Context, data dto.UserRegistrationRequestDTO) (dto.UserRegistrationResponseDTO, error)
-	Login(ctx context.Context, data dto.UserLoginRequestDTO) (string, error)
-	// RefreshToken(ctx context.Context, oldToken string) (string, error)
-	// Logout(ctx context.Context, token string) error
 	GetAll(ctx context.Context, page int) ([]dto.UserResponseDTO, error)
 	GetProfile(ctx context.Context, userID uuid.UUID) (dto.UserProfileResponseDTO, error)
 	UpdateProfile(ctx context.Context, userID uuid.UUID, data dto.UserUpdateProfileRequestDTO) error
-	ChangePassword(ctx context.Context, userID uuid.UUID, data dto.UserChangePasswordRequestDTO) error
 	Delete(ctx context.Context, userID uuid.UUID) error
-	SendOTP(ctx context.Context, userID uuid.UUID) error
-	VerifyOTP(ctx context.Context, userID uuid.UUID, otp string) error
+	SendVerificationUser(ctx context.Context, userID uuid.UUID) error
+	VerifyUser(ctx context.Context, userID uuid.UUID, otp string) error
 	OnBoardPatient(ctx context.Context, userID uuid.UUID, data dto.PatientCreateRequestDTO) error
 	// ApplyAsDoctor(ctx context.Context, userID uuid.UUID, licenseNumber, specialization string) error
 	// ApplyAsStaff(ctx context.Context, userID uuid.UUID) error

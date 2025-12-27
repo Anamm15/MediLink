@@ -8,6 +8,7 @@ dist/
 *.dll
 *.so
 *.dylib
+.air.toml
 
 # Nama aplikasi (jika Anda melakukan go build -o main)
 main

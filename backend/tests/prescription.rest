@@ -2,7 +2,7 @@
 @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTE3NWQ1MzgtZjJjMS00MzhhLWE3N2UtODc4NjFiNjllMWRkIiwicm9sZSI6ImRvY3RvciIsImlzcyI6Im1lZGlsaW5rLWFwcCIsImV4cCI6MTc2NjY0MjAxNCwiaWF0IjoxNzY2NTU1NjE0fQ.WwGKDqWjRUnDWrwEbp2s1m8B15bBBZI4zaxF2zXgMqE
 
 ###
-POST http://localhost:5000/api/v1/users/login
+POST http://localhost:5000/api/v1/auth/login
 Content-Type: application/json
 
 {

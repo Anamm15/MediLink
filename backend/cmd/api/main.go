@@ -28,6 +28,7 @@ func main() {
 	redisClient := database.NewRedisClient()
 
 	userRepository := repository.NewUserRepository(db)
+	authRepository := repository.NewRefreshTokenRepository(db)
 	patientRepository := repository.NewPatientRepository(db)
 	redisRepository := repository.NewRedisRepository(redisClient)
 	clinicRepository := repository.NewClinicRepository(db)
@@ -41,7 +42,9 @@ func main() {
 	prescriptionRepository := repository.NewPrescriptionRepository(db)
 	prescriptionItemRepository := repository.NewPrescriptionItemRepository(db)
 
-	userUsecase := usecase.NewUserUsecase(userRepository, patientRepository, redisRepository)
+	NotificationUsecase := usecase.NewNotificationUsecase(redisRepository)
+	userUsecase := usecase.NewUserUsecase(userRepository, patientRepository, redisRepository, NotificationUsecase)
+	authUsecase := usecase.NewAuthUsecase(authRepository, userRepository, redisRepository, NotificationUsecase)
 	patientUsecase := usecase.NewPatientUsecase(patientRepository)
 	clinicUsecase := usecase.NewClinicUsecase(clinicRepository, doctorClinicReplacementRepository)
 	doctorUsecase := usecase.NewDoctorUsecase(doctorRepository, doctorScheduleRepository)
@@ -52,6 +55,7 @@ func main() {
 	prescriptionUsecase := usecase.NewPrescriptionUsecase(prescriptionRepository, prescriptionItemRepository)
 
 	userHandler := handler.NewUserHandler(userUsecase)
+	authHandler := handler.NewAuthHandler(authUsecase)
 	patientHandler := handler.NewPatientHandler(patientUsecase)
 	clinicHandler := handler.NewClinicHandler(clinicUsecase)
 	doctorHandler := handler.NewDoctorHandler(doctorUsecase)
@@ -62,6 +66,7 @@ func main() {
 	prescriptionHandler := handler.NewPrescriptionHandler(prescriptionUsecase)
 
 	http.UserRoute(server, userHandler)
+	http.AuthRoute(server, authHandler)
 	http.PatientRoute(server, patientHandler)
 	http.ClinicRoute(server, clinicHandler, clinicInventoryHandler)
 	http.DoctorRoute(server, doctorHandler)

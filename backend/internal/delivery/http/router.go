@@ -7,21 +7,29 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func AuthRoute(server *gin.Engine, authHandler handler.AuthHandler) {
+	auth := server.Group("/api/v1/auth")
+	{
+		auth.POST("/login", authHandler.Login)
+		auth.POST("/register", authHandler.Register)
+		auth.POST("/refresh-token", authHandler.RefreshToken)
+		auth.POST("/logout", middlewares.Authenticate(), authHandler.Logout)
+		auth.POST("/change-password", middlewares.Authenticate(), authHandler.ChangePassword)
+		auth.POST("/request-reset-password", authHandler.RequestResetPassword)
+		auth.POST("/reset-password", authHandler.ResetPassword)
+	}
+}
+
 func UserRoute(server *gin.Engine, userHandler handler.UserHandler) {
 	user := server.Group("/api/v1/users")
 	{
 		user.GET("/", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), userHandler.GetAll)
 		user.GET("/me", middlewares.Authenticate(), userHandler.GetProfile)
 
-		user.POST("/register", userHandler.Register)
-		user.POST("/login", userHandler.Login)
-		user.POST("/send-otp", middlewares.Authenticate(), userHandler.SendOTP)
-		user.POST("/verify-otp", middlewares.Authenticate(), userHandler.VerifyOTP)
+		user.POST("/send-verification", middlewares.Authenticate(), userHandler.SendVerificationUser)
+		user.POST("/verify", middlewares.Authenticate(), userHandler.VerifyUser)
 		user.POST("/on-board-patient", middlewares.Authenticate(), userHandler.OnBoardPatient)
-
 		user.PUT("/", middlewares.Authenticate(), userHandler.UpdateProfile)
-		user.PATCH("/password", middlewares.Authenticate(), userHandler.ChangePassword)
-
 		user.DELETE("/", middlewares.Authenticate(), userHandler.Delete)
 	}
 }

@@ -3,7 +3,7 @@
 @tokenPatient = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDJhNDEyNzktZTliNy00MjBjLTljYmYtMjUyNTQzYzExN2U0Iiwicm9sZSI6InBhdGllbnQiLCJpc3MiOiJtZWRpbGluay1hcHAiLCJleHAiOjE3NjY4MDcyMDAsImlhdCI6MTc2NjcyMDgwMH0.n01F-1cAVPrJ1fRtoqUhBknP6xleyNGw7l4KiG_0Z8c
 
 ###
-POST http://localhost:5000/api/v1/users/login
+POST http://localhost:5000/api/v1/auth/login
 Content-Type: application/json
 
 {
@@ -12,7 +12,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:5000/api/v1/users/login
+POST http://localhost:5000/api/v1/auth/login
 Content-Type: application/json
 
 {

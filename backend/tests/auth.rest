@@ -1,0 +1,59 @@
+@baseUrl = http://localhost:5000/api/v1/auth
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZThkMzNiMTEtY2RlYS00N2ExLWIxZmUtMGE5YTZhYjhlMTA4Iiwicm9sZSI6InVzZXIiLCJpc3MiOiJtZWRpbGluay1hcHAiLCJleHAiOjE3NjY4ODAyNDksImlhdCI6MTc2Njc5Mzg0OX0.hQ6bH7BRpb6iUtioe4E-aN6L9KzramwJBG_pZXV62Dc
+
+###
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+   "name": "John Doe",
+   "email": "john.doe@gmail.com",
+   "phone_number": "+6283098037120",
+   "password": "SecurePass123"
+}
+
+###
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+   "email": "john.doe@gmail.com",
+   "password": "newResetPass123"
+}
+
+###
+POST {{baseUrl}}/refresh-token
+
+###
+POST {{baseUrl}}/logout
+Authorization: Bearer {{token}}
+
+###
+POST {{baseUrl}}/change-password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+   "old_password": "SecurePass123",
+   "new_password": "NewSecurePass123"
+}
+
+###
+POST {{baseUrl}}/request-reset-password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+   "email": "john.doe@gmail.com"
+}
+
+###
+POST {{baseUrl}}/reset-password
+Content-Type: application/json
+
+{
+   "email": "john.doe@gmail.com",
+   "otp": "517440",
+   "new_password": "newResetPass123"
+}
+

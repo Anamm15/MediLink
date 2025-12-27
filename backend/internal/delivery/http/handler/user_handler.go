@@ -22,43 +22,6 @@ func NewUserHandler(userUsecase usecase.UserUsecase) handler.UserHandler {
 	}
 }
 
-func (ud *userHandler) Register(ctx *gin.Context) {
-	var req dto.UserRegistrationRequestDTO
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
-		ctx.JSON(http.StatusBadRequest, res)
-		return
-	}
-
-	createdUser, err := ud.userUsecase.Register(ctx, req)
-	if err != nil {
-		res := utils.BuildResponseFailed("Registration failed", err.Error(), nil)
-		ctx.JSON(http.StatusInternalServerError, res)
-		return
-	}
-
-	res := utils.BuildResponseSuccess("Registration successful", createdUser)
-	ctx.JSON(http.StatusCreated, res)
-}
-
-func (ud *userHandler) Login(ctx *gin.Context) {
-	var req dto.UserLoginRequestDTO
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
-		ctx.JSON(http.StatusBadRequest, res)
-		return
-	}
-
-	token, err := ud.userUsecase.Login(ctx, req)
-	if err != nil {
-		res := utils.BuildResponseFailed("Login failed", err.Error(), nil)
-		ctx.JSON(http.StatusUnauthorized, res)
-		return
-	}
-	res := utils.BuildResponseSuccess("Login successful", token)
-	ctx.JSON(http.StatusOK, res)
-}
-
 func (ud *userHandler) GetAll(ctx *gin.Context) {
 	pageQuery := ctx.DefaultQuery("page", "1")
 	page := utils.StringToInt(pageQuery)
@@ -104,25 +67,6 @@ func (ud *userHandler) UpdateProfile(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (ud *userHandler) ChangePassword(ctx *gin.Context) {
-	userId := ctx.MustGet("user_id").(uuid.UUID)
-	var req dto.UserChangePasswordRequestDTO
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
-		ctx.JSON(http.StatusBadRequest, res)
-		return
-	}
-
-	err := ud.userUsecase.ChangePassword(ctx, userId, req)
-	if err != nil {
-		res := utils.BuildResponseFailed("Failed to change password", err.Error(), nil)
-		ctx.JSON(http.StatusInternalServerError, res)
-		return
-	}
-	res := utils.BuildResponseSuccess("Password changed successfully", nil)
-	ctx.JSON(http.StatusOK, res)
-}
-
 func (ud *userHandler) Delete(ctx *gin.Context) {
 	userId := ctx.MustGet("user_id").(uuid.UUID)
 	err := ud.userUsecase.Delete(ctx, userId)
@@ -135,9 +79,9 @@ func (ud *userHandler) Delete(ctx *gin.Context) {
 	ctx.JSON(http.StatusNoContent, res)
 }
 
-func (ud *userHandler) SendOTP(ctx *gin.Context) {
+func (ud *userHandler) SendVerificationUser(ctx *gin.Context) {
 	userId := ctx.MustGet("user_id").(uuid.UUID)
-	err := ud.userUsecase.SendOTP(ctx, userId)
+	err := ud.userUsecase.SendVerificationUser(ctx, userId)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to send OTP", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -148,16 +92,16 @@ func (ud *userHandler) SendOTP(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (ud *userHandler) VerifyOTP(ctx *gin.Context) {
+func (ud *userHandler) VerifyUser(ctx *gin.Context) {
 	userId := ctx.MustGet("user_id").(uuid.UUID)
-	var req dto.UserVerifyOTPRequestDTO
+	var req dto.VerifyUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
 		ctx.JSON(http.StatusBadRequest, res)
 		return
 	}
 
-	err := ud.userUsecase.VerifyOTP(ctx, userId, req.OTP)
+	err := ud.userUsecase.VerifyUser(ctx, userId, req.OTP)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to verify OTP", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)

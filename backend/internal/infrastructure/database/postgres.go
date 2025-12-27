@@ -35,6 +35,7 @@ func SetUpDatabaseConnection() *gorm.DB {
 
 	if err := db.AutoMigrate(
 		entity.User{},
+		entity.RefreshToken{},
 		entity.Clinic{},
 		entity.Doctor{},
 		entity.DoctorClinicPlacement{},
