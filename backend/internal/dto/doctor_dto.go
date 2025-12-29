@@ -34,8 +34,7 @@ type DoctorProfileResponse struct {
 	RatingTotal float64 `json:"rating_total"`
 	ReviewCount int     `json:"review_count"`
 
-	Clinic   []DoctorClinicResponse   `json:"clinic"`
-	Schedule []DoctorScheduleResponse `json:"schedule"`
+	Clinic []DoctorClinicResponse `json:"clinic"`
 }
 
 type DoctorUpdateRequest struct {
@@ -73,6 +72,10 @@ type DoctorUpdateScheduleRequest struct {
 	MaxQuota  *int              `json:"max_quota"`
 }
 
+type DoctorUpdateStatusScheduleRequest struct {
+	IsActive *bool `json:"is_active"`
+}
+
 func ToDoctorResponse(entity *entity.Doctor) DoctorProfileResponse {
 	var clinic []DoctorClinicResponse
 	for _, clinicEntity := range entity.DoctorClinicPlacements {
@@ -100,8 +103,7 @@ func ToDoctorResponse(entity *entity.Doctor) DoctorProfileResponse {
 		RatingCount: entity.RatingCount,
 		RatingTotal: entity.RatingTotal,
 		ReviewCount: entity.ReviewCount,
-
-		Schedule: ToListDoctorScheduleResponse(entity.DoctorSchedules),
+		Clinic:      clinic,
 	}
 }
 

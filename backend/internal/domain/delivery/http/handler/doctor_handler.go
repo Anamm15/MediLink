@@ -7,6 +7,8 @@ type DoctorHandler interface {
 	Find(ctx *gin.Context)
 	Update(ctx *gin.Context)
 	AddSchedule(ctx *gin.Context)
+	GetSchedules(ctx *gin.Context)
+	GetAvailableSchedules(ctx *gin.Context)
 	UpdateSchedule(ctx *gin.Context)
 	UpdateScheduleStatus(ctx *gin.Context)
 	DeleteSchedule(ctx *gin.Context)

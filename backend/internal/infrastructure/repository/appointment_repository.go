@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"MediLink/internal/domain/entity"
 	"MediLink/internal/domain/repository"
@@ -45,6 +46,17 @@ func (r *AppointmentRepository) GetByID(ctx context.Context, appointmentID uuid.
 		return nil, err
 	}
 	return &appointment, nil
+}
+
+func (r *AppointmentRepository) GetByDate(ctx context.Context, date time.Time) ([]entity.Appointment, error) {
+	appointments := []entity.Appointment{}
+	if err := r.db.WithContext(ctx).
+		Where("date = ?", date).
+		Find(&appointments).Error; err != nil {
+		return nil, err
+	}
+
+	return appointments, nil
 }
 
 func (r *AppointmentRepository) GetByDoctorID(ctx context.Context, doctorID uuid.UUID, limit int, offset int) ([]entity.Appointment, error) {

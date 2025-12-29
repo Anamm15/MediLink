@@ -9,7 +9,7 @@ import (
 )
 
 type DoctorRepository interface {
-	GetWithSchedule(context.Context, uuid.UUID) (*entity.Doctor, error)
+	GetWithClinic(context.Context, uuid.UUID) (*entity.Doctor, error)
 	GetByID(ctx context.Context, doctorID uuid.UUID) (*entity.Doctor, error)
 	GetByUserID(ctx context.Context, userID uuid.UUID) (*entity.Doctor, error)
 	Find(ctx context.Context, name string, limit int, offset int) ([]entity.Doctor, error)

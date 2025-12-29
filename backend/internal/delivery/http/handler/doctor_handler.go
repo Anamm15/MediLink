@@ -92,6 +92,45 @@ func (h *doctorHandler) AddSchedule(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
+func (h *doctorHandler) GetSchedules(ctx *gin.Context) {
+	doctorIDQuery := ctx.Query("doctor_id")
+	doctorID, err := uuid.Parse(doctorIDQuery)
+	if err != nil {
+		res := utils.BuildResponseFailed("Invalid doctor ID", err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	schedules, err := h.doctorUsecase.GetDoctorSchedules(ctx, doctorID)
+	if err != nil {
+		res := utils.BuildResponseFailed("Failed to retrieve schedules", err.Error(), nil)
+		ctx.JSON(http.StatusInternalServerError, res)
+		return
+	}
+	res := utils.BuildResponseSuccess("Schedules retrieved successfully", schedules)
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (h *doctorHandler) GetAvailableSchedules(ctx *gin.Context) {
+	doctorIDQuery := ctx.Query("doctor_id")
+	date := ctx.Query("date")
+	doctorID, err := uuid.Parse(doctorIDQuery)
+	if err != nil {
+		res := utils.BuildResponseFailed("Invalid doctor ID", err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	schedules, err := h.doctorUsecase.GetAvailableSchedules(ctx, doctorID, date)
+	if err != nil {
+		res := utils.BuildResponseFailed("Failed to retrieve available schedules", err.Error(), nil)
+		ctx.JSON(http.StatusInternalServerError, res)
+		return
+	}
+	res := utils.BuildResponseSuccess("Available schedules retrieved successfully", schedules)
+	ctx.JSON(http.StatusOK, res)
+}
+
 func (h *doctorHandler) UpdateSchedule(ctx *gin.Context) {
 	scheduleID := ctx.Param("id")
 	userID := ctx.MustGet("user_id").(uuid.UUID)
@@ -119,6 +158,49 @@ func (h *doctorHandler) UpdateSchedule(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (h *doctorHandler) UpdateScheduleStatus(ctx *gin.Context)
+func (h *doctorHandler) UpdateScheduleStatus(ctx *gin.Context) {
+	userID := ctx.MustGet("user_id").(uuid.UUID)
+	scheduleIDParam := ctx.Param("id")
+	scheduleID, err := uuid.Parse(scheduleIDParam)
+	if err != nil {
+		res := utils.BuildResponseFailed("Invalid schedule ID", err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
 
-func (h *doctorHandler) DeleteSchedule(ctx *gin.Context)
+	var req dto.DoctorUpdateStatusScheduleRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	err = h.doctorUsecase.UpdateStatusSchedule(ctx, userID, scheduleID, req)
+	if err != nil {
+		res := utils.BuildResponseFailed("Failed to update schedule status", err.Error(), nil)
+		ctx.JSON(http.StatusInternalServerError, res)
+		return
+	}
+	res := utils.BuildResponseSuccess("Schedule status updated successfully", nil)
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (h *doctorHandler) DeleteSchedule(ctx *gin.Context) {
+	scheduleID := ctx.Param("id")
+	userID := ctx.MustGet("user_id").(uuid.UUID)
+	parsedID, err := uuid.Parse(scheduleID)
+	if err != nil {
+		res := utils.BuildResponseFailed("Invalid schedule ID", err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	err = h.doctorUsecase.DeleteSchedule(ctx, userID, parsedID)
+	if err != nil {
+		res := utils.BuildResponseFailed("Failed to delete schedule", err.Error(), nil)
+		ctx.JSON(http.StatusInternalServerError, res)
+		return
+	}
+	res := utils.BuildResponseSuccess("Schedule deleted successfully", nil)
+	ctx.JSON(http.StatusOK, res)
+}

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"MediLink/internal/domain/entity"
 	"MediLink/internal/domain/repository"
@@ -37,6 +38,17 @@ func (r *doctorScheduleRepository) GetByDoctorID(ctx context.Context, doctorID u
 	return schedules, nil
 }
 
+func (r *doctorScheduleRepository) GetSchedulesByDate(ctx context.Context, doctorID uuid.UUID, date time.Time) ([]entity.DoctorSchedule, error) {
+	var schedules []entity.DoctorSchedule
+	if err := r.db.WithContext(ctx).
+		Where("doctor_id = ?", doctorID).
+		Where("date = ?", date).
+		Find(&schedules).Error; err != nil {
+		return nil, err
+	}
+	return schedules, nil
+}
+
 func (r *doctorScheduleRepository) Create(ctx context.Context, schedule *entity.DoctorSchedule) (*entity.DoctorSchedule, error) {
 	if err := r.db.WithContext(ctx).
 		Create(schedule).Error; err != nil {
@@ -55,8 +67,8 @@ func (r *doctorScheduleRepository) Update(ctx context.Context, schedule *entity.
 	return nil
 }
 
-func (r *doctorScheduleRepository) Delete(ctx context.Context, id uuid.UUID) error {
-	result := r.db.WithContext(ctx).Delete(&entity.DoctorSchedule{}, id)
+func (r *doctorScheduleRepository) Delete(ctx context.Context, id uuid.UUID, doctorID uuid.UUID) error {
+	result := r.db.WithContext(ctx).Delete(&entity.DoctorSchedule{}, "id = ? AND doctor_id = ?", id, doctorID)
 	if result.Error != nil {
 		return result.Error
 	}

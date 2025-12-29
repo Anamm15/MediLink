@@ -79,6 +79,8 @@ func DoctorRoute(server *gin.Engine, doctorHandler handler.DoctorHandler) {
 
 		schedule := server.Group("/schedules")
 		{
+			schedule.GET("", middlewares.Authenticate(), middlewares.AuthorizeRole("admin", "doctor"), doctorHandler.GetSchedules)
+			schedule.GET("/availability", doctorHandler.GetAvailableSchedules)
 			schedule.POST("", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), doctorHandler.AddSchedule)
 			schedule.PUT("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), doctorHandler.UpdateSchedule)
 			schedule.PATCH("/:id/status", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), doctorHandler.UpdateScheduleStatus)
