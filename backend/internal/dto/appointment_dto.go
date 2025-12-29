@@ -1,10 +1,9 @@
 package dto
 
 import (
-	"time"
-
 	"MediLink/internal/domain/entity"
 	"MediLink/internal/helpers/enum"
+	"MediLink/internal/utils"
 
 	"github.com/google/uuid"
 )
@@ -15,9 +14,9 @@ type AppointmentDetailResponse struct {
 	DoctorSpecialization string                 `json:"doctor_specialization"`
 	DoctorPhoneNumber    string                 `json:"doctor_phone_number"`
 	PatientName          string                 `json:"patient_name"`
-	AppointmentDate      time.Time              `json:"appointment_date"`
-	StartTime            time.Time              `json:"start_time"`
-	EndTime              time.Time              `json:"end_time"`
+	AppointmentDate      string                 `json:"appointment_date"`
+	StartTime            string                 `json:"start_time"`
+	EndTime              string                 `json:"end_time"`
 	Type                 enum.AppointmentType   `json:"type"`
 	Status               enum.AppointmentStatus `json:"status"`
 
@@ -33,9 +32,9 @@ type AppointmentCreateRequest struct {
 	DoctorID        uuid.UUID            `json:"doctor_id" binding:"required"`
 	PatientID       uuid.UUID            `json:"patient_id"`
 	ClinicID        uuid.UUID            `json:"clinic_id" binding:"required"`
-	AppointmentDate time.Time            `json:"appointment_date" binding:"required"`
-	StartTime       time.Time            `json:"start_time" binding:"required"`
-	EndTime         time.Time            `json:"end_time" binding:"required"`
+	AppointmentDate string               `json:"appointment_date" binding:"required"`
+	StartTime       string               `json:"start_time" binding:"required"`
+	EndTime         string               `json:"end_time" binding:"required"`
 	Type            enum.AppointmentType `json:"type" binding:"required"`
 
 	ConsultationFeeSnapshot float64 `json:"consultation_fee_snapshot" binding:"required"`
@@ -53,9 +52,9 @@ func ToAppointmentDetailResponse(appointment *entity.Appointment) *AppointmentDe
 		DoctorSpecialization:    appointment.Doctor.Specialization,
 		DoctorPhoneNumber:       appointment.Doctor.User.PhoneNumber,
 		PatientName:             appointment.Patient.User.Name,
-		AppointmentDate:         appointment.AppointmentDate,
-		StartTime:               appointment.StartTime,
-		EndTime:                 appointment.EndTime,
+		AppointmentDate:         utils.FormatDate(appointment.AppointmentDate),
+		StartTime:               utils.FormatDate(appointment.StartTime),
+		EndTime:                 utils.FormatDate(appointment.EndTime),
 		Type:                    appointment.Type,
 		Status:                  appointment.Status,
 		ConsultationFeeSnapshot: appointment.ConsultationFeeSnapshot,
@@ -74,19 +73,19 @@ func ToListAppointmentDetailResponse(appointments []entity.Appointment) []Appoin
 	return appointmentResponses
 }
 
-func (r *AppointmentCreateRequest) ToModel(appointment *entity.Appointment) {
-	appointment.DoctorID = r.DoctorID
-	appointment.PatientID = r.PatientID
-	appointment.ClinicID = r.ClinicID
-	appointment.AppointmentDate = r.AppointmentDate
-	appointment.StartTime = r.StartTime
-	appointment.EndTime = r.EndTime
-	appointment.Type = r.Type
+func (dto *AppointmentCreateRequest) ToModel(appointment *entity.Appointment) {
+	appointment.DoctorID = dto.DoctorID
+	appointment.PatientID = dto.PatientID
+	appointment.ClinicID = dto.ClinicID
+	appointment.AppointmentDate = utils.ParseDate(dto.AppointmentDate)
+	appointment.StartTime = utils.ParseDate(dto.StartTime)
+	appointment.EndTime = utils.ParseDate(dto.EndTime)
+	appointment.Type = dto.Type
 
-	appointment.ConsultationFeeSnapshot = r.ConsultationFeeSnapshot
-	appointment.QueueNumber = r.QueueNumber
-	appointment.MeetingLink = r.MeetingLink
+	appointment.ConsultationFeeSnapshot = dto.ConsultationFeeSnapshot
+	appointment.QueueNumber = dto.QueueNumber
+	appointment.MeetingLink = dto.MeetingLink
 
-	appointment.SymptomComplaint = r.SymptomComplaint
-	appointment.DoctorNotes = r.DoctorNotes
+	appointment.SymptomComplaint = dto.SymptomComplaint
+	appointment.DoctorNotes = dto.DoctorNotes
 }

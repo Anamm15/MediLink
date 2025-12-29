@@ -1,8 +1,6 @@
 package dto
 
 import (
-	"time"
-
 	"MediLink/internal/domain/entity"
 	"MediLink/internal/helpers/enum"
 	"MediLink/internal/utils"
@@ -13,7 +11,7 @@ import (
 type PatientResponse struct {
 	PatientID uuid.UUID `json:"patient_id"`
 
-	BirthDate      time.Time   `json:"birth_date"`
+	BirthDate      string      `json:"birth_date"`
 	Gender         enum.Gender `json:"gender"`
 	IdentityNumber string      `json:"identity_number"`
 	BloodType      string      `json:"blood_type"`
@@ -66,7 +64,7 @@ func ToPatientResponse(patient *entity.Patient) PatientResponse {
 	return PatientResponse{
 		PatientID:              patient.ID,
 		IdentityNumber:         patient.IdentityNumber,
-		BirthDate:              patient.BirthDate,
+		BirthDate:              utils.FormatDate(patient.BirthDate),
 		Gender:                 patient.Gender,
 		BloodType:              patient.BloodType,
 		WeightKg:               patient.WeightKg,
@@ -82,7 +80,7 @@ func ToPatientResponse(patient *entity.Patient) PatientResponse {
 
 func (dto *PatientCreateRequest) ToModel(patient *entity.Patient) {
 	patient.IdentityNumber = dto.IdentityNumber
-	patient.BirthDate = *utils.ConvertStringToTime(dto.BirthDate)
+	patient.BirthDate = utils.ParseDate(dto.BirthDate)
 	patient.Gender = dto.Gender
 	patient.BloodType = dto.BloodType
 	patient.WeightKg = dto.WeightKg
@@ -97,7 +95,7 @@ func (dto *PatientCreateRequest) ToModel(patient *entity.Patient) {
 
 func (dto *PatientUpdateRequest) ToModel(patient *entity.Patient) {
 	if dto.BirthDate != nil {
-		patient.BirthDate = *utils.ConvertStringToTime(*dto.BirthDate)
+		patient.BirthDate = utils.ParseDate(*dto.BirthDate)
 	}
 	if dto.Gender != nil {
 		patient.Gender = *dto.Gender

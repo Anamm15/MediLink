@@ -98,7 +98,7 @@ func (u *doctorUsecase) GetDoctorSchedules(ctx context.Context, doctorID uuid.UU
 }
 
 func (u *doctorUsecase) GetAvailableSchedules(ctx context.Context, doctorID uuid.UUID, date string) ([]dto.DoctorScheduleResponse, error) {
-	dateTime := utils.ConvertStringToTime(date)
+	dateTime := utils.ParseDate(date)
 	reservedSchedules, err := u.appointmentRepository.GetByDate(ctx, dateTime)
 	if err != nil {
 		return nil, err

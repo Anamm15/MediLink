@@ -47,7 +47,7 @@ func main() {
 	authUsecase := usecase.NewAuthUsecase(authRepository, userRepository, redisRepository, NotificationUsecase)
 	patientUsecase := usecase.NewPatientUsecase(patientRepository, redisRepository)
 	clinicUsecase := usecase.NewClinicUsecase(clinicRepository, doctorClinicReplacementRepository)
-	doctorUsecase := usecase.NewDoctorUsecase(doctorRepository, doctorScheduleRepository, redisRepository)
+	doctorUsecase := usecase.NewDoctorUsecase(doctorRepository, doctorScheduleRepository, appointmentRepository, redisRepository)
 	medicineUsecase := usecase.NewMedicineUsecase(medicineRepository)
 	clinicInventoryUsecase := usecase.NewClinicInventoryUsecase(clinicInventoryRepository)
 	appointmentUsecase := usecase.NewAppointmentUseCase(appointmentRepository, patientRepository, redisRepository)
