@@ -1,12 +1,12 @@
 @baseUrl = http://localhost:5000/api/v1/appointments
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDJhNDEyNzktZTliNy00MjBjLTljYmYtMjUyNTQzYzExN2U0Iiwicm9sZSI6InBhdGllbnQiLCJpc3MiOiJtZWRpbGluay1hcHAiLCJleHAiOjE3NjY3MjgxMzYsImlhdCI6MTc2NjY0MTczNn0.akWSr-F558ZWL6UkmbRG9OcOYSEhTSzcWKwUg4PTf04
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMWYzOTBlNDYtMDdiMy00OTZlLWI2ZjUtYmZiN2QwOWU3ZDYyIiwicm9sZSI6InBhdGllbnQiLCJpc3MiOiJtZWRpbGluay1hcHAiLCJleHAiOjE3Njc4MjM1OTYsImlhdCI6MTc2NzczNzE5Nn0.c-YVTQMQ5HPMhYIodCJTRDTC1MIVvKFar6BcReRRU7s
 
 ###
 POST http://localhost:5000/api/v1/auth/login
 Content-Type: application/json
 
 {
-   "email": "sdeviation4@gmail.com",
+   "email": "irulxartal@gmail.com",
    "password": "SecurePass123"
 }
 
@@ -32,14 +32,13 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "doctor_id": "d3acd040-75b4-46dc-9cc0-1cbebe986a2b",
-  "patient_id": "d6dcf46a-6320-4468-8bbc-489e0d2acc19",
-  "clinic_id": "253889e5-bacf-4c61-a032-54a340c772f4",
-  "appointment_date": "2025-01-10T00:00:00Z",
-  "start_time": "2025-01-10T09:00:00Z",
-  "end_time": "2025-01-10T09:30:00Z",
+  "doctor_id": "d877e585-306e-4cb6-a4e5-69d41b5d2428",
+  "clinic_id": "03431a76-aed5-4024-a243-23307a07a3d5",
+  "schedule_id": "cee738c5-0284-4f88-97dc-df127e6228c5",
+  "appointment_date": "2025-01-10",
+  "start_time": "09:00",
+  "end_time": "09:30",
   "type": "onsite",
   "consultation_fee_snapshot": 50000,
-  "queue_number": 5,
-  "meeting_link": "https://zoom.us/j/123456789"
+  "queue_number": 5
 }

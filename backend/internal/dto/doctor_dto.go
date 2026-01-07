@@ -1,8 +1,6 @@
 package dto
 
 import (
-	"time"
-
 	"MediLink/internal/domain/entity"
 	"MediLink/internal/helpers/enum"
 
@@ -46,30 +44,33 @@ type DoctorUpdateRequest struct {
 }
 
 type DoctorScheduleResponse struct {
-	ID        uuid.UUID        `json:"id"`
-	DayOfWeek enum.ScheduleDay `json:"day_of_week"`
-	StartTime time.Time        `json:"start_time"`
-	EndTime   time.Time        `json:"end_time"`
+	ID              uuid.UUID        `json:"id"`
+	DayOfWeek       enum.ScheduleDay `json:"day_of_week"`
+	StartTime       string           `json:"start_time"`
+	EndTime         string           `json:"end_time"`
+	ConsultationFee float64          `json:"consultation_fee"`
 
 	IsActive bool `json:"is_active"`
 	MaxQuota *int `json:"max_quota"`
 }
 
 type DoctorCreateScheduleRequest struct {
-	ClinicID  *uuid.UUID       `json:"clinic_id"`
-	DayOfWeek enum.ScheduleDay `json:"day_of_week" binding:"required" validate:"required"`
-	StartTime time.Time        `json:"start_time" binding:"required" validate:"required"`
-	EndTime   time.Time        `json:"end_time" binding:"required" validate:"required"`
-	IsActive  bool             `json:"is_active"`
-	MaxQuota  *int             `json:"max_quota"`
+	ClinicID        *uuid.UUID       `json:"clinic_id"`
+	DayOfWeek       enum.ScheduleDay `json:"day_of_week" binding:"required" validate:"required"`
+	StartTime       string           `json:"start_time" binding:"required" validate:"required"`
+	EndTime         string           `json:"end_time" binding:"required" validate:"required"`
+	ConsultationFee float64          `json:"consultation_fee" binding:"required" validate:"required"`
+	IsActive        bool             `json:"is_active"`
+	MaxQuota        *int             `json:"max_quota"`
 }
 
 type DoctorUpdateScheduleRequest struct {
-	DayOfWeek *enum.ScheduleDay `json:"day_of_week"`
-	StartTime *time.Time        `json:"start_time"`
-	EndTime   *time.Time        `json:"end_time"`
-	IsActive  *bool             `json:"is_active"`
-	MaxQuota  *int              `json:"max_quota"`
+	DayOfWeek       *enum.ScheduleDay `json:"day_of_week"`
+	StartTime       *string           `json:"start_time"`
+	EndTime         *string           `json:"end_time"`
+	IsActive        *bool             `json:"is_active"`
+	ConsultationFee *float64          `json:"consultation_fee"`
+	MaxQuota        *int              `json:"max_quota"`
 }
 
 type DoctorUpdateStatusScheduleRequest struct {
@@ -109,12 +110,13 @@ func ToDoctorResponse(entity *entity.Doctor) DoctorProfileResponse {
 
 func ToDoctorScheduleResponse(entity *entity.DoctorSchedule) DoctorScheduleResponse {
 	return DoctorScheduleResponse{
-		ID:        entity.ID,
-		DayOfWeek: entity.DayOfWeek,
-		StartTime: entity.StartTime,
-		EndTime:   entity.EndTime,
-		IsActive:  entity.IsActive,
-		MaxQuota:  entity.MaxQuota,
+		ID:              entity.ID,
+		DayOfWeek:       entity.DayOfWeek,
+		StartTime:       entity.StartTime,
+		EndTime:         entity.EndTime,
+		IsActive:        entity.IsActive,
+		ConsultationFee: entity.ConsultationFee,
+		MaxQuota:        entity.MaxQuota,
 	}
 }
 
@@ -151,6 +153,7 @@ func (dto *DoctorCreateScheduleRequest) ToModel(doctor *entity.DoctorSchedule) {
 	doctor.EndTime = dto.EndTime
 	doctor.IsActive = dto.IsActive
 	doctor.MaxQuota = dto.MaxQuota
+	doctor.ConsultationFee = dto.ConsultationFee
 }
 
 func (dto *DoctorUpdateScheduleRequest) ToModel(doctor *entity.DoctorSchedule) {
@@ -165,6 +168,9 @@ func (dto *DoctorUpdateScheduleRequest) ToModel(doctor *entity.DoctorSchedule) {
 	}
 	if dto.IsActive != nil {
 		doctor.IsActive = *dto.IsActive
+	}
+	if dto.ConsultationFee != nil {
+		doctor.ConsultationFee = *dto.ConsultationFee
 	}
 	if dto.MaxQuota != nil {
 		doctor.MaxQuota = dto.MaxQuota

@@ -8,6 +8,7 @@ import (
 	"MediLink/internal/helpers/enum"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type AppointmentRepository interface {
@@ -16,7 +17,8 @@ type AppointmentRepository interface {
 	GetByDate(ctx context.Context, date time.Time) ([]entity.Appointment, error)
 	GetByDoctorID(ctx context.Context, doctorID uuid.UUID, limit int, offset int) ([]entity.Appointment, error)
 	GetByPatientID(ctx context.Context, patientID uuid.UUID, limit int, offset int) ([]entity.Appointment, error)
-	Create(ctx context.Context, appointment *entity.Appointment) error
+	Create(tx *gorm.DB, appointment *entity.Appointment) error
 	UpdateStatus(ctx context.Context, appointmentID uuid.UUID, status enum.AppointmentStatus) error
 	Delete(ctx context.Context, appointmentID uuid.UUID) error
+	CheckAvailability(tx *gorm.DB, doctorID uuid.UUID, date time.Time, startTime string) (bool, error)
 }

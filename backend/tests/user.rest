@@ -1,5 +1,14 @@
 @baseUrl = http://localhost:5000/api/v1/users
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZThkMzNiMTEtY2RlYS00N2ExLWIxZmUtMGE5YTZhYjhlMTA4Iiwicm9sZSI6InVzZXIiLCJpc3MiOiJtZWRpbGluay1hcHAiLCJleHAiOjE3NjY4NzgyODYsImlhdCI6MTc2Njc5MTg4Nn0.38T9WYQPMtF4aRCD2_cfrWiiyBMEWAHm7wZknbCB1Wk
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMWYzOTBlNDYtMDdiMy00OTZlLWI2ZjUtYmZiN2QwOWU3ZDYyIiwicm9sZSI6InBhdGllbnQiLCJpc3MiOiJtZWRpbGluay1hcHAiLCJleHAiOjE3Njc4MDQxNzksImlhdCI6MTc2NzcxNzc3OX0.f_zdokeFChuAYMyNarbaO2M5w4LeE9VxV251SNNQssU
+
+###
+POST http://localhost:5000/api/v1/auth/login
+Content-Type: application/json
+
+{
+   "email": "irulxartal@gmail.com",
+   "password": "SecurePass123"
+}
 
 ###
 GET {{baseUrl}}/

@@ -91,8 +91,8 @@ func (r *AppointmentRepository) GetByPatientID(ctx context.Context, patientID uu
 	return appointments, nil
 }
 
-func (r *AppointmentRepository) Create(ctx context.Context, appointment *entity.Appointment) error {
-	if err := r.db.WithContext(ctx).Create(appointment).Error; err != nil {
+func (r *AppointmentRepository) Create(tx *gorm.DB, appointment *entity.Appointment) error {
+	if err := tx.Create(appointment).Error; err != nil {
 		return err
 	}
 	return nil
@@ -113,4 +113,14 @@ func (r *AppointmentRepository) Delete(ctx context.Context, appointmentID uuid.U
 		return err
 	}
 	return nil
+}
+
+func (r *AppointmentRepository) CheckAvailability(tx *gorm.DB, doctorID uuid.UUID, date time.Time, startTime string) (bool, error) {
+	var count int64
+	if err := tx.Model(&entity.Appointment{}).
+		Where("doctor_id = ? AND appointment_date = ? AND start_time = ?", doctorID, date, startTime).
+		Count(&count).Error; err != nil {
+		return false, err
+	}
+	return count == 0, nil
 }

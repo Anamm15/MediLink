@@ -42,9 +42,7 @@ func PatientRoute(server *gin.Engine, patientHandler handler.PatientHandler) {
 }
 
 func ClinicRoute(server *gin.Engine, clinicHandler handler.ClinicHandler, clinicInventoryHandler handler.ClinicInventoryHandler) {
-	api := server.Group("/api/v1")
-
-	clinics := api.Group("/clinics")
+	clinics := server.Group("/api/v1/clinics")
 	{
 		clinics.GET("", clinicHandler.GetAll)
 		clinics.POST("", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), clinicHandler.Create)
@@ -77,7 +75,7 @@ func DoctorRoute(server *gin.Engine, doctorHandler handler.DoctorHandler) {
 		doctor.GET("/:id", doctorHandler.GetProfile)
 		doctor.PUT("", middlewares.Authenticate(), middlewares.AuthorizeRole("admin", "doctor"), doctorHandler.Update)
 
-		schedule := server.Group("/schedules")
+		schedule := doctor.Group("/schedules")
 		{
 			schedule.GET("", middlewares.Authenticate(), middlewares.AuthorizeRole("admin", "doctor"), doctorHandler.GetSchedules)
 			schedule.GET("/availability", doctorHandler.GetAvailableSchedules)
@@ -108,7 +106,7 @@ func AppointmentRoute(server *gin.Engine, appointmentHandler handler.Appointment
 		appointment.GET("/:id", middlewares.Authenticate(), appointmentHandler.GetDetailByID)
 		appointment.GET("/doctor/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), appointmentHandler.GetByDoctor)
 		appointment.GET("/patient/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("patient"), appointmentHandler.GetByPatient)
-		appointment.POST("", middlewares.Authenticate(), appointmentHandler.Create)
+		appointment.POST("", middlewares.Authenticate(), middlewares.AuthorizeRole("patient", "doctor", "admin"), appointmentHandler.Create)
 		appointment.PATCH("/:id/cancel", middlewares.Authenticate(), appointmentHandler.CancelBooking)
 		appointment.PATCH("/:id/complete", middlewares.Authenticate(), appointmentHandler.CompleteConsultation)
 		appointment.DELETE("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), appointmentHandler.Delete)

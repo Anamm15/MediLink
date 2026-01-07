@@ -12,25 +12,42 @@ import (
 	"MediLink/internal/dto"
 	"MediLink/internal/helpers/constants"
 	"MediLink/internal/helpers/enum"
+	"MediLink/internal/utils"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type AppointmentUsecase struct {
-	appointmentRepo repository.AppointmentRepository
-	patientRepo     repository.PatientRepository
-	cacheRepo       repository.CacheRepository
+	db                 *gorm.DB
+	appointmentRepo    repository.AppointmentRepository
+	patientRepo        repository.PatientRepository
+	billingRepo        repository.BillingRepository
+	paymentRepo        repository.PaymentRepository
+	doctorScheduleRepo repository.DoctorScheduleRepository
+	cacheRepo          repository.CacheRepository
+	paymentUsecase     usecase.PaymentUsecase
 }
 
 func NewAppointmentUseCase(
+	db *gorm.DB,
 	appointmentRepo repository.AppointmentRepository,
 	patientRepo repository.PatientRepository,
+	billingRepo repository.BillingRepository,
+	paymentRepo repository.PaymentRepository,
+	doctorScheduleRepo repository.DoctorScheduleRepository,
 	cacheRepo repository.CacheRepository,
+	paymentUsecase usecase.PaymentUsecase,
 ) usecase.AppointmentUsecase {
 	return &AppointmentUsecase{
-		appointmentRepo: appointmentRepo,
-		patientRepo:     patientRepo,
-		cacheRepo:       cacheRepo,
+		db:                 db,
+		appointmentRepo:    appointmentRepo,
+		patientRepo:        patientRepo,
+		billingRepo:        billingRepo,
+		paymentRepo:        paymentRepo,
+		doctorScheduleRepo: doctorScheduleRepo,
+		cacheRepo:          cacheRepo,
+		paymentUsecase:     paymentUsecase,
 	}
 }
 
@@ -80,36 +97,130 @@ func (u *AppointmentUsecase) GetByPatient(ctx context.Context, patientID uuid.UU
 	return appointmentResponses, nil
 }
 
-func (u *AppointmentUsecase) Create(ctx context.Context, userID uuid.UUID, request dto.AppointmentCreateRequest) (dto.AppointmentDetailResponse, error) {
-	key := fmt.Sprintf(constants.RedisKeyPatient, userID.String())
-	appointment := &entity.Appointment{}
+func (u *AppointmentUsecase) CreateBooking(ctx context.Context, userID uuid.UUID, req dto.CreateBookingRequest) (dto.BookingResponse, error) {
+	var appointmentID uuid.UUID
+	var billingID uuid.UUID
+	var finalPrice float64
 	var patientID uuid.UUID
 
+	parsedDate := utils.ParseDate(req.AppointmentDate)
+
+	// =================================================================
+	// PHASE 0: RESOLVE PATIENT ID (Security & Caching)
+	// =================================================================
+
+	key := fmt.Sprintf(constants.RedisKeyPatient, userID.String())
+
 	patientIDStr, err := u.cacheRepo.Get(ctx, key)
-	if err == nil {
+	if err == nil && patientIDStr != "" {
 		patientID, _ = uuid.Parse(patientIDStr)
-		request.PatientID = patientID
 	} else {
 		patient, err := u.patientRepo.GetByUserID(ctx, userID)
 		if err != nil {
-			return dto.AppointmentDetailResponse{}, err
+			return dto.BookingResponse{}, errors.New("user profile not found or not registered as patient")
 		}
-		request.PatientID = patient.ID
+
+		patientID = patient.ID
 		_ = u.cacheRepo.Set(
 			ctx,
 			key,
 			patient.ID.String(),
-			time.Hour,
+			1*time.Hour,
 		)
 	}
 
-	request.ToModel(appointment)
-	if err := u.appointmentRepo.Create(ctx, appointment); err != nil {
-		return dto.AppointmentDetailResponse{}, err
+	// =================================================================
+	// PHASE 1: DATABASE TRANSACTION
+	// =================================================================
+
+	err = u.db.Transaction(func(tx *gorm.DB) error {
+		// 1. Cek Ketersediaan Slot
+		isAvailable, err := u.appointmentRepo.CheckAvailability(tx, req.DoctorID, parsedDate, req.StartTime)
+		if err != nil {
+			return err
+		}
+		if !isAvailable {
+			return errors.New("Schedule is not available")
+		}
+
+		// 2. Ambil Harga Snapshot
+		placement, err := u.doctorScheduleRepo.GetByID(ctx, req.ScheduleID)
+		if err != nil {
+			return err
+		}
+		finalPrice = placement.ConsultationFee
+
+		// 3. Buat Entity Appointment
+		newAppt := entity.Appointment{
+			PatientID:               patientID,
+			DoctorID:                req.DoctorID,
+			ClinicID:                req.ClinicID,
+			AppointmentDate:         parsedDate,
+			StartTime:               req.StartTime,
+			EndTime:                 req.EndTime,
+			Status:                  enum.AppointmentPending,
+			Type:                    req.Type,
+			ConsultationFeeSnapshot: finalPrice,
+		}
+
+		if err := u.appointmentRepo.Create(tx, &newAppt); err != nil {
+			return err
+		}
+		appointmentID = newAppt.ID
+
+		// 4. Buat Entity Billing
+		newBilling := entity.Billing{
+			AppointmentID: &appointmentID,
+			PatientID:     patientID,
+			TotalAmount:   finalPrice,
+		}
+
+		if err := u.billingRepo.Create(tx, &newBilling); err != nil {
+			return err
+		}
+		billingID = newBilling.ID
+
+		return nil
+	})
+	if err != nil {
+		return dto.BookingResponse{}, err
 	}
 
-	appointmentResponse := dto.ToAppointmentDetailResponse(appointment)
-	return *appointmentResponse, nil
+	// =================================================================
+	// PHASE 2: EXTERNAL PAYMENT GATEWAY
+	// =================================================================
+
+	paymentReq := dto.PaymentGatewayRequest{
+		OrderID: billingID.String(),
+		Amount:  finalPrice,
+	}
+
+	paymentResponse, err := u.paymentUsecase.RequestPayment(paymentReq)
+
+	paymentUrl := ""
+	if err == nil {
+		paymentUrl = paymentResponse.RedirectURL
+	}
+
+	// =================================================================
+	// PHASE 3: UPDATE PAYMENT DATA
+	// =================================================================
+
+	if paymentUrl != "" {
+		newPayment := entity.Payment{
+			BillingID:     billingID,
+			Amount:        finalPrice,
+			Status:        "unpaid",
+			PaymentMethod: "pending_selection",
+			PaymentURL:    &paymentUrl,
+		}
+		u.paymentRepo.Create(ctx, &newPayment)
+	}
+
+	return dto.BookingResponse{
+		AppointmentID: appointmentID,
+		PaymentURL:    &paymentUrl,
+	}, nil
 }
 
 func (u *AppointmentUsecase) CancelBooking(ctx context.Context, appointmentID uuid.UUID) error {

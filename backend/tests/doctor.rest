@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:5000/api/v1/doctors
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZWUzYjUzNzItNmNlYy00YjdkLWE5OWEtZGZlNDcxMzYwOWI2Iiwicm9sZSI6ImRvY3RvciIsImlzcyI6Im1lZGlsaW5rLWFwcCIsImV4cCI6MTc2NjgyODE1MSwiaWF0IjoxNzY2NzQxNzUxfQ.oafnq-4s7bZ8zbvFwa6iGjcmb78xfTvfl1NLNmhA8lI
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZGRmNjdkOWUtZTE0NC00MDY3LWEzYmMtMzJjMjFiN2E0ZGMwIiwicm9sZSI6ImRvY3RvciIsImlzcyI6Im1lZGlsaW5rLWFwcCIsImV4cCI6MTc2NzgyMzY3MSwiaWF0IjoxNzY3NzM3MjcxfQ.-WH02rW5TYKYt6I6Sl_snFMyRF8QZ2RXySgVy3IW-4Q
 
 ###
 POST http://localhost:5000/api/v1/auth/login
@@ -27,17 +27,17 @@ Content-Type: application/json
 
 
 ###
-POST {{baseUrl}}/schedule
+POST {{baseUrl}}/schedules
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "doctor_id": "d3acd040-75b4-46dc-9cc0-1cbebe986a2b",
-  "clinic_id": "253889e5-bacf-4c61-a032-54a340c772f4",
+  "clinic_id": "03431a76-aed5-4024-a243-23307a07a3d5",
   "day_of_week": "thursday",
-  "start_time": "2025-01-15T08:00:00Z",
-  "end_time": "2025-01-15T12:00:00Z",
-  "max_quota": 20
+  "start_time": "08:00",
+  "end_time": "12:00",
+  "max_quota": 20,
+  "consultation_fee": 50000
 }
 
 

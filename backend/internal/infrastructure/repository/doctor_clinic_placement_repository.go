@@ -18,6 +18,14 @@ func NewDoctorClinicPlacementRepository(db *gorm.DB) repository.DoctorClinicPlac
 	return &DoctorClinicPlacementRepository{db: db}
 }
 
+func (r *DoctorClinicPlacementRepository) GetByID(tx *gorm.DB, scheduleID uuid.UUID) (entity.DoctorClinicPlacement, error) {
+	var DoctorClinicPlacement entity.DoctorClinicPlacement
+	if err := tx.First(&DoctorClinicPlacement, "id = ?", scheduleID).Error; err != nil {
+		return entity.DoctorClinicPlacement{}, err
+	}
+	return DoctorClinicPlacement, nil
+}
+
 func (r *DoctorClinicPlacementRepository) Add(ctx context.Context, DoctorClinicPlacement *entity.DoctorClinicPlacement) error {
 	if err := r.db.Create(DoctorClinicPlacement).Error; err != nil {
 		return err

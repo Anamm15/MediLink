@@ -100,14 +100,14 @@ func (h *AppointmentHandler) GetByPatient(ctx *gin.Context) {
 
 func (h *AppointmentHandler) Create(ctx *gin.Context) {
 	userID := ctx.MustGet("user_id").(uuid.UUID)
-	var appointmentDTO dto.AppointmentCreateRequest
+	var appointmentDTO dto.CreateBookingRequest
 	if err := ctx.ShouldBindJSON(&appointmentDTO); err != nil {
 		res := utils.BuildResponseFailed("Invalid request body", err.Error(), nil)
 		ctx.JSON(http.StatusBadRequest, res)
 		return
 	}
 
-	appointment, err := h.appointmentUsecase.Create(ctx, userID, appointmentDTO)
+	appointment, err := h.appointmentUsecase.CreateBooking(ctx, userID, appointmentDTO)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to create appointment", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)

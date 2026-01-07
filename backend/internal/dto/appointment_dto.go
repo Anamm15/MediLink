@@ -28,10 +28,10 @@ type AppointmentDetailResponse struct {
 	DoctorNotes      *string `json:"doctor_notes"`
 }
 
-type AppointmentCreateRequest struct {
+type CreateBookingRequest struct {
 	DoctorID        uuid.UUID            `json:"doctor_id" binding:"required"`
-	PatientID       uuid.UUID            `json:"patient_id"`
 	ClinicID        uuid.UUID            `json:"clinic_id" binding:"required"`
+	ScheduleID      uuid.UUID            `json:"schedule_id" binding:"required"`
 	AppointmentDate string               `json:"appointment_date" binding:"required"`
 	StartTime       string               `json:"start_time" binding:"required"`
 	EndTime         string               `json:"end_time" binding:"required"`
@@ -53,8 +53,8 @@ func ToAppointmentDetailResponse(appointment *entity.Appointment) *AppointmentDe
 		DoctorPhoneNumber:       appointment.Doctor.User.PhoneNumber,
 		PatientName:             appointment.Patient.User.Name,
 		AppointmentDate:         utils.FormatDate(appointment.AppointmentDate),
-		StartTime:               utils.FormatDate(appointment.StartTime),
-		EndTime:                 utils.FormatDate(appointment.EndTime),
+		StartTime:               appointment.StartTime,
+		EndTime:                 appointment.EndTime,
 		Type:                    appointment.Type,
 		Status:                  appointment.Status,
 		ConsultationFeeSnapshot: appointment.ConsultationFeeSnapshot,
@@ -73,13 +73,12 @@ func ToListAppointmentDetailResponse(appointments []entity.Appointment) []Appoin
 	return appointmentResponses
 }
 
-func (dto *AppointmentCreateRequest) ToModel(appointment *entity.Appointment) {
+func (dto *CreateBookingRequest) ToModel(appointment *entity.Appointment) {
 	appointment.DoctorID = dto.DoctorID
-	appointment.PatientID = dto.PatientID
 	appointment.ClinicID = dto.ClinicID
 	appointment.AppointmentDate = utils.ParseDate(dto.AppointmentDate)
-	appointment.StartTime = utils.ParseDate(dto.StartTime)
-	appointment.EndTime = utils.ParseDate(dto.EndTime)
+	appointment.StartTime = dto.StartTime
+	appointment.EndTime = dto.EndTime
 	appointment.Type = dto.Type
 
 	appointment.ConsultationFeeSnapshot = dto.ConsultationFeeSnapshot
