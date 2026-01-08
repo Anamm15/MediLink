@@ -11,7 +11,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TYPE user_role AS ENUM ('patient', 'doctor', 'admin', 'pharmacist', 'nurse', 'super_admin');
 CREATE TYPE user_status AS ENUM ('active', 'inactive', 'suspended', 'banned');
 CREATE TYPE gender_enum AS ENUM ('male', 'female');
-CREATE TYPE appointment_status AS ENUM ('pending', 'confirmed', 'in_progress', 'completed', 'canceled', 'expired');
+CREATE TYPE appointment_status AS ENUM ('pending', 'confirmed', 'in_progress', 'completed', 'canceled');
 CREATE TYPE appointment_type AS ENUM ('video_call', 'onsite', 'chat');
 CREATE TYPE payment_status AS ENUM ('unpaid', 'paid', 'failed', 'refunded');
 CREATE TYPE schedule_day AS ENUM ('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday');

@@ -1,11 +1,16 @@
 import { Trash } from "lucide-react";
 
 type DeleteAlertProps = {
+  title: string;
   onClose: () => void;
   onConfirm: () => void;
 };
 
-export default function DeleteAlert({ onClose, onConfirm }: DeleteAlertProps) {
+export default function DeleteAlert({
+  title,
+  onClose,
+  onConfirm,
+}: DeleteAlertProps) {
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex justify-center items-center p-4">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
@@ -14,10 +19,10 @@ export default function DeleteAlert({ onClose, onConfirm }: DeleteAlertProps) {
             <Trash className="w-6 h-6 text-red-600" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-slate-800">Hapus Poll</h3>
+            <h3 className="text-lg font-bold text-slate-800">{title}</h3>
             <p className="mt-2 text-sm text-slate-600">
-              Apakah Anda yakin ingin menghapus bagian ini? Tindakan ini tidak
-              dapat diurungkan.
+              Are you sure you want to delete this section? This action cannot
+              be undone.
             </p>
           </div>
         </div>
@@ -26,13 +31,13 @@ export default function DeleteAlert({ onClose, onConfirm }: DeleteAlertProps) {
             onClick={onClose}
             className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-100"
           >
-            Batal
+            Cancel
           </button>
           <button
             onClick={onConfirm}
             className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700"
           >
-            Ya, Hapus
+            Yes, Delete
           </button>
         </div>
       </div>

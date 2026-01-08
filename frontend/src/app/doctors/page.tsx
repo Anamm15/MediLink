@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/layout/Navbar";
 import { DoctorList } from "./components/DoctorList";
-import { SearchFilter } from "@/components/searchs/SearchFilter";
+import { SearchFilter } from "@/components/ui/SearchFilter";
 import { Doctor } from "@/types";
 
 // Data Placeholder (nantinya ini akan datang dari API)

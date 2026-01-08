@@ -1,6 +1,6 @@
 import { Search } from "lucide-react";
-import Input from "../form/Input";
-import SelectOption from "../form/SelectOption";
+import { Input } from "./form/Input";
+import { Select } from "./form/Select";
 
 export const SearchFilter = () => {
   const options = [
@@ -25,7 +25,6 @@ export const SearchFilter = () => {
         <div className="md:col-span-3 lg:col-span-2">
           <Input
             id="doctor-name"
-            label="Cari Nama Dokter"
             type="text"
             placeholder="Contoh: Dr. Budi Santoso"
             // icon={<Search className="h-5 w-5 text-gray-400" />}
@@ -33,7 +32,13 @@ export const SearchFilter = () => {
         </div>
 
         {/* Filter by Specialty */}
-        <SelectOption label="Spesialisasi" options={options} />
+        <Select label="Spesialisasi">
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </Select>
 
         {/* Search Button */}
         <div className="mt-4 md:mt-0">
