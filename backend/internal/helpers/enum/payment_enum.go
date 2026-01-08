@@ -7,4 +7,5 @@ const (
 	PaymentPaid     PaymentStatus = "paid"
 	PaymentFailed   PaymentStatus = "failed"
 	PaymentRefunded PaymentStatus = "refunded"
+	PaymentPending  PaymentStatus = "pending"
 )

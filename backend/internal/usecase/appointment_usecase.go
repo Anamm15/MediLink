@@ -191,8 +191,8 @@ func (u *AppointmentUsecase) CreateBooking(ctx context.Context, userID uuid.UUID
 	// =================================================================
 
 	paymentReq := dto.PaymentGatewayRequest{
-		OrderID: billingID.String(),
-		Amount:  finalPrice,
+		OrderID:     billingID.String(),
+		GrossAmount: int64(finalPrice),
 	}
 
 	paymentResponse, err := u.paymentUsecase.RequestPayment(paymentReq)
@@ -210,7 +210,6 @@ func (u *AppointmentUsecase) CreateBooking(ctx context.Context, userID uuid.UUID
 		newPayment := entity.Payment{
 			BillingID:     billingID,
 			Amount:        finalPrice,
-			Status:        "unpaid",
 			PaymentMethod: "pending_selection",
 			PaymentURL:    &paymentUrl,
 		}
@@ -233,14 +232,14 @@ func (u *AppointmentUsecase) CancelBooking(ctx context.Context, appointmentID uu
 		return errors.New("Appointment have already completed can not be canceled")
 	}
 
-	if err := u.appointmentRepo.UpdateStatus(ctx, appointmentID, enum.AppointmentCanceled); err != nil {
+	if err := u.appointmentRepo.UpdateStatus(ctx, nil, appointmentID, enum.AppointmentCanceled); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (u *AppointmentUsecase) CompleteConsultation(ctx context.Context, appointmentID uuid.UUID) error {
-	if err := u.appointmentRepo.UpdateStatus(ctx, appointmentID, enum.AppointmentCompleted); err != nil {
+	if err := u.appointmentRepo.UpdateStatus(ctx, nil, appointmentID, enum.AppointmentCompleted); err != nil {
 		return err
 	}
 	return nil

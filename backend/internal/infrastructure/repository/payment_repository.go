@@ -5,6 +5,7 @@ import (
 
 	"MediLink/internal/domain/entity"
 	"MediLink/internal/domain/repository"
+	"MediLink/internal/helpers/enum"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -30,6 +31,15 @@ func (r *PaymentRepository) GetPaymentByID(ctx context.Context, paymentID uuid.U
 
 func (r *PaymentRepository) Create(ctx context.Context, payment *entity.Payment) error {
 	if err := r.db.WithContext(ctx).Create(payment).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *PaymentRepository) UpdateStatus(tx *gorm.DB, billingID uuid.UUID, status enum.PaymentStatus) error {
+	if err := tx.Model(&entity.Payment{}).
+		Where("billing_id = ?", billingID).
+		Update("status", status).Error; err != nil {
 		return err
 	}
 	return nil

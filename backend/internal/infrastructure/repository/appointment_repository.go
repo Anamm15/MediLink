@@ -98,11 +98,21 @@ func (r *AppointmentRepository) Create(tx *gorm.DB, appointment *entity.Appointm
 	return nil
 }
 
-func (r *AppointmentRepository) UpdateStatus(ctx context.Context, appointmentID uuid.UUID, status enum.AppointmentStatus) error {
-	if err := r.db.WithContext(ctx).Model(&entity.Appointment{}).
-		Where("id = ?", appointmentID).
-		Update("status", status).Error; err != nil {
-		return err
+func (r *AppointmentRepository) UpdateStatus(ctx context.Context, tx *gorm.DB, appointmentID uuid.UUID, status enum.AppointmentStatus) error {
+	if tx != nil {
+		if err := tx.WithContext(ctx).
+			Model(&entity.Appointment{}).
+			Where("id = ?", appointmentID).
+			Update("status", status).Error; err != nil {
+			return err
+		}
+	} else {
+		if err := r.db.WithContext(ctx).
+			Model(&entity.Appointment{}).
+			Where("id = ?", appointmentID).
+			Update("status", status).Error; err != nil {
+			return err
+		}
 	}
 	return nil
 }

@@ -11,7 +11,6 @@ const (
 	AppointmentCompleted  AppointmentStatus = "completed"
 	AppointmentInProgress AppointmentStatus = "in_progress"
 	AppointmentCanceled   AppointmentStatus = "canceled"
-	AppointmentExpired    AppointmentStatus = "expired"
 )
 
 const (

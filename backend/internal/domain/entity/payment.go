@@ -20,7 +20,6 @@ type Payment struct {
 	PaymentGatewayOrderID       *string `gorm:"type:varchar(255)"`
 	PaymentGatewayTransactionID *string `gorm:"type:varchar(255)"`
 	PaymentURL                  *string `gorm:"type:text"`
-	VANumber                    *string `gorm:"type:varchar(100)"`
 
 	CreatedAt time.Time `gorm:"type:timestamptz;default:now()"`
 }

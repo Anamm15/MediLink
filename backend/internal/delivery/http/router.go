@@ -139,3 +139,10 @@ func PrescriptionRoute(server *gin.Engine, prescriptionHandler handler.Prescript
 		prescriptions.DELETE("/:id/remove-medicine/:prescription_medicine_id", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), prescriptionHandler.RemoveMedicine)
 	}
 }
+
+func PaymentRoute(server *gin.Engine, paymentHandler handler.PaymentHandler) {
+	payments := server.Group("/api/v1/payments")
+	{
+		payments.POST("/callback", paymentHandler.ReceiveNotification)
+	}
+}

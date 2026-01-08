@@ -20,6 +20,7 @@ func main() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+	midtransServerKey := os.Getenv("MIDTRANS_SERVER_KEY")
 
 	server := gin.Default()
 	server.Use(middlewares.SetupCORS())
@@ -45,7 +46,7 @@ func main() {
 	paymentRepository := repository.NewPaymentRepository(db)
 
 	notificationUsecase := usecase.NewNotificationUsecase(redisRepository)
-	paymentUsecase := usecase.NewPaymentUsecase()
+	paymentUsecase := usecase.NewPaymentUsecase(db, midtransServerKey, paymentRepository, billingRepository, appointmentRepository)
 	userUsecase := usecase.NewUserUsecase(userRepository, patientRepository, redisRepository, notificationUsecase)
 	authUsecase := usecase.NewAuthUsecase(authRepository, userRepository, redisRepository, notificationUsecase)
 	patientUsecase := usecase.NewPatientUsecase(patientRepository, redisRepository)
@@ -67,6 +68,7 @@ func main() {
 	appointmentHandler := handler.NewAppointmentHandler(appointmentUsecase)
 	medicalRecordHandler := handler.NewMedicalRecordHandler(medicalRecordUsecase)
 	prescriptionHandler := handler.NewPrescriptionHandler(prescriptionUsecase)
+	paymentHandler := handler.NewPaymentHandler(paymentUsecase)
 
 	http.UserRoute(server, userHandler)
 	http.AuthRoute(server, authHandler)
@@ -77,6 +79,7 @@ func main() {
 	http.AppointmentRoute(server, appointmentHandler)
 	http.MedicalRecordRoute(server, medicalRecordHandler)
 	http.PrescriptionRoute(server, prescriptionHandler)
+	http.PaymentRoute(server, paymentHandler)
 
 	port := os.Getenv("PORT")
 	server.Run(":" + port)
