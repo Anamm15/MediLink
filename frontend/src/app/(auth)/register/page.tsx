@@ -5,20 +5,30 @@ import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/form/Input";
 import { Button } from "@/components/ui/Button";
-import { useLogin } from "./hooks/useLogin";
-import { LoginRequest } from "@/types/auth.type";
+import { toast } from "sonner";
+import { useRegister } from "./hooks/useRegister";
+import { RegistrationRequest } from "@/types/auth.type";
 import { TypographySmall } from "@/components/ui/Typography";
 
-export default function LoginPage() {
-  const [data, setData] = useState<LoginRequest>({
+export default function RegisterPage() {
+  const [data, setData] = useState<RegistrationRequest>({
+    name: "",
     email: "",
     password: "",
+    phone_number: "",
   });
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const { mutate } = useLogin();
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { mutate } = useRegister();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (data.password !== confirmPassword) {
+      toast.message("Password and confirm password do not match");
+      return;
+    }
+
     mutate(data);
   };
 
@@ -26,12 +36,30 @@ export default function LoginPage() {
     <main>
       <form onSubmit={handleSubmit} className="space-y-5">
         <Input
+          label="Name"
+          type="text"
+          placeholder="John Doe"
+          required
+          value={data.name}
+          onChange={(e) => setData({ ...data, name: e.target.value })}
+        />
+
+        <Input
           label="Email"
           type="email"
           placeholder="yourmail@email.com"
           required
           value={data.email}
           onChange={(e) => setData({ ...data, email: e.target.value })}
+        />
+
+        <Input
+          label="Phone Number"
+          type="text"
+          placeholder="+628123456789"
+          required
+          value={data.phone_number}
+          onChange={(e) => setData({ ...data, phone_number: e.target.value })}
         />
 
         <div className="relative">
@@ -56,27 +84,33 @@ export default function LoginPage() {
           </button>
         </div>
 
-        <div className="flex items-center justify-between text-sm">
-          <label className="flex items-center gap-2 cursor-pointer text-gray-600">
-            <input
-              type="checkbox"
-              className="rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
-            />
-            Remember Me
-          </label>
-          <Link
-            href="/forgot-password"
-            className="text-cyan-600 font-semibold hover:underline"
+        <div className="relative">
+          <Input
+            label="Confirm Password"
+            type={showConfirmPassword ? "text" : "password"}
+            placeholder="••••••••"
+            required
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute right-3 top-1/2 text-gray-400 hover:text-cyan-600 transition-colors"
           >
-            Forgot Password?
-          </Link>
+            {!showConfirmPassword ? (
+              <EyeOff className="h-5 w-5" />
+            ) : (
+              <Eye className="h-5 w-5" />
+            )}
+          </button>
         </div>
 
         <Button
           type="submit"
           className="w-full py-6 text-lg font-bold shadow-lg shadow-cyan-200"
         >
-          Sign In Now
+          Register
         </Button>
       </form>
 
@@ -86,7 +120,7 @@ export default function LoginPage() {
           <span className="w-full border-t border-gray-200"></span>
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-gray-400">Or Sign In With</span>
+          <span className="bg-white px-2 text-gray-400">Or Sign Up With</span>
         </div>
       </div>
 
@@ -112,12 +146,9 @@ export default function LoginPage() {
 
       {/* Footer Card */}
       <TypographySmall className="mt-4 text-center text-gray-500">
-        Have no account yet?{" "}
-        <Link
-          href="/register"
-          className="text-cyan-600 font-bold hover:underline"
-        >
-          Sign Up Here
+        Already have an account?{" "}
+        <Link href="/login" className="text-cyan-600 font-bold hover:underline">
+          Sign In Here
         </Link>
       </TypographySmall>
     </main>

@@ -17,8 +17,8 @@ POST {{baseUrl}}/login
 Content-Type: application/json
 
 {
-   "email": "john.doe@gmail.com",
-   "password": "newResetPass123"
+   "email": "irulxartal@gmail.com",
+   "password": "SecurePass123"
 }
 
 ###

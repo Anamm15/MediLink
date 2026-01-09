@@ -6,7 +6,7 @@ import axios, {
 import { BASE_URL } from "@/helpers/constant";
 
 interface RefreshTokenResponse {
-  access_token: string;
+  data: string;
 }
 
 const api: AxiosInstance = axios.create({
@@ -58,8 +58,13 @@ api.interceptors.response.use(
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
     };
+    const url = error.config?.url;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !url?.includes("/login")
+    ) {
       if (isRefreshing) {
         return new Promise(function (resolve, reject) {
           failedQueue.push({
@@ -83,7 +88,7 @@ api.interceptors.response.use(
           { withCredentials: true }
         );
 
-        const newAccessToken = response.data.access_token;
+        const newAccessToken = response.data.data;
 
         if (typeof window !== "undefined") {
           localStorage.setItem("access_token", newAccessToken);

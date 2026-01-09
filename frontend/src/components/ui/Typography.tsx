@@ -73,8 +73,10 @@ export function TypographyH4({
   return (
     <h4
       className={cn(
-        "scroll-m-20 font-semibold tracking-tight text-slate-900 dark:text-slate-50 mt-6",
-        "text-lg md:text-xl",
+        "scroll-m-20 font-semibold tracking-tight text-slate-900 dark:text-slate-50 mt-2",
+        "text-lg",
+        "md:text-xl",
+        "2xl:text-2xl",
         className
       )}
       {...props}
@@ -93,9 +95,7 @@ export function TypographyP({
     <p
       className={cn(
         "leading-7 text-slate-700 dark:text-slate-300 [&:not(:first-child)]:mt-6",
-        // Mobile: text-base (16px) is standard for readability
         "text-base",
-        // Laptop 16 inch+: bump to text-lg (18px) for better scaling on large screens
         "2xl:text-lg",
         className
       )}
@@ -115,11 +115,8 @@ export function TypographyLead({
     <p
       className={cn(
         "text-slate-500 dark:text-slate-400",
-        // Mobile
         "text-lg",
-        // Tablet/Laptop
         "md:text-xl",
-        // Large Screens
         "2xl:text-2xl",
         className
       )}
@@ -136,7 +133,7 @@ export function TypographyLarge({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div
+    <p
       className={cn(
         "font-semibold text-slate-900 dark:text-slate-50",
         "text-lg md:text-xl",
@@ -145,7 +142,7 @@ export function TypographyLarge({
       {...props}
     >
       {children}
-    </div>
+    </p>
   );
 }
 
@@ -155,12 +152,9 @@ export function TypographySmall({
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
   return (
-    <small
-      className={cn("text-sm font-medium leading-none", className)}
-      {...props}
-    >
+    <p className={cn("text-sm font-medium leading-none", className)} {...props}>
       {children}
-    </small>
+    </p>
   );
 }
 

@@ -1,7 +1,7 @@
 import { DoctorProfileHeader } from "./components/DoctorProfileHeader";
 import { InfoSection } from "./components/InfoSection";
 import { BookingWidget } from "./components/BookingWidget";
-import { DoctorDetail } from "@/types";
+import { DoctorDetail } from "@/types/index.type";
 import { CheckCircle } from "lucide-react";
 
 // Placeholder data untuk satu dokter. Nantinya akan di-fetch berdasarkan `params.id`

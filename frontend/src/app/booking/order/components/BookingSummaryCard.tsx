@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Calendar, Clock, Video } from "lucide-react";
-import { DoctorDetail } from "@/types";
+import { DoctorDetail } from "@/types/index.type";
 
 interface SummaryProps {
   doctor: DoctorDetail;

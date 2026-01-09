@@ -1,5 +1,5 @@
 import { DoctorCard } from "@/components/cards/DoctorCard";
-import { Doctor } from "@/types";
+import { Doctor } from "@/types/index.type";
 
 interface DoctorListProps {
   doctors: Doctor[];

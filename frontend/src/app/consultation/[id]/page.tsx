@@ -4,7 +4,7 @@ import { MessageSquare, Video } from "lucide-react";
 import { ChatInterface } from "../components/ChatInterface";
 import { VideoInterface } from "../components/VideoInterface";
 import { SessionInfoPanel } from "../components/SessionInfoPanel";
-import { Doctor } from "@/types";
+import { Doctor } from "@/types/index.type";
 import { Navbar } from "@/components/layout/Navbar";
 
 // Data Mock

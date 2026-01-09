@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Clock, FileText } from "lucide-react";
-import { Doctor } from "@/types"; // Gunakan tipe Doctor yang sudah ada
+import { Doctor } from "@/types/index.type"; // Gunakan tipe Doctor yang sudah ada
 
 interface SessionInfoPanelProps {
   doctor: Doctor;

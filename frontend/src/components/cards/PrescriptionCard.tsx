@@ -1,5 +1,5 @@
 import { ClipboardPlus, ChevronRight } from "lucide-react";
-import { Prescription } from "@/types";
+import { Prescription } from "@/types/index.type";
 
 interface PrescriptionCardProps {
   prescription: Prescription;

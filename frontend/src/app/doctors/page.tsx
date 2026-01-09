@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/layout/Navbar";
 import { DoctorList } from "./components/DoctorList";
 import { SearchFilter } from "@/components/ui/SearchFilter";
-import { Doctor } from "@/types";
+import { Doctor } from "@/types/index.type";
 
 // Data Placeholder (nantinya ini akan datang dari API)
 const mockDoctors: Doctor[] = [

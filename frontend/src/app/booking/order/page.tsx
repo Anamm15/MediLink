@@ -2,7 +2,7 @@
 import Script from "next/script";
 import { BookingSummaryCard } from "./components/BookingSummaryCard";
 import { PaymentFlow } from "./components/PaymentFlow";
-import { DoctorDetail } from "@/types";
+import { DoctorDetail } from "@/types/index.type";
 import { User } from "lucide-react";
 
 // Declare Midtrans Snap type for TypeScript

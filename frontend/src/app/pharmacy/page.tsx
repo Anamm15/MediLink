@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { PrescriptionCard } from "@/components/cards/PrescriptionCard";
 import { PrescriptionDetailModal } from "@/components/modal/PrescriptionDetailModal";
-import { Prescription } from "@/types";
+import { Prescription } from "@/types/index.type";
 import { Search } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 

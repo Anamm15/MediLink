@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Star, Calendar } from "lucide-react";
-import { Doctor } from "@/types";
+import { Doctor } from "@/types/index.type";
 
 interface DoctorCardProps {
   doctor: Doctor;

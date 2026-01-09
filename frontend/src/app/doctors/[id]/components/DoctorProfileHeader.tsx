@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Star, Briefcase, Users } from "lucide-react";
-import { DoctorDetail } from "@/types";
+import { DoctorDetail } from "@/types/index.type";
 
 interface HeaderProps {
   doctor: DoctorDetail;
