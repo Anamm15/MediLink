@@ -23,12 +23,13 @@ func AuthRoute(server *gin.Engine, authHandler handler.AuthHandler) {
 func UserRoute(server *gin.Engine, userHandler handler.UserHandler) {
 	user := server.Group("/api/v1/users")
 	{
-		user.GET("/", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), userHandler.GetAll)
-		user.GET("/me", middlewares.Authenticate(), userHandler.GetProfile)
+		user.GET("", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), userHandler.GetAll)
+		user.GET("/me", middlewares.Authenticate(), userHandler.Me)
+		user.GET("/profile", middlewares.Authenticate(), userHandler.GetProfile)
 
-		user.POST("/send-verification", middlewares.Authenticate(), userHandler.SendVerificationUser)
-		user.POST("/verify", middlewares.Authenticate(), userHandler.VerifyUser)
-		user.POST("/on-board-patient", middlewares.Authenticate(), userHandler.OnBoardPatient)
+		user.POST("/send-email-verification", middlewares.Authenticate(), userHandler.SendVerificationUser)
+		user.POST("/verify-email", middlewares.Authenticate(), userHandler.VerifyUser)
+		user.POST("/onboard-patient", middlewares.Authenticate(), userHandler.OnBoardPatient)
 		user.PUT("", middlewares.Authenticate(), userHandler.UpdateProfile)
 		user.DELETE("", middlewares.Authenticate(), userHandler.Delete)
 	}

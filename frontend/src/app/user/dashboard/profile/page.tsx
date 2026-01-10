@@ -1,89 +1,91 @@
-import { ProfileHeader } from "./components/ProfileHeader";
+"use client";
+
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import {
+  KeyRound,
+  Camera,
+  User as UserIcon,
+  ShieldCheck,
+  ShieldAlert,
+  Edit3,
+  MailWarning,
+  Stethoscope,
+  Plus,
+} from "lucide-react";
 import { EditableSectionCard } from "../components/EditableSectionCard";
-// --- DATA DUMMY UNTUK PENGGUNA ---
-const mockUserData = {
-  name: "Budi Setiawan",
-  email: "budi.setiawan@email.com",
-  avatarUrl: "https://i.pravatar.cc/150?u=budi",
-  dob: "15 Agustus 1988",
-  gender: "Pria",
-  phone: "0812-3456-7890",
-  address: "Jl. Pahlawan No. 45, Surabaya, Jawa Timur",
-  medicalInfo: {
-    bloodType: "O+",
-    allergies: "Debu, Makanan Laut",
-    chronicConditions: "Asma",
+import { ProfileHeader } from "./components/ProfileHeader";
+import { AccountInformation } from "./components/Account";
+import DetailPatient from "./components/Patient";
+import {
+  TypographyH3,
+  TypographyH4,
+  TypographyP,
+} from "@/components/ui/Typography";
+import { UserProfileResponse } from "@/types/user.type";
+import { useUserQuery } from "./hooks/useUser";
+
+const mockInitialData: UserProfileResponse = {
+  user: {
+    id: "user-01",
+    name: "Budi Setiawan",
+    email: "budi.setiawan@email.com",
+    role: "Pasien",
+    status: "active",
+    phone_number: "0812-3456-7890",
+    avatar_url: "https://i.pravatar.cc/150?u=budi",
+    is_verified: true,
+    created_at: "2022-01-01",
+    updated_at: "2022-01-01",
   },
-  emergencyContact: {
-    name: "Sarah Setiawan",
-    relation: "Istri",
-    phone: "0812-9876-5432",
-  },
+  // Default: null untuk user baru
+  patient: null,
+  // patient: {
+  //   id: "patient-01",
+  //   identity_number: "1234567890",
+  //   weight_kg: 70,
+  //   height_cm: 170,
+  //   birth_date: "15 Agustus 1988",
+  //   gender: "Pria",
+  //   blood_type: "O+",
+  //   allergies: "Debu, Makanan Laut",
+  //   history_chronic_diseases: "Asma",
+  //   emergency_contact: "0812-9876-5432",
+  //   insurance_number: "213702312",
+  //   insurance_provider: "BPJS Kesehatan",
+  //   occupation: "PNS",
+  // },
 };
 
-// Komponen kecil untuk menampilkan item data agar rapi
-const InfoItem = ({ label, value }: { label: string; value: string }) => (
-  <div>
-    <p className="text-sm text-gray-500">{label}</p>
-    <p className="font-semibold text-gray-800">{value}</p>
-  </div>
-);
-
 export default function UserProfilePage() {
-  const { personalInfo, medicalInfo, emergencyContact } = {
-    personalInfo: {
-      "Nama Lengkap": mockUserData.name,
-      "Tanggal Lahir": mockUserData.dob,
-      "Jenis Kelamin": mockUserData.gender,
-      "Nomor Telepon": mockUserData.phone,
-      Alamat: mockUserData.address,
-    },
-    medicalInfo: {
-      "Golongan Darah": mockUserData.medicalInfo.bloodType,
-      Alergi: mockUserData.medicalInfo.allergies,
-      "Penyakit Kronis": mockUserData.medicalInfo.chronicConditions,
-    },
-    emergencyContact: {
-      Nama: mockUserData.emergencyContact.name,
-      Hubungan: mockUserData.emergencyContact.relation,
-      "Nomor Telepon": mockUserData.emergencyContact.phone,
-    },
-  };
+  const { data: userData, isLoading } = useUserQuery();
+  const [data, setData] = useState<UserProfileResponse>();
+
+  useEffect(() => {
+    setData(userData);
+  }, [userData]);
 
   return (
-    <div className="space-y-6">
-      <header>
-        <h1 className="text-3xl font-bold text-gray-800">Profil Saya</h1>
-        <p className="mt-1 text-gray-500">
-          Kelola informasi akun dan data pribadi Anda di sini.
-        </p>
+    <div className="max-w-5xl mx-auto space-y-8 pb-10">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <TypographyH3> My Profile </TypographyH3>
+          <TypographyP className="text-gray-500">
+            Manage your personal identity information and medical records.
+          </TypographyP>
+        </div>
       </header>
 
-      <ProfileHeader userData={mockUserData} />
+      {!isLoading && data && (
+        <>
+          <ProfileHeader user={data.user} />
 
-      <EditableSectionCard title="Data Diri">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {Object.entries(personalInfo).map(([label, value]) => (
-            <InfoItem key={label} label={label} value={value} />
-          ))}
-        </div>
-      </EditableSectionCard>
-
-      <EditableSectionCard title="Informasi Medis Penting">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {Object.entries(medicalInfo).map(([label, value]) => (
-            <InfoItem key={label} label={label} value={value} />
-          ))}
-        </div>
-      </EditableSectionCard>
-
-      <EditableSectionCard title="Kontak Darurat">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {Object.entries(emergencyContact).map(([label, value]) => (
-            <InfoItem key={label} label={label} value={value} />
-          ))}
-        </div>
-      </EditableSectionCard>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <AccountInformation data={data} setData={setData} />
+            <DetailPatient data={data} setData={setData} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

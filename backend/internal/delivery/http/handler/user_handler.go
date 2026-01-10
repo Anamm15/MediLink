@@ -36,6 +36,18 @@ func (h *userHandler) GetAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
+func (h *userHandler) Me(ctx *gin.Context) {
+	userId := ctx.MustGet("user_id").(uuid.UUID)
+	user, err := h.userUsecase.Me(ctx, userId)
+	if err != nil {
+		res := utils.BuildResponseFailed("Failed to retrieve user", err.Error(), nil)
+		ctx.JSON(http.StatusInternalServerError, res)
+		return
+	}
+	res := utils.BuildResponseSuccess("User retrieved successfully", user)
+	ctx.JSON(http.StatusOK, res)
+}
+
 func (h *userHandler) GetProfile(ctx *gin.Context) {
 	userId := ctx.MustGet("user_id").(uuid.UUID)
 	profile, err := h.userUsecase.GetProfile(ctx, userId)
@@ -121,12 +133,12 @@ func (h *userHandler) OnBoardPatient(ctx *gin.Context) {
 		return
 	}
 
-	err := h.userUsecase.OnBoardPatient(ctx, userId, req)
+	patient, err := h.userUsecase.OnBoardPatient(ctx, userId, req)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to on board patient", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
 		return
 	}
-	res := utils.BuildResponseSuccess("Patient on boarded successfully", nil)
+	res := utils.BuildResponseSuccess("Patient on boarded successfully", patient)
 	ctx.JSON(http.StatusOK, res)
 }

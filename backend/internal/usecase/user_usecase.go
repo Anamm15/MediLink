@@ -53,6 +53,14 @@ func (u *userUsecase) GetAll(ctx context.Context, page int) ([]dto.UserResponse,
 	return userDTOs, nil
 }
 
+func (u *userUsecase) Me(ctx context.Context, userID uuid.UUID) (dto.UserResponse, error) {
+	user, err := u.userRepo.GetByID(ctx, userID)
+	if err != nil {
+		return dto.UserResponse{}, err
+	}
+	return dto.ToUserResponse(user), nil
+}
+
 func (u *userUsecase) GetProfile(ctx context.Context, userID uuid.UUID) (dto.UserProfileResponse, error) {
 	var user *entity.User
 	var patient *entity.Patient
@@ -88,7 +96,7 @@ func (u *userUsecase) GetProfile(ctx context.Context, userID uuid.UUID) (dto.Use
 	// Hanya mapping patient jika datanya memang ditemukan
 	if patient != nil {
 		patientDTO := dto.ToPatientResponse(patient)
-		response.Patient = patientDTO
+		response.Patient = &patientDTO
 	}
 
 	return response, nil
@@ -150,14 +158,14 @@ func (u *userUsecase) VerifyUser(ctx context.Context, userID uuid.UUID, inputOTP
 	return nil
 }
 
-func (u *userUsecase) OnBoardPatient(ctx context.Context, userID uuid.UUID, request dto.PatientCreateRequest) error {
+func (u *userUsecase) OnBoardPatient(ctx context.Context, userID uuid.UUID, request dto.PatientCreateRequest) (dto.PatientResponse, error) {
 	user, err := u.userRepo.GetByID(ctx, userID)
 	if err != nil {
-		return err
+		return dto.PatientResponse{}, err
 	}
 
 	if !user.IsVerified {
-		return errs.ErrUserNotVerified
+		return dto.PatientResponse{}, errs.ErrUserNotVerified
 	}
 
 	var patient entity.Patient
@@ -165,13 +173,15 @@ func (u *userUsecase) OnBoardPatient(ctx context.Context, userID uuid.UUID, requ
 	request.ToModel(&patient)
 	_, err = u.patientRepo.Create(ctx, &patient)
 	if err != nil {
-		return err
+		return dto.PatientResponse{}, err
 	}
 
 	user.Role = enum.UserRole(enum.RolePatient)
 	err = u.userRepo.Update(ctx, user)
 	if err != nil {
-		return err
+		return dto.PatientResponse{}, err
 	}
-	return nil
+
+	patientResponse := dto.ToPatientResponse(&patient)
+	return patientResponse, nil
 }

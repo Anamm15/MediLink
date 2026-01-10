@@ -1,8 +1,10 @@
 import { login } from "@/services/auth.service";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export function useLogin() {
+  const router = useRouter();
   return useMutation({
     mutationFn: login,
     onMutate: () => {
@@ -11,13 +13,12 @@ export function useLogin() {
     },
 
     onSuccess: (data, variables, context) => {
-      console.log(data);
-
       localStorage.setItem("token", data);
       toast.success("Login successful", {
         id: context?.toastId,
         duration: 3000,
       });
+      router.push("/");
     },
 
     onError: (error: any, variables, context) => {

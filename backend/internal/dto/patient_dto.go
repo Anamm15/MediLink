@@ -9,7 +9,7 @@ import (
 )
 
 type PatientResponse struct {
-	PatientID uuid.UUID `json:"patient_id"`
+	ID uuid.UUID `json:"id"`
 
 	BirthDate      string      `json:"birth_date"`
 	Gender         enum.Gender `json:"gender"`
@@ -62,7 +62,7 @@ type PatientUpdateRequest struct {
 
 func ToPatientResponse(patient *entity.Patient) PatientResponse {
 	return PatientResponse{
-		PatientID:              patient.ID,
+		ID:                     patient.ID,
 		IdentityNumber:         patient.IdentityNumber,
 		BirthDate:              utils.FormatDate(patient.BirthDate),
 		Gender:                 patient.Gender,

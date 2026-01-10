@@ -52,7 +52,7 @@ export function TypographyH3({
   return (
     <h3
       className={cn(
-        "scroll-m-20 font-semibold tracking-tight text-slate-900 dark:text-slate-50 mt-8",
+        "scroll-m-20 font-semibold tracking-tight text-slate-900 dark:text-slate-50",
         "text-xl",
         "md:text-2xl",
         "2xl:text-3xl",
@@ -94,7 +94,7 @@ export function TypographyP({
   return (
     <p
       className={cn(
-        "leading-7 text-slate-700 dark:text-slate-300 [&:not(:first-child)]:mt-6",
+        "leading-7 text-slate-700 dark:text-slate-300",
         "text-base",
         "2xl:text-lg",
         className

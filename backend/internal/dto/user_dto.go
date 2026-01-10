@@ -24,8 +24,8 @@ type UserResponse struct {
 }
 
 type UserProfileResponse struct {
-	User    UserResponse    `json:"user"`
-	Patient PatientResponse `json:"patient"`
+	User    UserResponse     `json:"user"`
+	Patient *PatientResponse `json:"patient"`
 }
 
 type UserUpdateProfileRequest struct {
@@ -36,10 +36,6 @@ type UserUpdateProfileRequest struct {
 
 type VerifyUserRequest struct {
 	OTP string `json:"otp" binding:"required"`
-}
-
-type OnBoardPatientRequest struct {
-	MedicalHistory string `json:"medical_history" binding:"required"`
 }
 
 func ToUserResponse(user *entity.User) UserResponse {
