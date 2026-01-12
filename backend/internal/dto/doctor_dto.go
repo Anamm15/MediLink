@@ -74,11 +74,11 @@ type DoctorUpdateScheduleRequest struct {
 }
 
 type DoctorUpdateStatusScheduleRequest struct {
-	IsActive *bool `json:"is_active"`
+	IsActive bool `json:"is_active" `
 }
 
 func ToDoctorResponse(entity *entity.Doctor) DoctorProfileResponse {
-	var clinic []DoctorClinicResponse
+	clinic := make([]DoctorClinicResponse, 0)
 	for _, clinicEntity := range entity.DoctorClinicPlacements {
 		clinic = append(clinic, DoctorClinicResponse{
 			ID:       clinicEntity.ClinicID,

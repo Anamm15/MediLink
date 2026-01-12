@@ -1,7 +1,11 @@
+"use client";
+
 import { Navbar } from "@/components/layout/Navbar";
 import { DoctorList } from "./components/DoctorList";
 import { SearchFilter } from "@/components/ui/SearchFilter";
 import { Doctor } from "@/types/index.type";
+import { useSearchDoctor } from "./hooks/useDoctor";
+import { useEffect, useState } from "react";
 
 // Data Placeholder (nantinya ini akan datang dari API)
 const mockDoctors: Doctor[] = [
@@ -68,6 +72,11 @@ const mockDoctors: Doctor[] = [
 ];
 
 export default function DoctorsPage() {
+  const [doctorNameFiltered, setDoctorNameFiltered] = useState<string>("");
+  const [page, setPage] = useState(1);
+
+  const { data: doctors } = useSearchDoctor(doctorNameFiltered, page);
+
   return (
     <>
       <Navbar />
@@ -83,8 +92,8 @@ export default function DoctorsPage() {
             </p>
           </header>
 
-          <SearchFilter />
-          <DoctorList doctors={mockDoctors} />
+          <SearchFilter setDoctorNameFiltered={setDoctorNameFiltered} />
+          <DoctorList doctors={doctors || []} />
         </div>
       </main>
     </>

@@ -2,14 +2,19 @@
 import { useState } from "react";
 import { SectionCard } from "@/components/cards/SectionCard";
 import { PracticeSchedule } from "./PracticeSchedule";
-import { motion, AnimatePresence } from "framer-motion"; // <-- Import motion dan AnimatePresence
+import { motion, AnimatePresence } from "framer-motion";
+import { DoctorProfileResponse } from "@/types/doctor.type";
 
 const tabs = [
-  { id: "info", label: "Informasi Detail" },
-  { id: "schedule", label: "Kelola Jadwal Praktik" },
+  { id: "info", label: "Detail Information" },
+  { id: "schedule", label: "Schedule Management" },
 ];
 
-export const ProfileTabs = ({ doctorData }: { doctorData: any }) => {
+export const ProfileTabs = ({
+  doctorData,
+}: {
+  doctorData: DoctorProfileResponse;
+}) => {
   const [activeTab, setActiveTab] = useState(tabs[0].id);
 
   const tabContentVariants = {
@@ -20,7 +25,6 @@ export const ProfileTabs = ({ doctorData }: { doctorData: any }) => {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Tombol Tab dengan Indikator Animasi */}
       <div className="bg-white p-1 rounded-xl shadow-sm border flex items-center gap-2">
         {tabs.map((tab) => (
           <button
@@ -37,13 +41,11 @@ export const ProfileTabs = ({ doctorData }: { doctorData: any }) => {
         ))}
       </div>
 
-      {/* Konten Tab dengan Animasi Transisi */}
       <div>
         <AnimatePresence mode="wait">
           {" "}
-          {/* 'mode="wait"' memastikan animasi exit selesai sebelum animasi enter dimulai */}
           <motion.div
-            key={activeTab} // <-- Kunci unik ini memberitahu AnimatePresence kapan konten berubah
+            key={activeTab}
             variants={tabContentVariants}
             initial="initial"
             animate="animate"
@@ -52,12 +54,12 @@ export const ProfileTabs = ({ doctorData }: { doctorData: any }) => {
           >
             {activeTab === "info" && (
               <div className="space-y-6">
-                <SectionCard title="Tentang Saya">
+                <SectionCard title="About Me">
                   <p className="text-gray-600 text-sm leading-relaxed">
                     {doctorData.bio}
                   </p>
                 </SectionCard>
-                <SectionCard title="Pendidikan">
+                {/* <SectionCard title="Pendidikan">
                   <ul className="space-y-2 text-sm">
                     {doctorData.education.map((edu: any, index: number) => (
                       <li key={index}>
@@ -66,10 +68,12 @@ export const ProfileTabs = ({ doctorData }: { doctorData: any }) => {
                       </li>
                     ))}
                   </ul>
-                </SectionCard>
+                </SectionCard> */}
               </div>
             )}
-            {activeTab === "schedule" && <PracticeSchedule />}
+            {activeTab === "schedule" && doctorData.id && (
+              <PracticeSchedule doctor_id={doctorData.id} />
+            )}
           </motion.div>
         </AnimatePresence>
       </div>

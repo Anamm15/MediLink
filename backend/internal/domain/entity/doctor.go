@@ -8,9 +8,8 @@ import (
 )
 
 type Doctor struct {
-	ID       uuid.UUID  `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
-	UserID   uuid.UUID  `gorm:"type:uuid;uniqueIndex;not null"`
-	ClinicID *uuid.UUID `gorm:"type:uuid"`
+	ID     uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
+	UserID uuid.UUID `gorm:"type:uuid;uniqueIndex;not null"`
 
 	Specialization  string         `gorm:"type:varchar(100);not null;index:idx_doctor_specialization"`
 	LicenseNumber   string         `gorm:"type:varchar(100);uniqueIndex;not null"`

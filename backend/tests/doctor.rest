@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:5000/api/v1/doctors
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZGRmNjdkOWUtZTE0NC00MDY3LWEzYmMtMzJjMjFiN2E0ZGMwIiwicm9sZSI6ImRvY3RvciIsImlzcyI6Im1lZGlsaW5rLWFwcCIsImV4cCI6MTc2NzgyMzY3MSwiaWF0IjoxNzY3NzM3MjcxfQ.-WH02rW5TYKYt6I6Sl_snFMyRF8QZ2RXySgVy3IW-4Q
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZGRmNjdkOWUtZTE0NC00MDY3LWEzYmMtMzJjMjFiN2E0ZGMwIiwicm9sZSI6ImRvY3RvciIsImlzcyI6Im1lZGlsaW5rLWFwcCIsImV4cCI6MTc2ODI3NDc4OSwiaWF0IjoxNzY4MTg4Mzg5fQ.HKTFWFls335YJLJ2T-w8cRpjdJy49cRMnLpdvnTf9X0
 
 ###
 POST http://localhost:5000/api/v1/auth/login
@@ -11,10 +11,14 @@ Content-Type: application/json
 }
 
 ###
+GET {{baseUrl}}/me
+Authorization: Bearer {{token}}
+
+###
 GET {{baseUrl}}?name=muhajir
 
 ###
-GET {{baseUrl}}/d3acd040-75b4-46dc-9cc0-1cbebe986a2b
+GET {{baseUrl}}/d877e585-306e-4cb6-a4e5-69d41b5d2428
 
 ###
 PUT {{baseUrl}}/0902d466-40c2-4bb7-9884-81035819ebdc
@@ -25,6 +29,13 @@ Content-Type: application/json
   "specialization": "Dokter Penyakit Dalam"
 }
 
+###
+GET {{baseUrl}}/schedules?doctor_id=d877e585-306e-4cb6-a4e5-69d41b5d2428
+Authorization: Bearer {{token}}
+
+###
+GET {{baseUrl}}/schedules/availability?doctor_id=d877e585-306e-4cb6-a4e5-69d41b5d2428&date=2026-01-10&day=monday
+
 
 ###
 POST {{baseUrl}}/schedules
@@ -33,9 +44,9 @@ Content-Type: application/json
 
 {
   "clinic_id": "03431a76-aed5-4024-a243-23307a07a3d5",
-  "day_of_week": "thursday",
-  "start_time": "08:00",
-  "end_time": "12:00",
+  "day_of_week": "monday",
+  "start_time": "12:00",
+  "end_time": "14:00",
   "max_quota": 20,
   "consultation_fee": 50000
 }

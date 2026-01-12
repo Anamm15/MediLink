@@ -18,7 +18,23 @@ func NewDoctorRepository(db *gorm.DB) repository.DoctorRepository {
 	return &doctorRepository{db: db}
 }
 
-func (r *doctorRepository) GetWithClinic(ctx context.Context, id uuid.UUID) (*entity.Doctor, error) {
+func (r *doctorRepository) GetProfileByUserID(ctx context.Context, userID uuid.UUID) (*entity.Doctor, error) {
+	var doctor entity.Doctor
+	if err := r.db.WithContext(ctx).
+		Preload("User", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id", "name", "email", "phone_number")
+		}).
+		Preload("DoctorClinicPlacements.Clinic", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id", "name", "address", "city", "is_active")
+		}).
+		Where("user_id = ?", userID).
+		First(&doctor).Error; err != nil {
+		return nil, err
+	}
+	return &doctor, nil
+}
+
+func (r *doctorRepository) GetProfileByID(ctx context.Context, id uuid.UUID) (*entity.Doctor, error) {
 	var doctor entity.Doctor
 	if err := r.db.WithContext(ctx).
 		Preload("User", func(db *gorm.DB) *gorm.DB {

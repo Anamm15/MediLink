@@ -1,104 +1,209 @@
 "use client";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import { SectionCard } from "@/components/cards/SectionCard";
-import { Trash2, PlusCircle } from "lucide-react";
+import {
+  Trash2,
+  PlusCircle,
+  Clock,
+  Banknote,
+  Users,
+  HandMetal,
+  Edit3,
+  Edit2,
+  Edit,
+} from "lucide-react";
+import {
+  useDeleteSchedule,
+  useSchedulesQuery,
+  useUpdateStatusSchedule,
+} from "../hooks/useSchedule";
+import { formatSchedule, formattedSchedule, Slot } from "@/types/schedule.type";
+import ScheduleModal from "./ScheduleModal";
+import DeleteAlert from "@/components/ui/DeleteAlert";
 
-// Initial dummy data for schedule
-const initialSchedule = [
-  { day: "Senin", isActive: true, slots: ["09:00 - 12:00", "14:00 - 17:00"] },
-  { day: "Selasa", isActive: true, slots: ["09:00 - 12:00"] },
-  { day: "Rabu", isActive: false, slots: [] },
-  { day: "Kamis", isActive: true, slots: ["18:00 - 21:00"] },
-  { day: "Jumat", isActive: true, slots: ["09:00 - 11:00"] },
-  { day: "Sabtu", isActive: false, slots: [] },
-  { day: "Minggu", isActive: false, slots: [] },
-];
+export const PracticeSchedule = ({ doctor_id }: { doctor_id: string }) => {
+  const { data } = useSchedulesQuery(doctor_id);
+  const [schedules, setSchedules] = useState<formattedSchedule[]>([]);
+  const [deleteAlert, setDeleteAlert] = useState(false);
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  const [selectedDay, setSelectedDay] = useState<string>("");
+  const [selectedSlotId, setSelectedSlotId] = useState<string>("");
+  const [isEdit, setIsEdit] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
+  const { mutateAsync: updateStatus } = useUpdateStatusSchedule(
+    setSchedules,
+    selectedSlotId
+  );
+  const { mutateAsync: deleteSchedule } = useDeleteSchedule(
+    schedules,
+    setSchedules,
+    selectedSlotId
+  );
 
-export const PracticeSchedule = () => {
-  const [schedule, setSchedule] = useState(initialSchedule);
+  useEffect(() => {
+    if (data) setSchedules(formatSchedule(data));
+  }, [data]);
 
-  const toggleDay = (day: string) => {
-    setSchedule(
-      schedule.map((d) => (d.day === day ? { ...d, isActive: !d.isActive } : d))
-    );
+  const handleToggleSlot = async (
+    id: string,
+    day: string,
+    is_active: boolean
+  ) => {
+    setSelectedSlotId(id);
+    await updateStatus({
+      id: id,
+      is_active: !is_active,
+    });
   };
 
-  // Placeholder functions for adding/removing slots
-  const addSlot = (day: string) => alert(`Tambah slot untuk hari ${day}`);
-  const removeSlot = (day: string, slot: string) =>
-    alert(`Hapus slot ${slot} dari hari ${day}`);
+  const handleAddSlot = (day: string) => {
+    setSelectedDay(day);
+    setIsScheduleModalOpen(true);
+    setSelectedSlotId("");
+  };
+
+  const handleUpdateSlot = (slot: Slot) => {
+    setSelectedSlot(slot);
+    setIsScheduleModalOpen(true);
+    setIsEdit(true);
+  };
+
+  const handleDeleteSlot = async (id: string) => {
+    await deleteSchedule(id);
+    setSelectedSlotId("");
+    setDeleteAlert(false);
+  };
 
   return (
-    <SectionCard title="Kelola Jadwal Praktik Mingguan">
-      <div className="space-y-4">
-        {schedule.map((d) => (
-          <div key={d.day} className="p-3 rounded-lg border">
-            <div className="flex items-center justify-between">
-              <span
-                className={`font-semibold ${
-                  d.isActive ? "text-gray-800" : "text-gray-400"
-                }`}
+    <SectionCard title="Manage Your Weekly Schedule">
+      <div className="space-y-6">
+        {schedules.map((schedule) => (
+          <div key={schedule.day} className="group">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="font-bold text-gray-800 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-cyan-500"></span>
+                {schedule.day}
+              </h4>
+              <button
+                onClick={() => handleAddSlot(schedule.day)}
+                className="text-xs font-bold text-cyan-600 hover:text-cyan-700 flex items-center gap-1 bg-cyan-50 px-2 py-1 rounded-md transition-colors"
               >
-                {d.day}
-              </span>
-              <div className="flex items-center gap-2">
-                <span
-                  className={`text-xs font-medium ${
-                    d.isActive ? "text-green-600" : "text-gray-500"
-                  }`}
-                >
-                  {d.isActive ? "Aktif" : "Tidak Aktif"}
-                </span>
-                {/* Toggle Switch */}
-                <button
-                  onClick={() => toggleDay(d.day)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    d.isActive ? "bg-cyan-500" : "bg-gray-200"
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      d.isActive ? "translate-x-6" : "translate-x-1"
-                    }`}
-                  />
-                </button>
-              </div>
+                <PlusCircle className="w-3.5 h-3.5" /> Add Slot
+              </button>
             </div>
-            {d.isActive && (
-              <div className="mt-3 pt-3 border-t border-dashed">
-                <p className="text-sm text-gray-500 mb-2">
-                  Slot Waktu Tersedia:
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {d.slots.map((slot) => (
-                    <div
-                      key={slot}
-                      className="flex items-center gap-1 bg-cyan-50 text-cyan-700 text-xs font-semibold px-2 py-1 rounded-full"
-                    >
-                      {slot}
-                      <button
-                        onClick={() => removeSlot(d.day, slot)}
-                        className="hover:text-red-500"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    onClick={() => addSlot(d.day)}
-                    className="flex items-center gap-1 text-cyan-600 hover:text-cyan-800 text-xs font-semibold"
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {schedule.slots.length > 0 ? (
+                schedule.slots.map((slot) => (
+                  <div
+                    key={slot.id}
+                    className={`relative p-4 rounded-xl border transition-all duration-300 ${
+                      slot.isActive
+                        ? "bg-white border-gray-200 shadow-sm"
+                        : "bg-gray-50 border-gray-100 opacity-70"
+                    }`}
                   >
-                    <PlusCircle className="w-4 h-4" /> Tambah Slot
-                  </button>
+                    {/* Baris Atas: Waktu & Toggle */}
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex items-center gap-2 text-gray-800">
+                        <Clock
+                          className={`w-4 h-4 ${
+                            slot.isActive ? "text-cyan-500" : "text-gray-400"
+                          }`}
+                        />
+                        <span className="font-bold text-sm">
+                          {slot.startTime} - {slot.endTime}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        {/* Toggle Switch Per Slot */}
+                        <button
+                          onClick={() =>
+                            handleToggleSlot(
+                              slot.id,
+                              schedule.day,
+                              slot.isActive
+                            )
+                          }
+                          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${
+                            slot.isActive ? "bg-cyan-500" : "bg-gray-400"
+                          }`}
+                        >
+                          <span
+                            className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                              slot.isActive ? "translate-x-5" : "translate-x-1"
+                            }`}
+                          />
+                        </button>
+
+                        <button
+                          onClick={() => handleUpdateSlot(slot)}
+                          className="text-gray-500 hover:text-blue-600 transition-colors"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setDeleteAlert(true);
+                            setSelectedSlotId(slot.id);
+                          }}
+                          className="text-gray-500 hover:text-red-600 transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Info Fee & Quota */}
+                    <div className="flex items-center gap-4 pt-3 border-t border-gray-50">
+                      <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                        <Banknote className="w-3.5 h-3.5" />
+                        <span>
+                          Rp {slot.consultation_fee.toLocaleString("id-ID")}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                        <Users className="w-3.5 h-3.5" />
+                        <span>Quota: {slot.max_quota}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-2 py-4 px-4 border border-dashed rounded-xl text-center">
+                  <p className="text-xs text-gray-400 italic">
+                    There is no practice schedule for today
+                  </p>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+
+            {/* Divider Antar Hari */}
+            <div className="mt-6 border-b border-gray-100 last:hidden"></div>
           </div>
         ))}
-        <button className="mt-4 w-full font-semibold py-2.5 rounded-lg bg-cyan-500 text-white hover:bg-cyan-600">
-          Simpan Perubahan Jadwal
-        </button>
       </div>
+
+      {deleteAlert && (
+        <DeleteAlert
+          title="Delete Schedule"
+          onClose={() => setDeleteAlert(false)}
+          onConfirm={() => handleDeleteSlot(selectedSlotId)}
+        />
+      )}
+
+      {isScheduleModalOpen && (
+        <ScheduleModal
+          day={selectedDay}
+          isEdit={isEdit}
+          setIsEdit={setIsEdit}
+          slot={selectedSlot}
+          setIsModalOpen={setIsScheduleModalOpen}
+        />
+      )}
     </SectionCard>
   );
 };

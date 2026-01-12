@@ -9,7 +9,8 @@ import (
 )
 
 type DoctorRepository interface {
-	GetWithClinic(context.Context, uuid.UUID) (*entity.Doctor, error)
+	GetProfileByUserID(ctx context.Context, userID uuid.UUID) (*entity.Doctor, error)
+	GetProfileByID(context.Context, uuid.UUID) (*entity.Doctor, error)
 	GetByID(ctx context.Context, doctorID uuid.UUID) (*entity.Doctor, error)
 	GetByUserID(ctx context.Context, userID uuid.UUID) (*entity.Doctor, error)
 	Find(ctx context.Context, name string, limit int, offset int) ([]entity.Doctor, error)

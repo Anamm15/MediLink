@@ -20,6 +20,18 @@ func NewDoctorHandler(doctorUsecase usecase.DoctorUsecase) handler.DoctorHandler
 	return &doctorHandler{doctorUsecase: doctorUsecase}
 }
 
+func (h *doctorHandler) Me(ctx *gin.Context) {
+	userID := ctx.MustGet("user_id").(uuid.UUID)
+	profile, err := h.doctorUsecase.Me(ctx, userID)
+	if err != nil {
+		res := utils.BuildResponseFailed("Failed to retrieve profile", err.Error(), nil)
+		ctx.JSON(http.StatusInternalServerError, res)
+		return
+	}
+	res := utils.BuildResponseSuccess("Profile retrieved successfully", profile)
+	ctx.JSON(http.StatusOK, res)
+}
+
 func (h *doctorHandler) GetProfile(ctx *gin.Context) {
 	doctorId := ctx.Param("id")
 
@@ -114,6 +126,7 @@ func (h *doctorHandler) GetSchedules(ctx *gin.Context) {
 func (h *doctorHandler) GetAvailableSchedules(ctx *gin.Context) {
 	doctorIDQuery := ctx.Query("doctor_id")
 	date := ctx.Query("date")
+	day := ctx.Query("day")
 	doctorID, err := uuid.Parse(doctorIDQuery)
 	if err != nil {
 		res := utils.BuildResponseFailed("Invalid doctor ID", err.Error(), nil)
@@ -121,7 +134,7 @@ func (h *doctorHandler) GetAvailableSchedules(ctx *gin.Context) {
 		return
 	}
 
-	schedules, err := h.doctorUsecase.GetAvailableSchedules(ctx, doctorID, date)
+	schedules, err := h.doctorUsecase.GetAvailableSchedules(ctx, doctorID, date, day)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve available schedules", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)

@@ -37,8 +37,16 @@ func NewDoctorUsecase(
 	}
 }
 
-func (u *doctorUsecase) GetProfile(ctx context.Context, userID uuid.UUID) (dto.DoctorProfileResponse, error) {
-	doctor, err := u.doctorRepository.GetWithClinic(ctx, userID)
+func (u *doctorUsecase) Me(ctx context.Context, userID uuid.UUID) (dto.DoctorProfileResponse, error) {
+	doctor, err := u.doctorRepository.GetProfileByUserID(ctx, userID)
+	if err != nil {
+		return dto.DoctorProfileResponse{}, err
+	}
+	return dto.ToDoctorResponse(doctor), nil
+}
+
+func (u *doctorUsecase) GetProfile(ctx context.Context, doctorID uuid.UUID) (dto.DoctorProfileResponse, error) {
+	doctor, err := u.doctorRepository.GetProfileByID(ctx, doctorID)
 	if err != nil {
 		return dto.DoctorProfileResponse{}, err
 	}
@@ -97,14 +105,14 @@ func (u *doctorUsecase) GetDoctorSchedules(ctx context.Context, doctorID uuid.UU
 	return dto.ToListDoctorScheduleResponse(doctorSchedules), nil
 }
 
-func (u *doctorUsecase) GetAvailableSchedules(ctx context.Context, doctorID uuid.UUID, date string) ([]dto.DoctorScheduleResponse, error) {
+func (u *doctorUsecase) GetAvailableSchedules(ctx context.Context, doctorID uuid.UUID, date string, day string) ([]dto.DoctorScheduleResponse, error) {
 	dateTime := utils.ParseDate(date)
 	reservedSchedules, err := u.appointmentRepository.GetByDate(ctx, dateTime)
 	if err != nil {
 		return nil, err
 	}
 
-	schedules, err := u.doctorScheduleRepository.GetByDoctorID(ctx, doctorID)
+	schedules, err := u.doctorScheduleRepository.GetSchedulesByDay(ctx, doctorID, day)
 	if err != nil {
 		return nil, err
 	}
@@ -201,8 +209,7 @@ func (u *doctorUsecase) UpdateStatusSchedule(ctx context.Context, userID uuid.UU
 		return errors.New("You do not have permission to update this schedule")
 	}
 
-	schedule.IsActive = *request.IsActive
-	return u.doctorScheduleRepository.Update(ctx, schedule)
+	return u.doctorScheduleRepository.UpdateStatus(ctx, scheduleID, request.IsActive)
 }
 
 func (u *doctorUsecase) DeleteSchedule(ctx context.Context, userID uuid.UUID, scheduleID uuid.UUID) error {

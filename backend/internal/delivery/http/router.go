@@ -72,7 +72,8 @@ func ClinicRoute(server *gin.Engine, clinicHandler handler.ClinicHandler, clinic
 func DoctorRoute(server *gin.Engine, doctorHandler handler.DoctorHandler) {
 	doctor := server.Group("/api/v1/doctors")
 	{
-		doctor.GET("", doctorHandler.Find)
+		doctor.GET("/search", doctorHandler.Find)
+		doctor.GET("/me", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), doctorHandler.Me)
 		doctor.GET("/:id", doctorHandler.GetProfile)
 		doctor.PUT("", middlewares.Authenticate(), middlewares.AuthorizeRole("admin", "doctor"), doctorHandler.Update)
 

@@ -51,7 +51,7 @@ func (r *AppointmentRepository) GetByID(ctx context.Context, appointmentID uuid.
 func (r *AppointmentRepository) GetByDate(ctx context.Context, date time.Time) ([]entity.Appointment, error) {
 	appointments := []entity.Appointment{}
 	if err := r.db.WithContext(ctx).
-		Where("date = ?", date).
+		Where("appointment_date = ?", date).
 		Find(&appointments).Error; err != nil {
 		return nil, err
 	}

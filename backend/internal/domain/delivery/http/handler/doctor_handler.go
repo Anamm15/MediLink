@@ -3,6 +3,7 @@ package handler
 import "github.com/gin-gonic/gin"
 
 type DoctorHandler interface {
+	Me(ctx *gin.Context)
 	GetProfile(ctx *gin.Context)
 	Find(ctx *gin.Context)
 	Update(ctx *gin.Context)

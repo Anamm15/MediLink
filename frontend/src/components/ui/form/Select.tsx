@@ -20,7 +20,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     const uniqueId = id || React.useId();
 
     return (
-      <div className="w-full space-y-2">
+      <div className="w-full">
         {/* Render Label if provided */}
         {label && (
           <Label htmlFor={uniqueId} required={props.required}>

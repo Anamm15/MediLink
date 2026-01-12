@@ -1,15 +1,13 @@
 import { DoctorCard } from "@/components/cards/DoctorCard";
-import { Doctor } from "@/types/index.type";
+import { DoctorProfileResponse } from "@/types/doctor.type";
 
 interface DoctorListProps {
-  doctors: Doctor[];
+  doctors: DoctorProfileResponse[];
 }
 
 export const DoctorList = ({ doctors }: DoctorListProps) => {
   if (doctors.length === 0) {
-    return (
-      <p className="text-center text-gray-500 mt-10">Dokter tidak ditemukan.</p>
-    );
+    return <p className="text-center text-gray-500 mt-10">Doctor not found</p>;
   }
 
   return (

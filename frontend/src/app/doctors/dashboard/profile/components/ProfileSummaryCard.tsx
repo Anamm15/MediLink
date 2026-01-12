@@ -9,15 +9,18 @@ import {
   MapPin,
   ShieldCheck,
 } from "lucide-react";
+import { DoctorProfileResponse } from "@/types/doctor.type";
 
-// Terima data dokter sebagai props
-export const ProfileSummaryCard = ({ doctorData }: { doctorData: any }) => {
+type ProfileSummaryCardProps = {
+  doctorData: DoctorProfileResponse;
+};
+
+export const ProfileSummaryCard = ({ doctorData }: ProfileSummaryCardProps) => {
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-      {/* Bagian Atas: Info Utama */}
       <div className="text-center">
         <Image
-          src={doctorData.avatarUrl}
+          src={doctorData.avatar_url}
           alt={doctorData.name}
           width={120}
           height={120}
@@ -27,27 +30,28 @@ export const ProfileSummaryCard = ({ doctorData }: { doctorData: any }) => {
           {doctorData.name}
         </h2>
         <p className="mt-1 text-cyan-600 font-semibold">
-          {doctorData.specialty}
+          {doctorData.specialization}
         </p>
       </div>
 
-      {/* Bagian Tengah: Statistik */}
       <div className="grid grid-cols-3 gap-4 w-full text-sm my-6">
         <div className="text-center p-2 rounded-lg bg-slate-50">
-          <p className="font-bold text-lg text-gray-800">{doctorData.rating}</p>
+          <p className="font-bold text-lg text-gray-800">
+            {doctorData.rating_total}
+          </p>
           <p className="text-gray-500 text-xs">Rating</p>
         </div>
         <div className="text-center p-2 rounded-lg bg-slate-50">
           <p className="font-bold text-lg text-gray-800">
-            {doctorData.patientCount}
+            {doctorData.review_count}
           </p>
-          <p className="text-gray-500 text-xs">Pasien</p>
+          <p className="text-gray-500 text-xs">Patient</p>
         </div>
         <div className="text-center p-2 rounded-lg bg-slate-50">
           <p className="font-bold text-lg text-gray-800">
-            {doctorData.experience} thn
+            {doctorData.experience_years} year(s)
           </p>
-          <p className="text-gray-500 text-xs">Pengalaman</p>
+          <p className="text-gray-500 text-xs">Experience</p>
         </div>
       </div>
 
@@ -56,7 +60,7 @@ export const ProfileSummaryCard = ({ doctorData }: { doctorData: any }) => {
       {/* Bagian Bawah: Informasi Detail */}
       <div className="mt-6 space-y-4 text-left">
         <h3 className="text-base font-semibold text-gray-700">
-          Informasi Kontak & Praktik
+          Contact & Practice Information
         </h3>
 
         <div className="flex items-start gap-3">
@@ -69,25 +73,28 @@ export const ProfileSummaryCard = ({ doctorData }: { doctorData: any }) => {
         <div className="flex items-start gap-3">
           <Phone className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
           <p className="text-sm font-medium text-gray-600">
-            {doctorData.phone}
+            {doctorData.phone_number}
           </p>
         </div>
 
-        <div className="flex items-start gap-3">
-          <MapPin className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
-          <div>
-            <p className="text-sm font-medium text-gray-800">
-              {doctorData.clinic.name}
-            </p>
-            <p className="text-xs text-gray-500">{doctorData.clinic.address}</p>
-          </div>
-        </div>
+        {doctorData.clinic &&
+          doctorData.clinic.map((clinic) => (
+            <div key={clinic.id} className="flex items-start gap-3">
+              <MapPin className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-gray-800">
+                  {clinic.name}
+                </p>
+                <p className="text-xs text-gray-500">{clinic.address}</p>
+              </div>
+            </div>
+          ))}
 
         <div className="flex items-start gap-3">
           <ShieldCheck className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
           <div>
-            <p className="text-sm font-medium text-gray-800">Nomor STR</p>
-            <p className="text-xs text-gray-500">{doctorData.strNumber}</p>
+            <p className="text-sm font-medium text-gray-800">STR Number</p>
+            <p className="text-xs text-gray-500">{doctorData.license_number}</p>
           </div>
         </div>
       </div>
