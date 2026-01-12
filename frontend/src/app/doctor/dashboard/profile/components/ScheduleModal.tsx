@@ -37,6 +37,7 @@ export default function ScheduleModal({
     consultation_fee: 0,
     max_quota: 1,
     is_active: true,
+    type: "onsite",
   });
 
   useEffect(() => {
@@ -155,6 +156,29 @@ export default function ScheduleModal({
             });
           }}
         />
+
+        <Select
+          name="Type"
+          label="Type of Consultation"
+          required
+          value={temporarySchedule.type}
+          onChange={(e) =>
+            setTemporarySchedule({
+              ...temporarySchedule,
+              type: e.target.value,
+            })
+          }
+        >
+          <option value="onsite" key="onsite">
+            Onsite
+          </option>
+          <option value="video_call" key="video_call">
+            Video Call
+          </option>
+          <option value="chat" key="chat">
+            Chat
+          </option>
+        </Select>
 
         <div className="flex justify-end gap-2">
           <Button

@@ -11,3 +11,5 @@ func GetJWTSecret() string {
 	}
 	return secret
 }
+
+const AdminFee = 2500

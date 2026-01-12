@@ -12,27 +12,27 @@ import {
 
 const doctorMenuItems = [
   {
-    href: "/doctors/dashboard/profile",
+    href: "/doctor/dashboard/profile",
     text: "Profile",
     icon: <User className="h-4 w-4" />,
   },
   {
-    href: "/doctors/dashboard/prescriptions",
+    href: "/doctor/dashboard/prescriptions",
     text: "Prescriptions",
     icon: <ClipboardPlus className="h-4 w-4" />,
   },
   {
-    href: "/doctors/dashboard/appointments",
+    href: "/doctor/dashboard/appointments",
     text: "Appointments",
     icon: <CalendarDays className="h-4 w-4" />,
   },
   {
-    href: "/doctors/dashboard/consultation-history",
+    href: "/doctor/dashboard/consultation-history",
     text: "Consultation History",
     icon: <History className="h-4 w-4" />,
   },
   {
-    href: "/doctors/dashboard/setting",
+    href: "/doctor/dashboard/setting",
     text: "Setting",
     icon: <Settings className="h-4 w-4" />,
   },

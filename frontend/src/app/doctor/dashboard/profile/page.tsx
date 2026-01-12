@@ -2,7 +2,7 @@
 
 import { ProfileSummaryCard } from "./components/ProfileSummaryCard";
 import { ProfileTabs } from "./components/ProfileTabs";
-import { useDoctorQuery } from "./hooks/useDoctor";
+import { useDoctorQuery } from "./hooks/useDoctorProfile";
 
 export default function DoctorProfilePage() {
   const { data: doctor } = useDoctorQuery();

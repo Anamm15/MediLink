@@ -1,7 +1,11 @@
 "use client";
+
 import { useState, useMemo, useEffect } from "react";
-import { Calendar, Clock, Info, AlertCircle } from "lucide-react";
+import { Calendar, Clock, AlertCircle } from "lucide-react";
 import { DoctorScheduleResponse } from "@/types/schedule.type";
+import { useParams } from "next/navigation";
+import Link from "next/link";
+import { getCurrentDate, getCurrentTime } from "@/helpers/datetime";
 
 interface BookingWidgetProps {
   schedules: DoctorScheduleResponse[];
@@ -10,13 +14,13 @@ interface BookingWidgetProps {
 export const BookingWidget = ({ schedules }: BookingWidgetProps) => {
   const [selectedSchedule, setSelectedSchedule] =
     useState<DoctorScheduleResponse | null>(null);
+  const [currentDate, setCurrentDate] = useState("");
   const [currentTime, setCurrentTime] = useState("");
+  const { id } = useParams();
 
   useEffect(() => {
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    setCurrentTime(`${hours}:${minutes}`);
+    setCurrentTime(getCurrentTime());
+    setCurrentDate(getCurrentDate());
   }, []);
 
   const isToday = true;
@@ -104,7 +108,7 @@ export const BookingWidget = ({ schedules }: BookingWidgetProps) => {
                       : "text-gray-400"
                   }`}
                 >
-                  {passed ? "Time Passess" : `Available: ${slot.max_quota}`}
+                  {passed ? "Time Passed" : `Available: ${slot.max_quota}`}
                 </span>
 
                 {passed && (
@@ -131,12 +135,24 @@ export const BookingWidget = ({ schedules }: BookingWidgetProps) => {
         </p>
       </div>
 
-      <button
-        disabled={!selectedSchedule}
-        className="w-full mt-6 bg-slate-800 text-white font-bold py-3 rounded-xl hover:bg-slate-700 transition-all active:scale-[0.98] disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed shadow-lg shadow-slate-200"
+      <Link
+        href={
+          selectedSchedule
+            ? `/booking/order?schedule_id=${selectedSchedule.id}&doctor_id=${id}&date=${currentDate}&time=${selectedSchedule.start_time}&type=${selectedSchedule.type}`
+            : "#"
+        }
+        onClick={(e) => !selectedSchedule && e.preventDefault()}
+        tabIndex={!selectedSchedule ? -1 : 0}
+        aria-disabled={!selectedSchedule}
+        className={`w-full mt-6 flex justify-center items-center font-bold py-3 rounded-xl transition-all shadow-lg shadow-slate-200 
+    ${
+      !selectedSchedule
+        ? "bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none shadow-none"
+        : "bg-slate-800 text-white hover:bg-slate-700 active:scale-[0.98]"
+    }`}
       >
         Proceed to Payment
-      </button>
+      </Link>
     </div>
   );
 };

@@ -134,8 +134,14 @@ func (u *AppointmentUsecase) CreateBooking(ctx context.Context, userID uuid.UUID
 	// =================================================================
 
 	err = u.db.Transaction(func(tx *gorm.DB) error {
-		// 1. Cek Ketersediaan Slot
-		isAvailable, err := u.appointmentRepo.CheckAvailability(tx, req.DoctorID, parsedDate, req.StartTime)
+		// 1. Ambil Info Schedule
+		schedule, err := u.doctorScheduleRepo.GetByID(ctx, req.ScheduleID)
+		if err != nil {
+			return err
+		}
+
+		// 2. Cek Ketersediaan Slot
+		isAvailable, err := u.appointmentRepo.CheckAvailability(tx, req.DoctorID, parsedDate, schedule.StartTime)
 		if err != nil {
 			return err
 		}
@@ -143,23 +149,23 @@ func (u *AppointmentUsecase) CreateBooking(ctx context.Context, userID uuid.UUID
 			return errors.New("Schedule is not available")
 		}
 
-		// 2. Ambil Harga Snapshot
+		// 3. Ambil Harga Snapshot
 		placement, err := u.doctorScheduleRepo.GetByID(ctx, req.ScheduleID)
 		if err != nil {
 			return err
 		}
-		finalPrice = placement.ConsultationFee
+		finalPrice = placement.ConsultationFee + constants.AdminFee
 
-		// 3. Buat Entity Appointment
+		// 4. Buat Entity Appointment
 		newAppt := entity.Appointment{
 			PatientID:               patientID,
 			DoctorID:                req.DoctorID,
-			ClinicID:                req.ClinicID,
+			ClinicID:                *placement.ClinicID,
 			AppointmentDate:         parsedDate,
-			StartTime:               req.StartTime,
-			EndTime:                 req.EndTime,
+			StartTime:               schedule.StartTime,
+			EndTime:                 schedule.EndTime,
 			Status:                  enum.AppointmentPending,
-			Type:                    req.Type,
+			Type:                    schedule.Type,
 			ConsultationFeeSnapshot: finalPrice,
 		}
 
@@ -168,7 +174,7 @@ func (u *AppointmentUsecase) CreateBooking(ctx context.Context, userID uuid.UUID
 		}
 		appointmentID = newAppt.ID
 
-		// 4. Buat Entity Billing
+		// 5. Buat Entity Billing
 		newBilling := entity.Billing{
 			AppointmentID: &appointmentID,
 			PatientID:     patientID,

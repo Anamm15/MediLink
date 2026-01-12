@@ -8,10 +8,8 @@ import {
   Clock,
   Banknote,
   Users,
-  HandMetal,
-  Edit3,
-  Edit2,
   Edit,
+  MapPin,
 } from "lucide-react";
 import {
   useDeleteSchedule,
@@ -168,6 +166,10 @@ export const PracticeSchedule = ({ doctor_id }: { doctor_id: string }) => {
                       <div className="flex items-center gap-1.5 text-xs text-gray-500">
                         <Users className="w-3.5 h-3.5" />
                         <span>Quota: {slot.max_quota}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                        <MapPin className="w-3.5 h-3.5" />
+                        <span>Type: {slot.type}</span>
                       </div>
                     </div>
                   </div>

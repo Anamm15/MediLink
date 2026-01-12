@@ -9,10 +9,10 @@ import { usePathname } from "next/navigation";
 // --- DATA UNTUK MENU ---
 const menuItems = [
   { text: "Beranda", href: "/" },
-  { text: "Cari Dokter", href: "/doctors" },
+  { text: "Cari Dokter", href: "/doctor" },
   { text: "Apotek", href: "/pharmacy" },
   { text: "Dashboard User", href: "/user/dashboard" },
-  { text: "Dashboard Doctor", href: "/doctors/dashboard" },
+  { text: "Dashboard Doctor", href: "/doctor/dashboard" },
   { text: "Artikel", href: "/articles" },
 ];
 

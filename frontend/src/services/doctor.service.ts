@@ -59,6 +59,13 @@ export async function getSchedules(
   return unwrapResponse(response.data);
 }
 
+export async function getScheduleByID(id: string) {
+  const response = await api.get<ApiResponse<DoctorScheduleResponse>>(
+    `${SCHEDULE_BASE_PATH}/${id}`
+  );
+  return unwrapResponse(response.data);
+}
+
 export async function getAvailableSchedules(
   doctor_id: string,
   date: string,

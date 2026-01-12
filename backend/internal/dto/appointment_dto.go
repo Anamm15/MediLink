@@ -29,20 +29,9 @@ type AppointmentDetailResponse struct {
 }
 
 type CreateBookingRequest struct {
-	DoctorID        uuid.UUID            `json:"doctor_id" binding:"required"`
-	ClinicID        uuid.UUID            `json:"clinic_id" binding:"required"`
-	ScheduleID      uuid.UUID            `json:"schedule_id" binding:"required"`
-	AppointmentDate string               `json:"appointment_date" binding:"required"`
-	StartTime       string               `json:"start_time" binding:"required"`
-	EndTime         string               `json:"end_time" binding:"required"`
-	Type            enum.AppointmentType `json:"type" binding:"required"`
-
-	ConsultationFeeSnapshot float64 `json:"consultation_fee_snapshot" binding:"required"`
-	QueueNumber             *int    `json:"queue_number"`
-	MeetingLink             *string `json:"meeting_link"`
-
-	SymptomComplaint *string `json:"symptom_complaint"`
-	DoctorNotes      *string `json:"doctor_notes"`
+	DoctorID        uuid.UUID `json:"doctor_id" binding:"required"`
+	ScheduleID      uuid.UUID `json:"schedule_id" binding:"required"`
+	AppointmentDate string    `json:"appointment_date" binding:"required"`
 }
 
 func ToAppointmentDetailResponse(appointment *entity.Appointment) *AppointmentDetailResponse {
@@ -75,16 +64,5 @@ func ToListAppointmentDetailResponse(appointments []entity.Appointment) []Appoin
 
 func (dto *CreateBookingRequest) ToModel(appointment *entity.Appointment) {
 	appointment.DoctorID = dto.DoctorID
-	appointment.ClinicID = dto.ClinicID
 	appointment.AppointmentDate = utils.ParseDate(dto.AppointmentDate)
-	appointment.StartTime = dto.StartTime
-	appointment.EndTime = dto.EndTime
-	appointment.Type = dto.Type
-
-	appointment.ConsultationFeeSnapshot = dto.ConsultationFeeSnapshot
-	appointment.QueueNumber = dto.QueueNumber
-	appointment.MeetingLink = dto.MeetingLink
-
-	appointment.SymptomComplaint = dto.SymptomComplaint
-	appointment.DoctorNotes = dto.DoctorNotes
 }

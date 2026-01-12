@@ -4,10 +4,10 @@ import { DoctorProfileHeader } from "./components/DoctorProfileHeader";
 import { InfoSection } from "./components/InfoSection";
 import { BookingWidget } from "./components/BookingWidget";
 import { Navbar } from "@/components/layout/Navbar";
-import { useDoctorQuery } from "../hooks/useDoctor";
+import { useDoctorQuery } from "@/hooks/useDoctor";
 import { useParams } from "next/navigation";
 import { getToday } from "@/helpers/datetime";
-import { useAvailableSchedulesQuery } from "./hooks/useSchedule";
+import { useAvailableSchedulesQuery } from "./hooks/useAvailableSchedule";
 
 export default function DoctorDetailPage() {
   const params = useParams();

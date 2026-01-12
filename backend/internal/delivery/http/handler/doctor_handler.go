@@ -123,6 +123,26 @@ func (h *doctorHandler) GetSchedules(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
+func (h *doctorHandler) GetScheduleByID(ctx *gin.Context) {
+	scheduleIDParam := ctx.Param("id")
+	scheduleID, err := uuid.Parse(scheduleIDParam)
+	if err != nil {
+		res := utils.BuildResponseFailed("Invalid schedule ID", err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	schedule, err := h.doctorUsecase.GetScheduleByID(ctx, scheduleID)
+	if err != nil {
+		res := utils.BuildResponseFailed("Failed to retrieve schedule", err.Error(), nil)
+		ctx.JSON(http.StatusInternalServerError, res)
+		return
+	}
+
+	res := utils.BuildResponseSuccess("Schedule retrieved successfully", schedule)
+	ctx.JSON(http.StatusOK, res)
+}
+
 func (h *doctorHandler) GetAvailableSchedules(ctx *gin.Context) {
 	doctorIDQuery := ctx.Query("doctor_id")
 	date := ctx.Query("date")

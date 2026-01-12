@@ -4,8 +4,8 @@ import { Navbar } from "@/components/layout/Navbar";
 import { DoctorList } from "./components/DoctorList";
 import { SearchFilter } from "@/components/ui/SearchFilter";
 import { Doctor } from "@/types/index.type";
-import { useSearchDoctor } from "./hooks/useDoctor";
-import { useEffect, useState } from "react";
+import { useSearchDoctor } from "@/hooks/useDoctor";
+import { useState } from "react";
 
 // Data Placeholder (nantinya ini akan datang dari API)
 const mockDoctors: Doctor[] = [
@@ -84,11 +84,11 @@ export default function DoctorsPage() {
         <div className="container mx-auto px-4 py-8 md:py-12">
           <header className="mb-8 text-center md:text-left">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
-              Temukan Dokter Anda
+              Find Your Doctor
             </h1>
             <p className="mt-2 text-md text-gray-500">
-              Booking janji temu dengan dokter profesional pilihan Anda dengan
-              mudah.
+              Book an appointment with the professional doctor of your choice
+              easily.
             </p>
           </header>
 

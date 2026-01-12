@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:5000/api/v1/appointments
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMWYzOTBlNDYtMDdiMy00OTZlLWI2ZjUtYmZiN2QwOWU3ZDYyIiwicm9sZSI6InBhdGllbnQiLCJpc3MiOiJtZWRpbGluay1hcHAiLCJleHAiOjE3Njc5MjA1MDUsImlhdCI6MTc2NzgzNDEwNX0.ov3WCm1WzNqbI-uKl6duD1Sr7O0xcT-tABXPEvfKhPM
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMWYzOTBlNDYtMDdiMy00OTZlLWI2ZjUtYmZiN2QwOWU3ZDYyIiwicm9sZSI6InBhdGllbnQiLCJpc3MiOiJtZWRpbGluay1hcHAiLCJleHAiOjE3NjgzMDIwNDksImlhdCI6MTc2ODIxNTY0OX0.tCPJTlPGMGI3m7gPMjRYQ8b2V1dzSuw5D15Ycbl3wqg
 
 ###
 POST http://localhost:5000/api/v1/auth/login
@@ -33,12 +33,6 @@ Content-Type: application/json
 
 {
   "doctor_id": "d877e585-306e-4cb6-a4e5-69d41b5d2428",
-  "clinic_id": "03431a76-aed5-4024-a243-23307a07a3d5",
-  "schedule_id": "cee738c5-0284-4f88-97dc-df127e6228c5",
-  "appointment_date": "2025-01-10",
-  "start_time": "09:00",
-  "end_time": "09:30",
-  "type": "onsite",
-  "consultation_fee_snapshot": 50000,
-  "queue_number": 5
+  "schedule_id": "5bdceaf4-d262-42df-b8e7-e8118b21648f",
+  "appointment_date": "2025-01-13"
 }

@@ -50,7 +50,7 @@ export const DoctorCard = ({ doctor }: DoctorCardProps) => {
       </div>
 
       <Link
-        href={`/doctors/${doctor.id}`}
+        href={`/doctor/${doctor.id}`}
         className="mt-5 w-full block bg-cyan-500 text-white font-semibold py-2.5 rounded-lg text-center
              hover:bg-cyan-600 transition-colors duration-200
              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"

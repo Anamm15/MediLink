@@ -105,6 +105,14 @@ func (u *doctorUsecase) GetDoctorSchedules(ctx context.Context, doctorID uuid.UU
 	return dto.ToListDoctorScheduleResponse(doctorSchedules), nil
 }
 
+func (u *doctorUsecase) GetScheduleByID(ctx context.Context, scheduleID uuid.UUID) (dto.DoctorScheduleResponse, error) {
+	doctorSchedule, err := u.doctorScheduleRepository.GetByID(ctx, scheduleID)
+	if err != nil {
+		return dto.DoctorScheduleResponse{}, err
+	}
+	return dto.ToDoctorScheduleResponse(doctorSchedule), nil
+}
+
 func (u *doctorUsecase) GetAvailableSchedules(ctx context.Context, doctorID uuid.UUID, date string, day string) ([]dto.DoctorScheduleResponse, error) {
 	dateTime := utils.ParseDate(date)
 	reservedSchedules, err := u.appointmentRepository.GetByDate(ctx, dateTime)

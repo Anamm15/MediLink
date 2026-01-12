@@ -8,6 +8,7 @@ export type DoctorScheduleResponse = {
   consultation_fee: number;
   is_active: boolean;
   max_quota: number;
+  type: string;
 };
 
 export type CreateScheduleRequest = {
@@ -18,6 +19,7 @@ export type CreateScheduleRequest = {
   consultation_fee: number;
   max_quota: number;
   is_active?: boolean;
+  type: string;
 };
 
 export type UpdateScheduleRequest = {
@@ -26,6 +28,7 @@ export type UpdateScheduleRequest = {
   end_time?: string;
   consultation_fee?: number;
   max_quota?: number;
+  type?: string;
 };
 
 export type UpdateStatusScheduleRequest = {
@@ -39,6 +42,7 @@ export type Slot = {
   endTime: string;
   consultation_fee: number;
   max_quota: number;
+  type: string;
 };
 
 export type formattedSchedule = {
@@ -60,6 +64,7 @@ export function formatSchedule(schedules: DoctorScheduleResponse[]) {
       consultation_fee: schedule.consultation_fee,
       max_quota: schedule.max_quota,
       isActive: schedule.is_active,
+      type: schedule.type,
     }));
     formattedSchedules.push({ day, slots });
   }
