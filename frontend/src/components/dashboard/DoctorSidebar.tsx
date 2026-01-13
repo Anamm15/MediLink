@@ -8,6 +8,7 @@ import {
   History,
   LogOut,
   ShieldCheck,
+  HeartPulse,
 } from "lucide-react";
 
 const doctorMenuItems = [
@@ -20,6 +21,11 @@ const doctorMenuItems = [
     href: "/doctor/dashboard/prescriptions",
     text: "Prescriptions",
     icon: <ClipboardPlus className="h-4 w-4" />,
+  },
+  {
+    href: "/doctor/dashboard/medical-records",
+    text: "Medical Records",
+    icon: <HeartPulse className="h-4 w-4" />,
   },
   {
     href: "/doctor/dashboard/appointments",

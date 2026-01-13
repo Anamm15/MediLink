@@ -2,6 +2,8 @@ import Image from "next/image";
 import { Video, MessageSquare, Clock } from "lucide-react";
 import { AppointmentDetailResponse } from "@/types/appointment.type";
 import Link from "next/link";
+import { useState } from "react";
+import MedicalRecordModal from "@/app/doctor/dashboard/appointments/components/MedicalRecordModal";
 
 interface AppointmentCardProps {
   appointment: AppointmentDetailResponse;
@@ -16,6 +18,8 @@ export const AppointmentCard = ({
 }: AppointmentCardProps) => {
   const { patient, start_time, type, symptom_complaint } = appointment;
   const TypeIcon = type === "Video Call" ? Video : MessageSquare;
+  const [isMedicalRecordModalOpen, setIsMedicalRecordModalOpen] =
+    useState(false);
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex transition-all hover:shadow-lg hover:border-cyan-300">
@@ -76,12 +80,24 @@ export const AppointmentCard = ({
             >
               View Detail
             </Link>
-            <button className="text-xs font-semibold text-gray-500 hover:text-gray-800">
+            <button
+              onClick={() => setIsMedicalRecordModalOpen(true)}
+              className="text-xs font-semibold text-gray-500 hover:text-gray-800"
+            >
               Write Medical Notes
             </button>
           </div>
         )}
       </div>
+
+      {isMedicalRecordModalOpen && (
+        <MedicalRecordModal
+          isOpen={isMedicalRecordModalOpen}
+          setIsOpen={setIsMedicalRecordModalOpen}
+          patient_id={patient.id}
+          appointment_id={appointment.id}
+        />
+      )}
     </div>
   );
 };

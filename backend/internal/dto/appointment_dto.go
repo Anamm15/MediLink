@@ -35,14 +35,14 @@ type CreateBookingRequest struct {
 
 func ToAppointmentDetailResponse(appointment *entity.Appointment) *AppointmentDetailResponse {
 	doctorResponse := DoctorMinimumResponse{
-		ID:             appointment.Doctor.User.ID,
+		ID:             appointment.Doctor.ID,
 		Name:           appointment.Doctor.User.Name,
 		Specialization: appointment.Doctor.Specialization,
 		PhoneNumber:    appointment.Doctor.User.PhoneNumber,
 	}
 
 	patientResponse := PatientMinimumResponse{
-		ID:          appointment.Patient.User.ID,
+		ID:          appointment.Patient.ID,
 		Name:        appointment.Patient.User.Name,
 		Email:       appointment.Patient.User.Email,
 		PhoneNumber: appointment.Patient.User.PhoneNumber,

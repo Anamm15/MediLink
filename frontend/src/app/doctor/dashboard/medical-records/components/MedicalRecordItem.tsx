@@ -164,7 +164,7 @@ export const MedicalRecordItem = ({
                   </div>
 
                   <Link
-                    href={`/user/dashboard/appointments/${record.appointment_id}`}
+                    href={`/doctor/dashboard/appointments/${record.appointment_id}`}
                     className="flex items-center gap-2 text-xs font-bold text-cyan-700 hover:text-cyan-800 hover:underline transition-all"
                   >
                     <Stethoscope className="w-3.5 h-3.5" />

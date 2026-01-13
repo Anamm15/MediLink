@@ -9,25 +9,26 @@ import (
 )
 
 type MedicalRecordResponse struct {
-	ID          uuid.UUID `json:"id"`
-	DoctorName  string    `json:"doctor_name"`
-	PatientName string    `json:"patient_name"`
-	Title       string    `json:"title"`
-	Subjective  *string   `json:"subjective"`
-	Objective   *string   `json:"objective"`
-	Assessment  *string   `json:"assessment"`
-	Plan        *string   `json:"plan"`
-	CreatedAt   time.Time `json:"created_at"`
+	ID            uuid.UUID `json:"id"`
+	AppointmentID uuid.UUID `json:"appointment_id"`
+	Title         string    `json:"title"`
+	Date          string    `json:"date"`
+	Subjective    *string   `json:"subjective"`
+	Objective     *string   `json:"objective"`
+	Assessment    *string   `json:"assessment"`
+	Plan          *string   `json:"plan"`
+	CreatedAt     time.Time `json:"created_at"`
 }
 
 type MedicalRecordCreateRequest struct {
-	PatientID     uuid.UUID  `json:"patient_id" binding:"required"`
-	AppointmentID *uuid.UUID `json:"appointment_id"`
-	Title         string     `json:"title" binding:"required"`
-	Subjective    *string    `json:"subjective"`
-	Objective     *string    `json:"objective"`
-	Assessment    *string    `json:"assessment"`
-	Plan          *string    `json:"plan"`
+	PatientID     uuid.UUID `json:"patient_id" binding:"required"`
+	AppointmentID uuid.UUID `json:"appointment_id" binding:"required"`
+	Title         string    `json:"title" binding:"required"`
+	Date          string    `json:"date" binding:"required"`
+	Subjective    *string   `json:"subjective"`
+	Objective     *string   `json:"objective"`
+	Assessment    *string   `json:"assessment"`
+	Plan          *string   `json:"plan"`
 }
 
 type MedicalRecordUpdateRequest struct {
@@ -44,15 +45,14 @@ type MedicalRecordDeleteRequest struct {
 
 func ToMedicalRecordResponse(medicalRecord *entity.MedicalRecord) MedicalRecordResponse {
 	return MedicalRecordResponse{
-		ID:          medicalRecord.ID,
-		DoctorName:  medicalRecord.Doctor.User.Name,
-		PatientName: medicalRecord.Patient.User.Name,
-		Title:       medicalRecord.Title,
-		Subjective:  medicalRecord.Subjective,
-		Objective:   medicalRecord.Objective,
-		Assessment:  medicalRecord.Assessment,
-		Plan:        medicalRecord.Plan,
-		CreatedAt:   medicalRecord.CreatedAt,
+		ID:            medicalRecord.ID,
+		AppointmentID: medicalRecord.AppointmentID,
+		Title:         medicalRecord.Title,
+		Subjective:    medicalRecord.Subjective,
+		Objective:     medicalRecord.Objective,
+		Assessment:    medicalRecord.Assessment,
+		Plan:          medicalRecord.Plan,
+		CreatedAt:     medicalRecord.CreatedAt,
 	}
 }
 
@@ -68,6 +68,7 @@ func (medicalRecord *MedicalRecordCreateRequest) ToModel(entity *entity.MedicalR
 	entity.PatientID = medicalRecord.PatientID
 	entity.AppointmentID = medicalRecord.AppointmentID
 	entity.Title = medicalRecord.Title
+	entity.Date = medicalRecord.Date
 	entity.Subjective = medicalRecord.Subjective
 	entity.Objective = medicalRecord.Objective
 	entity.Assessment = medicalRecord.Assessment

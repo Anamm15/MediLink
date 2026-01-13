@@ -1,12 +1,12 @@
 "use client";
 
-import { usePatientIdQuery } from "@/hooks/usePatient";
+import { useDoctorIdQuery } from "@/hooks/useDoctor";
 import { MedicalRecordItem } from "./components/MedicalRecordItem";
-import { usePatientMedicalRecord } from "./hooks/usePatientMedicalRecord";
+import { useDoctorMedicalRecord } from "./hooks/useDoctorMedicalRecord";
 
 export default function MedicalRecordsPage() {
-  const { data: patientId } = usePatientIdQuery();
-  const { data: records } = usePatientMedicalRecord(patientId!);
+  const { data: patientId } = useDoctorIdQuery();
+  const { data: records } = useDoctorMedicalRecord(patientId!);
 
   return (
     <div className="space-y-6">

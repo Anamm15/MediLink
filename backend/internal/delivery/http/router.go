@@ -38,6 +38,7 @@ func UserRoute(server *gin.Engine, userHandler handler.UserHandler) {
 func PatientRoute(server *gin.Engine, patientHandler handler.PatientHandler) {
 	patient := server.Group("/api/v1/patients")
 	{
+		patient.GET("/me", middlewares.Authenticate(), middlewares.AuthorizeRole("patient"), patientHandler.Me)
 		patient.PUT("", middlewares.Authenticate(), middlewares.AuthorizeRole("patient"), patientHandler.Update)
 	}
 }
@@ -124,7 +125,7 @@ func MedicalRecordRoute(server *gin.Engine, medicalRecordHandler handler.Medical
 		medicalRecord.GET("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("patient", "doctor", "admin"), medicalRecordHandler.GetDetailByID)
 		medicalRecord.POST("", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), medicalRecordHandler.Create)
 		medicalRecord.PUT("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), medicalRecordHandler.Update)
-		medicalRecord.DELETE("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor", "user"), medicalRecordHandler.Delete)
+		medicalRecord.DELETE("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor", "patient"), medicalRecordHandler.Delete)
 	}
 }
 

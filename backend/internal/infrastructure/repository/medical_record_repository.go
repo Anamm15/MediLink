@@ -21,10 +21,6 @@ func NewMedicalRecordRepository(db *gorm.DB) repository.MedicalRecordRepository 
 func (r *MedicalRecordRepository) GetByPatientID(ctx context.Context, patientID uuid.UUID) ([]entity.MedicalRecord, error) {
 	var medicalRecords []entity.MedicalRecord
 	if err := r.db.WithContext(ctx).
-		Preload("Patient", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id") }).
-		Preload("Patient.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name") }).
-		Preload("Doctor", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id") }).
-		Preload("Doctor.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name") }).
 		Where("patient_id = ?", patientID).
 		Find(&medicalRecords).Error; err != nil {
 		return nil, err
@@ -35,10 +31,6 @@ func (r *MedicalRecordRepository) GetByPatientID(ctx context.Context, patientID 
 func (r *MedicalRecordRepository) GetByDoctorID(ctx context.Context, doctorID uuid.UUID) ([]entity.MedicalRecord, error) {
 	var medicalRecords []entity.MedicalRecord
 	if err := r.db.WithContext(ctx).
-		Preload("Patient", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id") }).
-		Preload("Patient.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name") }).
-		Preload("Doctor", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id") }).
-		Preload("Doctor.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name") }).
 		Where("doctor_id = ?", doctorID).
 		Find(&medicalRecords).Error; err != nil {
 		return nil, err
@@ -49,10 +41,6 @@ func (r *MedicalRecordRepository) GetByDoctorID(ctx context.Context, doctorID uu
 func (r *MedicalRecordRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity.MedicalRecord, error) {
 	var medicalRecord *entity.MedicalRecord
 	if err := r.db.WithContext(ctx).
-		Preload("Patient", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id") }).
-		Preload("Patient.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name") }).
-		Preload("Doctor", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id") }).
-		Preload("Doctor.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name") }).
 		Where("id = ?", id).
 		First(&medicalRecord).Error; err != nil {
 		return nil, err

@@ -9,11 +9,12 @@ import (
 type MedicalRecord struct {
 	ID uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
 
-	PatientID     uuid.UUID  `gorm:"type:uuid;not null"`
-	DoctorID      uuid.UUID  `gorm:"type:uuid;not null"`
-	AppointmentID *uuid.UUID `gorm:"type:uuid"`
+	PatientID     uuid.UUID `gorm:"type:uuid;not null"`
+	DoctorID      uuid.UUID `gorm:"type:uuid;not null"`
+	AppointmentID uuid.UUID `gorm:"type:uuid"`
 
 	Title      string  `gorm:"type:varchar(255);not null"`
+	Date       string  `gorm:"type:date;not null"`
 	Subjective *string `gorm:"type:text"` // Patient's reported symptoms and complaints
 	Objective  *string `gorm:"type:text"` // Clinician's observations and findings
 	Assessment *string `gorm:"type:text"` // Diagnosis or clinical impression

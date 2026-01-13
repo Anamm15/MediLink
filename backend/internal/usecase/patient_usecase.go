@@ -29,6 +29,14 @@ func NewPatientUsecase(
 	}
 }
 
+func (u *patientUsecase) Me(ctx context.Context, userID uuid.UUID) (dto.PatientResponse, error) {
+	patient, err := u.patientRepository.GetByUserID(ctx, userID)
+	if err != nil {
+		return dto.PatientResponse{}, err
+	}
+	return dto.ToPatientResponse(patient), nil
+}
+
 func (u *patientUsecase) Update(ctx context.Context, userID uuid.UUID, request dto.PatientUpdateRequest) error {
 	key := fmt.Sprintf(constants.RedisKeyPatient, userID.String())
 	var patient *entity.Patient

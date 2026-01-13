@@ -1,9 +1,21 @@
 import {
+  doctorMe,
   getDoctor,
   getScheduleByID,
   searchDoctor,
 } from "@/services/doctor.service";
 import { useQuery } from "@tanstack/react-query";
+
+export function useDoctorIdQuery() {
+  return useQuery({
+    queryKey: ["doctor-me"],
+    queryFn: async () => {
+      const data = await doctorMe();
+      return data.id;
+    },
+    staleTime: Infinity,
+  });
+}
 
 export function useSearchDoctor(name: string, page: number) {
   return useQuery({

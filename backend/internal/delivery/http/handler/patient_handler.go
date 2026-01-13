@@ -20,6 +20,18 @@ func NewPatientHandler(patientUsecase usecase.PatientUsecase) handler.PatientHan
 	return &patientHandler{patientUsecase: patientUsecase}
 }
 
+func (h *patientHandler) Me(ctx *gin.Context) {
+	userId := ctx.MustGet("user_id").(uuid.UUID)
+	patient, err := h.patientUsecase.Me(ctx, userId)
+	if err != nil {
+		res := utils.BuildResponseFailed("Failed to retrieve patient", err.Error(), nil)
+		ctx.JSON(http.StatusInternalServerError, res)
+		return
+	}
+	res := utils.BuildResponseSuccess("Patient retrieved successfully", patient)
+	ctx.JSON(http.StatusOK, res)
+}
+
 func (h *patientHandler) Update(ctx *gin.Context) {
 	userId := ctx.MustGet("user_id").(uuid.UUID)
 
