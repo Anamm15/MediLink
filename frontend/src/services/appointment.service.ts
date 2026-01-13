@@ -9,8 +9,8 @@ import {
 
 const BASE_PATH = "/appointments";
 
-export async function getAppointments(): Promise<AppointmentDetailResponse> {
-  const response = await api.get<ApiResponse<AppointmentDetailResponse>>(
+export async function getAppointments(): Promise<AppointmentDetailResponse[]> {
+  const response = await api.get<ApiResponse<AppointmentDetailResponse[]>>(
     BASE_PATH
   );
   return unwrapResponse(response.data);
@@ -35,29 +35,33 @@ export async function createAppointment(
   return unwrapResponse(response.data);
 }
 
-export async function getDoctorAppointments(): Promise<AppointmentDetailResponse> {
-  const response = await api.get<ApiResponse<AppointmentDetailResponse>>(
+export async function getDoctorAppointments(): Promise<
+  AppointmentDetailResponse[]
+> {
+  const response = await api.get<ApiResponse<AppointmentDetailResponse[]>>(
     `${BASE_PATH}/doctor`
   );
   return unwrapResponse(response.data);
 }
 
-export async function getPatientAppointments(): Promise<AppointmentDetailResponse> {
-  const response = await api.get<ApiResponse<AppointmentDetailResponse>>(
+export async function getPatientAppointments(): Promise<
+  AppointmentDetailResponse[]
+> {
+  const response = await api.get<ApiResponse<AppointmentDetailResponse[]>>(
     `${BASE_PATH}/patient`
   );
   return unwrapResponse(response.data);
 }
 
 export async function completeAppointment(id: string): Promise<null> {
-  const response = await api.post<ApiResponse<null>>(
+  const response = await api.patch<ApiResponse<null>>(
     `${BASE_PATH}/${id}/complete`
   );
   return unwrapResponse(response.data);
 }
 
 export async function cancelAppointment(id: string): Promise<null> {
-  const response = await api.post<ApiResponse<null>>(
+  const response = await api.patch<ApiResponse<null>>(
     `${BASE_PATH}/${id}/cancel`
   );
   return unwrapResponse(response.data);

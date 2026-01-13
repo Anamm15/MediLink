@@ -44,9 +44,9 @@ Content-Type: application/json
 
 {
   "clinic_id": "03431a76-aed5-4024-a243-23307a07a3d5",
-  "day_of_week": "monday",
-  "start_time": "21:00",
-  "end_time": "22:00",
+  "day_of_week": "tuesday",
+  "start_time": "23:00",
+  "end_time": "23:59",
   "max_quota": 20,
   "consultation_fee": 50000,
   "type": "onsite"

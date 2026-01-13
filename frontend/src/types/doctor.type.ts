@@ -1,3 +1,10 @@
+export type DoctorMinimumResponse = {
+  id: string;
+  name: string;
+  specialization: string;
+  avatar_url?: string;
+};
+
 export type DoctorClinicRepsonse = {
   id: string;
   name: string;

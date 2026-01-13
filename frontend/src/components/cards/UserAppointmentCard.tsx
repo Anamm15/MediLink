@@ -10,16 +10,17 @@ import {
   FileText,
   Repeat,
 } from "lucide-react";
-
-// Tipe data untuk janji temu dari perspektif user
-type UserAppointment = any; // Ganti dengan tipe data spesifik Anda nanti
+import { AppointmentDetailResponse } from "@/types/appointment.type";
+import { DEFAULT_PROFILE } from "@/helpers/constant";
+import Link from "next/link";
 
 interface CardProps {
-  appointment: UserAppointment;
+  appointment: AppointmentDetailResponse;
 }
 
 export const UserAppointmentCard = ({ appointment }: CardProps) => {
-  const { doctor, date, time, type, status } = appointment;
+  const { doctor, appointment_date, start_time, end_time, type, status } =
+    appointment;
   const isUpcoming = status === "Dikonfirmasi";
   const TypeIcon = type === "Online" ? Video : Building;
 
@@ -36,7 +37,7 @@ export const UserAppointmentCard = ({ appointment }: CardProps) => {
       {/* Kiri: Info Dokter */}
       <div className="flex-shrink-0 w-full sm:w-1/3 md:w-1/4 p-4 flex items-center gap-4 sm:flex-col sm:justify-center sm:text-center sm:border-r">
         <Image
-          src={doctor.avatarUrl}
+          src={doctor.avatar_url || DEFAULT_PROFILE}
           alt={doctor.name}
           width={72}
           height={72}
@@ -44,7 +45,7 @@ export const UserAppointmentCard = ({ appointment }: CardProps) => {
         />
         <div>
           <h3 className="font-bold text-gray-800">{doctor.name}</h3>
-          <p className="text-sm text-gray-500">{doctor.specialty}</p>
+          <p className="text-sm text-gray-500">{doctor.specialization}</p>
         </div>
       </div>
 
@@ -52,19 +53,20 @@ export const UserAppointmentCard = ({ appointment }: CardProps) => {
       <div className="flex-grow p-4 border-t sm:border-t-0">
         <div className="flex items-center gap-4 text-sm text-gray-600">
           <span className="flex items-center gap-1.5">
-            <Calendar className="w-4 h-4 text-gray-400" /> {date}
+            <Calendar className="w-4 h-4 text-gray-400" /> {appointment_date}
           </span>
           <span className="flex items-center gap-1.5">
-            <Clock className="w-4 h-4 text-gray-400" /> {time} WIB
+            <Clock className="w-4 h-4 text-gray-400" /> {start_time} -{" "}
+            {end_time} WIB
           </span>
         </div>
         <div className="mt-3 flex items-center gap-2">
           <TypeIcon className="w-5 h-5 text-cyan-600" />
-          <p className="font-semibold text-gray-800">Konsultasi {type}</p>
+          <p className="font-semibold text-gray-800">Consultation {type}</p>
         </div>
-        {type === "Onsite" && (
+        {/* {type === "Onsite" && (
           <p className="text-xs text-gray-500 mt-1">{doctor.clinicAddress}</p>
-        )}
+        )} */}
       </div>
 
       {/* Kanan: Aksi */}
@@ -72,7 +74,7 @@ export const UserAppointmentCard = ({ appointment }: CardProps) => {
         {isUpcoming ? (
           <>
             <button className="px-4 py-2 text-sm font-semibold text-white bg-cyan-500 rounded-lg hover:bg-cyan-600">
-              {type === "Online" ? "Gabung Konsultasi" : "Lihat Detail Lokasi"}
+              {type === "Online" ? "Join Consultation" : "View Detail Location"}
             </button>
             <button className="p-2 text-gray-500 rounded-md hover:bg-gray-200">
               <MoreVertical className="w-5 h-5" />
@@ -81,11 +83,14 @@ export const UserAppointmentCard = ({ appointment }: CardProps) => {
         ) : (
           <>
             <button className="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 flex items-center gap-2">
-              <FileText className="w-4 h-4" /> Lihat Resep
+              <FileText className="w-4 h-4" /> View Prescription
             </button>
-            <button className="px-4 py-2 text-sm font-semibold text-white bg-slate-800 rounded-lg hover:bg-slate-700 flex items-center gap-2">
-              <Repeat className="w-4 h-4" /> Booking Lagi
-            </button>
+            <Link
+              href={`/user/dashboard/appointments/${appointment.id}`}
+              className="px-4 py-2 text-sm font-semibold text-white bg-slate-800 rounded-lg hover:bg-slate-700 flex items-center gap-2"
+            >
+              <Repeat className="w-4 h-4" /> View Detail
+            </Link>
           </>
         )}
       </div>

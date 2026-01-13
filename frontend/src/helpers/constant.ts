@@ -9,3 +9,5 @@ export const DAYS = [
   "friday",
   "saturday",
 ];
+
+export const DEFAULT_PROFILE = "/images/default-profile-picture.avif";

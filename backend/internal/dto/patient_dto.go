@@ -8,6 +8,13 @@ import (
 	"github.com/google/uuid"
 )
 
+type PatientMinimumResponse struct {
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Email       string    `json:"email"`
+	PhoneNumber string    `json:"phone_number"`
+}
+
 type PatientResponse struct {
 	ID uuid.UUID `json:"id"`
 

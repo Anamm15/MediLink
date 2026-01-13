@@ -8,6 +8,13 @@ import (
 	"gorm.io/datatypes"
 )
 
+type DoctorMinimumResponse struct {
+	ID             uuid.UUID `json:"id"`
+	Name           string    `json:"name"`
+	Specialization string    `json:"specialization"`
+	PhoneNumber    string    `json:"phone_number"`
+}
+
 type DoctorClinicResponse struct {
 	ID       uuid.UUID `json:"id"`
 	Name     string    `json:"name"`

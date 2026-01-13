@@ -5,6 +5,8 @@ import { useBooking } from "../hooks/useBooking";
 import { CreateBookingRequest } from "@/types/appointment.type";
 import { getSnapTokenFromUrl } from "@/helpers/midtrans";
 import { toast } from "sonner";
+import { useState } from "react";
+import { Input } from "@/components/ui/form/Input";
 
 declare global {
   interface Window {
@@ -20,11 +22,12 @@ interface PaymentFlowProps {
 export const PaymentFlow = ({ consultationFee, payload }: PaymentFlowProps) => {
   const adminFee = 2500;
   const total = consultationFee + adminFee;
+  const [symptomComplaint, setSymptomComplaint] = useState("");
   const { mutateAsync: createBooking } = useBooking();
 
   const handlePayment = async () => {
-    // LANGKAH 1: Minta token dari backend Anda
     try {
+      if (symptomComplaint !== "") payload.symptom_complaint = symptomComplaint;
       const response = await createBooking(payload);
       const token = getSnapTokenFromUrl(response.payment_url);
       if (window.snap && token) {
@@ -69,7 +72,21 @@ export const PaymentFlow = ({ consultationFee, payload }: PaymentFlowProps) => {
       />
       <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col h-full">
         <div>
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Bill Details</h2>
+          <h2 className="text-lg font-bold text-gray-800 mb-3">
+            Type Your Complain or Symptom (optional)
+          </h2>
+          <Input
+            type="text"
+            name="symptom_complaint"
+            value={symptomComplaint}
+            onChange={(e) => setSymptomComplaint(e.target.value)}
+            placeholder="Symptom or Complaint"
+          />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-gray-800 mt-8 mb-4">
+            Bill Details
+          </h2>
           <div className="space-y-3 text-sm">
             <div className="flex justify-between">
               <p className="text-gray-500">Consultation Fee</p>

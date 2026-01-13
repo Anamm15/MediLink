@@ -22,6 +22,7 @@ type AppointmentUsecase struct {
 	db                 *gorm.DB
 	appointmentRepo    repository.AppointmentRepository
 	patientRepo        repository.PatientRepository
+	doctorRepo         repository.DoctorRepository
 	billingRepo        repository.BillingRepository
 	paymentRepo        repository.PaymentRepository
 	doctorScheduleRepo repository.DoctorScheduleRepository
@@ -33,6 +34,7 @@ func NewAppointmentUseCase(
 	db *gorm.DB,
 	appointmentRepo repository.AppointmentRepository,
 	patientRepo repository.PatientRepository,
+	doctorRepo repository.DoctorRepository,
 	billingRepo repository.BillingRepository,
 	paymentRepo repository.PaymentRepository,
 	doctorScheduleRepo repository.DoctorScheduleRepository,
@@ -43,6 +45,7 @@ func NewAppointmentUseCase(
 		db:                 db,
 		appointmentRepo:    appointmentRepo,
 		patientRepo:        patientRepo,
+		doctorRepo:         doctorRepo,
 		billingRepo:        billingRepo,
 		paymentRepo:        paymentRepo,
 		doctorScheduleRepo: doctorScheduleRepo,
@@ -73,9 +76,24 @@ func (u *AppointmentUsecase) GetDetailByID(ctx context.Context, appointmentID uu
 	return *appointmentResponse, nil
 }
 
-func (u *AppointmentUsecase) GetByDoctor(ctx context.Context, doctorID uuid.UUID, page int) ([]dto.AppointmentDetailResponse, error) {
+func (u *AppointmentUsecase) GetByDoctor(ctx context.Context, userID uuid.UUID, page int) ([]dto.AppointmentDetailResponse, error) {
 	limit := constants.PAGE_LIMIT_DEFAULT
 	offset := (page - 1) * limit
+
+	var doctorID uuid.UUID
+	key := fmt.Sprintf(constants.RedisKeyPatient, userID.String())
+	doctorIDStr, err := u.cacheRepo.Get(ctx, key)
+	if err == nil && doctorIDStr != "" {
+		doctorID, _ = uuid.Parse(doctorIDStr)
+		doctorID = userID
+	} else {
+		patient, err := u.doctorRepo.GetByUserID(ctx, userID)
+		if err != nil {
+			return nil, err
+		}
+		doctorID = patient.ID
+	}
+
 	appointments, err := u.appointmentRepo.GetByDoctorID(ctx, doctorID, limit, offset)
 	if err != nil {
 		return nil, err
@@ -85,9 +103,24 @@ func (u *AppointmentUsecase) GetByDoctor(ctx context.Context, doctorID uuid.UUID
 	return appointmentResponses, nil
 }
 
-func (u *AppointmentUsecase) GetByPatient(ctx context.Context, patientID uuid.UUID, page int) ([]dto.AppointmentDetailResponse, error) {
+func (u *AppointmentUsecase) GetByPatient(ctx context.Context, userID uuid.UUID, page int) ([]dto.AppointmentDetailResponse, error) {
 	limit := constants.PAGE_LIMIT_DEFAULT
 	offset := (page - 1) * limit
+
+	var patientID uuid.UUID
+	key := fmt.Sprintf(constants.RedisKeyPatient, userID.String())
+	patientIDStr, err := u.cacheRepo.Get(ctx, key)
+	if err == nil && patientIDStr != "" {
+		patientID, _ = uuid.Parse(patientIDStr)
+		patientID = userID
+	} else {
+		patient, err := u.patientRepo.GetByUserID(ctx, userID)
+		if err != nil {
+			return nil, err
+		}
+		patientID = patient.ID
+	}
+
 	appointments, err := u.appointmentRepo.GetByPatientID(ctx, patientID, limit, offset)
 	if err != nil {
 		return nil, err
@@ -167,6 +200,7 @@ func (u *AppointmentUsecase) CreateBooking(ctx context.Context, userID uuid.UUID
 			Status:                  enum.AppointmentPending,
 			Type:                    schedule.Type,
 			ConsultationFeeSnapshot: finalPrice,
+			SymptomComplaint:        req.SymptomComplaint,
 		}
 
 		if err := u.appointmentRepo.Create(tx, &newAppt); err != nil {

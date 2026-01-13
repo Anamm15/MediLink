@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Star, Calendar } from "lucide-react";
 import { DoctorProfileResponse } from "@/types/doctor.type";
 import Link from "next/link";
+import { DEFAULT_PROFILE } from "@/helpers/constant";
 
 interface DoctorCardProps {
   doctor: DoctorProfileResponse;
@@ -13,7 +14,7 @@ export const DoctorCard = ({ doctor }: DoctorCardProps) => {
       <div className="flex items-start space-x-4">
         <div className="relative flex-shrink-0">
           <Image
-            src={doctor.avatar_url}
+            src={doctor.avatar_url || DEFAULT_PROFILE}
             alt={doctor.name}
             width={80}
             height={80}

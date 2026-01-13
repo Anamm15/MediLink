@@ -1,9 +1,10 @@
+import { DoctorMinimumResponse } from "./doctor.type";
+import { PatientMinimumResponse } from "./patient.type";
+
 export type AppointmentDetailResponse = {
   id: string;
-  doctor_name: string;
-  doctor_specialization: string;
-  doctor_phone_number: string;
-  patient_name: string;
+  doctor: DoctorMinimumResponse;
+  patient: PatientMinimumResponse;
   appointment_date: string;
   start_time: string;
   end_time: string;
@@ -20,6 +21,7 @@ export type CreateBookingRequest = {
   doctor_id: string;
   schedule_id: string;
   appointment_date: string;
+  symptom_complaint?: string;
 };
 
 export type BookingResponse = {

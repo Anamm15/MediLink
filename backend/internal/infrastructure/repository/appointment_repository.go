@@ -28,7 +28,7 @@ func (r *AppointmentRepository) GetAll(ctx context.Context, limit int, offset in
 		Preload("Doctor", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id", "specialization") }).
 		Preload("Doctor.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name", "phone_number") }).
 		Preload("Patient", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id") }).
-		Preload("Patient.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name") }).
+		Preload("Patient.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name", "email", "phone_number") }).
 		Find(&appointments).Error; err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (r *AppointmentRepository) GetByID(ctx context.Context, appointmentID uuid.
 		Preload("Doctor", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id", "specialization") }).
 		Preload("Doctor.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name", "phone_number") }).
 		Preload("Patient", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id") }).
-		Preload("Patient.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name") }).
+		Preload("Patient.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name", "email", "phone_number") }).
 		First(&appointment, "id = ?", appointmentID).Error; err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (r *AppointmentRepository) GetByDoctorID(ctx context.Context, doctorID uuid
 		Preload("Doctor", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id", "specialization") }).
 		Preload("Doctor.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name", "phone_number") }).
 		Preload("Patient", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id") }).
-		Preload("Patient.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name") }).
+		Preload("Patient.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name", "email", "phone_number") }).
 		Find(&appointments).Error; err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (r *AppointmentRepository) GetByPatientID(ctx context.Context, patientID uu
 		Preload("Doctor", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id", "specialization") }).
 		Preload("Doctor.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name", "phone_number") }).
 		Preload("Patient", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id") }).
-		Preload("Patient.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name") }).
+		Preload("Patient.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name", "email", "phone_number") }).
 		Find(&appointments).Error; err != nil {
 		return nil, err
 	}

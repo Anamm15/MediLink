@@ -1,7 +1,9 @@
 import Image from "next/image";
 import { KeyRound, Camera, ShieldCheck, ShieldAlert } from "lucide-react";
+import { UserResponse } from "@/types/user.type";
+import { DEFAULT_PROFILE } from "@/helpers/constant";
 
-export const ProfileHeader = ({ user }: { user: any }) => {
+export const ProfileHeader = ({ user }: { user: UserResponse }) => {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="h-24 bg-gradient-to-r from-blue-500 to-cyan-600"></div>
@@ -9,7 +11,7 @@ export const ProfileHeader = ({ user }: { user: any }) => {
         <div className="relative -mt-12 flex flex-col md:flex-row items-end gap-6">
           <div className="relative">
             <Image
-              src={user.avatar_url}
+              src={user.avatar_url || DEFAULT_PROFILE}
               alt={user.name}
               width={120}
               height={120}

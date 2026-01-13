@@ -1,29 +1,26 @@
 "use client";
 import { motion } from "framer-motion";
 import { AppointmentCard } from "@/components/cards/AppointmentCard";
+import { AppointmentDetailResponse } from "@/types/appointment.type";
 
-// Tipe data dari page.tsx
-type Appointment = any;
-
-// Helper function untuk mengelompokkan
-const groupAppointmentsByDate = (appointments: Appointment[]) => {
+const groupAppointmentsByDate = (appointments: AppointmentDetailResponse[]) => {
   const groups = appointments.reduce((acc, app) => {
-    (acc[app.date] = acc[app.date] || []).push(app);
+    (acc[app.appointment_date] = acc[app.appointment_date] || []).push(app);
     return acc;
-  }, {} as Record<string, Appointment[]>);
+  }, {} as Record<string, AppointmentDetailResponse[]>);
   return groups;
 };
 
 export const AppointmentList = ({
   appointments,
 }: {
-  appointments: Appointment[];
+  appointments: AppointmentDetailResponse[];
 }) => {
   const groupedAppointments = groupAppointmentsByDate(appointments);
 
   if (appointments.length === 0) {
     return (
-      <p className="text-center text-gray-500 mt-10">Tidak ada janji temu.</p>
+      <p className="text-center text-gray-500 mt-10">No appointments yet.</p>
     );
   }
 
@@ -50,7 +47,11 @@ export const AppointmentList = ({
                   delay: appIndex * 0.1 + index * 0.1,
                 }}
               >
-                <AppointmentCard appointment={app} />
+                <AppointmentCard
+                  appointment={app}
+                  isUpcoming={false}
+                  isActionable={true}
+                />
               </motion.div>
             ))}
           </div>

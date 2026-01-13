@@ -10,6 +10,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { DoctorProfileResponse } from "@/types/doctor.type";
+import { DEFAULT_PROFILE } from "@/helpers/constant";
 
 type ProfileSummaryCardProps = {
   doctorData: DoctorProfileResponse;
@@ -20,7 +21,7 @@ export const ProfileSummaryCard = ({ doctorData }: ProfileSummaryCardProps) => {
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
       <div className="text-center">
         <Image
-          src={doctorData.avatar_url}
+          src={doctorData.avatar_url || DEFAULT_PROFILE}
           alt={doctorData.name}
           width={120}
           height={120}

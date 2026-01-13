@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Star, Briefcase, Users } from "lucide-react";
 import { DoctorProfileResponse } from "@/types/doctor.type";
+import { DEFAULT_PROFILE } from "@/helpers/constant";
 
 interface HeaderProps {
   doctor: DoctorProfileResponse;
@@ -11,7 +12,7 @@ export const DoctorProfileHeader = ({ doctor }: HeaderProps) => {
     <div className="flex flex-col sm:flex-row items-start gap-6 p-6 bg-white rounded-xl border border-gray-200 shadow-sm">
       <div className="relative flex-shrink-0">
         <Image
-          src={doctor.avatar_url}
+          src={doctor.avatar_url || DEFAULT_PROFILE}
           alt={doctor.name}
           width={128}
           height={128}

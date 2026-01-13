@@ -103,8 +103,11 @@ api.interceptors.response.use(
         processQueue(refreshError, null);
 
         if (typeof window !== "undefined") {
+          const currentPath = window.location.pathname + window.location.search;
           localStorage.removeItem("access_token");
-          window.location.href = "/login";
+          window.location.href = `/login?returnTo=${encodeURIComponent(
+            currentPath
+          )}`;
         }
 
         return Promise.reject(refreshError);

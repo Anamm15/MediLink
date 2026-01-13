@@ -1,3 +1,11 @@
+export type PatientMinimumResponse = {
+  id: string;
+  name: string;
+  email: string;
+  phone_number: string;
+  avatar_url?: string;
+};
+
 export type PatientResponse = {
   id: string;
   birth_date: string;

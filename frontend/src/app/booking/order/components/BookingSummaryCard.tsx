@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Calendar, Clock, Video } from "lucide-react";
 import { DoctorProfileResponse } from "@/types/doctor.type";
+import { DEFAULT_PROFILE } from "@/helpers/constant";
 
 interface SummaryProps {
   doctor: DoctorProfileResponse;
@@ -22,7 +23,7 @@ export const BookingSummaryCard = ({
       </h2>
       <div className="flex items-center gap-4 py-5">
         <Image
-          src={"https://i.pravatar.cc/150?u=adinda"}
+          src={doctor.avatar_url || DEFAULT_PROFILE}
           alt={doctor.name}
           width={64}
           height={64}

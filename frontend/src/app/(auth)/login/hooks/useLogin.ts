@@ -1,10 +1,13 @@
 import { login } from "@/services/auth.service";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export function useLogin() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get("returnTo");
+
   return useMutation({
     mutationFn: login,
     onMutate: () => {
@@ -18,7 +21,12 @@ export function useLogin() {
         id: context?.toastId,
         duration: 3000,
       });
-      router.push("/");
+
+      if (returnTo && returnTo.startsWith("/")) {
+        router.push(returnTo);
+      } else {
+        router.push("/");
+      }
     },
 
     onError: (error: any, variables, context) => {

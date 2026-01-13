@@ -1,56 +1,42 @@
 import Image from "next/image";
-import {
-  Video,
-  MessageSquare,
-  Clock,
-  FileText,
-  MoreHorizontal,
-} from "lucide-react";
-
-// Tipe data untuk satu janji temu
-type Appointment = {
-  id: string;
-  patient: {
-    name: string;
-    age: number;
-    avatarUrl: string;
-  };
-  time: string;
-  type: "Video Call" | "Chat";
-  complaint: string;
-  isUpcoming: boolean;
-  isActionable?: boolean; // Untuk menandakan tombol 'Mulai' aktif
-};
+import { Video, MessageSquare, Clock } from "lucide-react";
+import { AppointmentDetailResponse } from "@/types/appointment.type";
+import Link from "next/link";
 
 interface AppointmentCardProps {
-  appointment: Appointment;
+  appointment: AppointmentDetailResponse;
+  isUpcoming: boolean;
+  isActionable: boolean;
 }
 
-export const AppointmentCard = ({ appointment }: AppointmentCardProps) => {
-  const { patient, time, type, complaint, isUpcoming, isActionable } =
-    appointment;
+export const AppointmentCard = ({
+  appointment,
+  isUpcoming,
+  isActionable,
+}: AppointmentCardProps) => {
+  const { patient, start_time, type, symptom_complaint } = appointment;
   const TypeIcon = type === "Video Call" ? Video : MessageSquare;
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex transition-all hover:shadow-lg hover:border-cyan-300">
-      {/* Kolom Kiri: Info Pasien */}
+      {/* Left Column */}
       <div className="w-1/3 md:w-1/4 p-4 flex flex-col items-center justify-center text-center border-r">
         <Image
-          src={patient.avatarUrl}
+          src={"https://i.pravatar.cc/150?u=citra"}
           alt={patient.name}
           width={72}
           height={72}
           className="rounded-full"
         />
         <h3 className="mt-3 font-bold text-gray-800">{patient.name}</h3>
-        <p className="text-sm text-gray-500">{patient.age} tahun</p>
+        {/* <p className="text-sm text-gray-500">{patient.age} tahun</p> */}
       </div>
 
-      {/* Kolom Tengah: Detail Sesi */}
+      {/* Center Column */}
       <div className="w-2/3 md:w-1/2 p-4 flex flex-col justify-center">
         <div className="flex items-center gap-4">
           <p className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <Clock className="w-6 h-6 text-gray-400" /> {time}
+            <Clock className="w-6 h-6 text-gray-400" /> {start_time}
           </p>
           <span
             className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${
@@ -63,11 +49,11 @@ export const AppointmentCard = ({ appointment }: AppointmentCardProps) => {
           </span>
         </div>
         <p className="mt-3 text-sm text-gray-600">
-          <span className="font-semibold">Keluhan:</span> {complaint}
+          <span className="font-semibold">Complaint:</span> {symptom_complaint}
         </p>
       </div>
 
-      {/* Kolom Kanan: Aksi */}
+      {/* Right Column */}
       <div className="hidden md:flex w-1/4 p-4 items-center justify-end bg-slate-50 border-l">
         {isUpcoming ? (
           <div className="flex flex-col items-end gap-2 w-full">
@@ -79,19 +65,19 @@ export const AppointmentCard = ({ appointment }: AppointmentCardProps) => {
                   : "bg-gray-200 text-gray-500 cursor-not-allowed"
               }`}
             >
-              Mulai Konsultasi
-            </button>
-            <button className="text-xs font-semibold text-gray-500 hover:text-gray-800">
-              Lihat Rekam Medis
+              Start Consultation
             </button>
           </div>
         ) : (
           <div className="flex flex-col items-end gap-2 w-full">
-            <button className="w-full font-semibold py-2.5 rounded-lg text-sm bg-slate-800 text-white hover:bg-slate-700">
-              Lihat Detail
-            </button>
+            <Link
+              href={`/doctor/dashboard/appointments/${appointment.id}`}
+              className="w-full font-semibold py-2.5 rounded-lg text-sm bg-cyan-500 text-white hover:bg-cyan-600 transition-colors text-center"
+            >
+              View Detail
+            </Link>
             <button className="text-xs font-semibold text-gray-500 hover:text-gray-800">
-              Tulis Catatan Medis
+              Write Medical Notes
             </button>
           </div>
         )}
