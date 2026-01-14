@@ -1,10 +1,12 @@
 import { updatePatient } from "@/services/patient.service";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export function useUpdatePatient(
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>
 ) {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: updatePatient,
 
@@ -14,6 +16,7 @@ export function useUpdatePatient(
     },
 
     onSuccess: (data, variables, context) => {
+      queryClient.removeQueries({ queryKey: ["profile"] });
       setIsEditing(false);
       toast.success("Profile updated successfully", {
         id: context?.toastId,

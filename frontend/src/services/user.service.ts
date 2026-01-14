@@ -11,17 +11,15 @@ import {
 
 const BASE_PATH = "/users";
 
-/* =======================
-   QUERY
-======================= */
-
 export async function getUsers(): Promise<UserResponse[]> {
   const response = await api.get<ApiResponse<UserResponse[]>>(BASE_PATH);
   return unwrapResponse(response.data);
 }
 
 export async function me(): Promise<UserResponse> {
-  const response = await api.get<ApiResponse<UserResponse>>(`${BASE_PATH}/me`);
+  const response = await api.get<ApiResponse<UserResponse>>(`${BASE_PATH}/me`, {
+    skipAuthRedirect: true,
+  });
   return unwrapResponse(response.data);
 }
 

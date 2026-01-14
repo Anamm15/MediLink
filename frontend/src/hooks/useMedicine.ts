@@ -6,5 +6,6 @@ export function useSearchMedicineQuery(name: string) {
     queryKey: ["medicine", name],
     queryFn: () => searchMedicine(name),
     enabled: !!name,
+    staleTime: 30 * 1000,
   });
 }

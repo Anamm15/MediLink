@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { SidebarMenuItem } from "./SidebarMenuItem";
 import {
@@ -11,6 +13,8 @@ import {
   ShieldCheck,
   Bell,
 } from "lucide-react";
+import { useLogout } from "@/hooks/useAuth";
+import { Button } from "../ui/Button";
 
 const userMenuItems = [
   {
@@ -51,8 +55,9 @@ const userMenuItems = [
 ];
 
 export const UserSidebar = () => {
+  const { mutate: logout } = useLogout();
   return (
-    <aside className="hidden w-64 flex-col border-r bg-white md:flex">
+    <aside className="hidden w-64 flex-col border-r bg-white md:flex h-full">
       <div className="flex h-16 items-center border-b px-6">
         <Link
           href="/"
@@ -71,12 +76,15 @@ export const UserSidebar = () => {
           </ul>
         </nav>
       </div>
-      <div className="mt-auto p-4 border-t">
-        <SidebarMenuItem
-          href="/logout"
-          text="Logout"
-          icon={<LogOut className="h-4 w-4" />}
-        />
+      <div className="px-6 w-full">
+        <Button
+          variant="destructive"
+          className="w-full mb-4"
+          onClick={() => logout()}
+          startIcon={<LogOut className="h-4 w-4" />}
+        >
+          Logout
+        </Button>
       </div>
     </aside>
   );

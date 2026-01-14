@@ -8,7 +8,9 @@ export default function UserDashboardLayout({
 }) {
   return (
     <div className="flex min-h-screen w-full bg-gray-50">
-      <UserSidebar />
+      <div className="sticky h-screen top-0 left-0">
+        <UserSidebar />
+      </div>
       <div className="flex flex-1 flex-col">
         <DashboardHeader />
         <main className="flex-1 p-6">{children}</main>

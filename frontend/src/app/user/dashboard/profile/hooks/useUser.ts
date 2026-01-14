@@ -1,5 +1,5 @@
 import { UserProfileResponse } from "@/types/user.type";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getProfile,
   onBoardPatient,
@@ -16,12 +16,15 @@ export function useUserQuery() {
   return useQuery<UserProfileResponse>({
     queryKey: ["profile"],
     queryFn: getProfile,
+    staleTime: 5 * 60 * 1000,
   });
 }
 
 export function useUpdateUser(
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>
 ) {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: updateProfile,
 
@@ -32,6 +35,9 @@ export function useUpdateUser(
 
     onSuccess: (data, variables, context) => {
       setIsEditing(false);
+      queryClient.removeQueries({ queryKey: ["me"] });
+      queryClient.removeQueries({ queryKey: ["profile"] });
+
       toast.success("Profile updated successfully", {
         id: context?.toastId,
         duration: 3000,
@@ -53,6 +59,8 @@ export function useOnBoardPatient(
   dataParam: UserProfileResponse,
   setData: React.Dispatch<React.SetStateAction<UserProfileResponse | undefined>>
 ) {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: onBoardPatient,
 
@@ -63,6 +71,7 @@ export function useOnBoardPatient(
 
     onSuccess: async (data, variables, context) => {
       try {
+        queryClient.removeQueries({ queryKey: ["profile"] });
         setIsModalOpen(false);
         setData({
           ...dataParam,

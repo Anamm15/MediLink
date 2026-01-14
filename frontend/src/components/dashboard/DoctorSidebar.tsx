@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { SidebarMenuItem } from "./SidebarMenuItem";
 import {
@@ -5,11 +7,12 @@ import {
   Settings,
   ClipboardPlus,
   CalendarDays,
-  History,
   LogOut,
   ShieldCheck,
   HeartPulse,
 } from "lucide-react";
+import { Button } from "../ui/Button";
+import { useLogout } from "@/hooks/useAuth";
 
 const doctorMenuItems = [
   {
@@ -40,8 +43,9 @@ const doctorMenuItems = [
 ];
 
 export const DoctorSidebar = () => {
+  const { mutate: logout } = useLogout();
   return (
-    <aside className="hidden w-64 sticky flex-col border-r bg-white md:flex h-screen top-0">
+    <aside className="hidden w-64 flex-col border-r bg-white md:flex h-full">
       <div className="flex h-16 items-center border-b px-6">
         <Link
           href="/"
@@ -60,12 +64,15 @@ export const DoctorSidebar = () => {
           </ul>
         </nav>
       </div>
-      <div className="p-4 border-t">
-        <SidebarMenuItem
-          href="/logout"
-          text="Logout"
-          icon={<LogOut className="h-4 w-4" />}
-        />
+      <div className="px-6 w-full">
+        <Button
+          variant="destructive"
+          className="w-full mb-4"
+          onClick={() => logout()}
+          startIcon={<LogOut className="h-4 w-4" />}
+        >
+          Logout
+        </Button>
       </div>
     </aside>
   );

@@ -5,28 +5,36 @@ import Link from "next/link";
 import Image from "next/image";
 import { ShieldCheck, Menu, X, LogOut, LayoutDashboard } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useLogout, useSession } from "@/hooks/useAuth";
+import { DEFAULT_PROFILE } from "@/helpers/constant";
 
-// --- DATA UNTUK MENU ---
 const menuItems = [
   { text: "Beranda", href: "/" },
   { text: "Cari Dokter", href: "/doctor" },
   { text: "Apotek", href: "/pharmacy" },
-  { text: "Dashboard User", href: "/user/dashboard" },
-  { text: "Dashboard Doctor", href: "/doctor/dashboard" },
   { text: "Artikel", href: "/articles" },
 ];
 
-// --- DATA PENGGUNA (SIMULASI) ---
-const mockUser = {
-  name: "Budi Setiawan",
-  avatarUrl: "https://i.pravatar.cc/150?u=budi",
+const mapRoleToDashboard = (role: string): string => {
+  if (role === "doctor") {
+    return "/doctor/dashboard/profile";
+  } else if (role === "pharmacy") {
+    return "/pharmacy/dashboard/profile";
+  } else if (role === "user" || role === "patient") {
+    return "/user/dashboard/profile";
+  } else if (role === "admin") {
+    return "/admin/dashboard/profile";
+  }
+  return "/";
 };
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const pathname = usePathname();
+  const { data: user } = useSession();
+  const { mutate: logout } = useLogout();
+  const [dashboardLinkHref, setDashboardLinkHref] = useState("/");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,6 +50,11 @@ export const Navbar = () => {
     }
   }, [pathname]);
 
+  useEffect(() => {
+    if (!user) return;
+    setDashboardLinkHref(mapRoleToDashboard(user?.role || ""));
+  }, [user]);
+
   return (
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
@@ -49,7 +62,6 @@ export const Navbar = () => {
       }`}
     >
       <div className="container mx-auto flex h-20 items-center justify-between px-4">
-        {/* 1. Logo */}
         <Link
           href="/"
           className="flex items-center gap-2 font-bold text-cyan-600"
@@ -58,7 +70,6 @@ export const Navbar = () => {
           <span className="text-xl font-bold">MediLink</span>
         </Link>
 
-        {/* 2. Menu Navigasi Desktop */}
         <nav className="hidden items-center gap-8 md:flex">
           {menuItems.map((item) => (
             <Link
@@ -73,36 +84,34 @@ export const Navbar = () => {
           ))}
         </nav>
 
-        {/* 3. Tombol Aksi / Profil Pengguna (Desktop) */}
         <div className="hidden items-center gap-3 md:flex">
-          {isLoggedIn ? (
+          {user ? (
             <div className="group relative">
               <Link
-                href="/dashboard"
+                href={dashboardLinkHref}
                 className="flex items-center gap-2 cursor-pointer"
               >
                 <Image
-                  src={mockUser.avatarUrl}
-                  alt={mockUser.name}
+                  src={user.avatar_url || DEFAULT_PROFILE}
+                  alt={user.name}
                   width={36}
                   height={36}
                   className="rounded-full"
                 />
                 <span className="text-sm font-medium text-gray-700">
-                  {mockUser.name}
+                  {user.name}
                 </span>
               </Link>
-              {/* Dropdown Menu (optional) */}
               <div className="absolute right-0 top-full mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
                 <div className="py-1">
                   <Link
-                    href="/dashboard"
+                    href={dashboardLinkHref}
                     className="flex w-full items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     <LayoutDashboard className="h-4 w-4" /> Dashboard
                   </Link>
                   <button
-                    onClick={() => setIsLoggedIn(false)}
+                    onClick={() => logout()}
                     className="flex w-full items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100"
                   >
                     <LogOut className="h-4 w-4" /> Logout
@@ -116,19 +125,19 @@ export const Navbar = () => {
                 href="/login"
                 className="px-4 py-2 font-semibold text-gray-600 hover:text-cyan-600"
               >
-                Masuk
+                Sign In
               </Link>
               <Link
                 href="/register"
                 className="rounded-full bg-cyan-500 px-5 py-2 font-semibold text-white shadow-sm hover:bg-cyan-600"
               >
-                Daftar
+                Sign Up
               </Link>
             </>
           )}
         </div>
 
-        {/* 4. Tombol Hamburger (Mobile) */}
+        {/* Hamburger Button */}
         <div className="md:hidden">
           <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? (
@@ -140,7 +149,6 @@ export const Navbar = () => {
         </div>
       </div>
 
-      {/* 5. Menu Mobile (Slide-in) */}
       <div
         className={`absolute top-20 left-0 w-full bg-white shadow-lg md:hidden transition-transform duration-300 ease-in-out ${
           isMenuOpen ? "translate-x-0" : "-translate-x-full"
@@ -161,25 +169,26 @@ export const Navbar = () => {
             </Link>
           ))}
           <div className="border-t border-gray-200 pt-6">
-            {isLoggedIn ? (
+            {user ? (
               <div className="space-y-4">
-                <Link href="/dashboard" className="flex items-center gap-3">
+                <Link
+                  href={dashboardLinkHref}
+                  className="flex items-center gap-3"
+                >
                   <Image
-                    src={mockUser.avatarUrl}
-                    alt={mockUser.name}
+                    src={user.avatar_url || DEFAULT_PROFILE}
+                    alt={user.name}
                     width={40}
                     height={40}
                     className="rounded-full"
                   />
                   <div>
-                    <p className="font-semibold text-gray-800">
-                      {mockUser.name}
-                    </p>
-                    <p className="text-xs text-gray-500">Lihat Dashboard</p>
+                    <p className="font-semibold text-gray-800">{user.name}</p>
+                    <p className="text-xs text-gray-500">View Dashboard</p>
                   </div>
                 </Link>
                 <button
-                  onClick={() => setIsLoggedIn(false)}
+                  onClick={() => logout()}
                   className="w-full rounded-md bg-red-50 py-2.5 text-sm font-semibold text-red-600"
                 >
                   Logout
@@ -191,13 +200,13 @@ export const Navbar = () => {
                   href="/login"
                   className="w-full rounded-md border border-gray-300 py-2.5 text-center text-sm font-semibold text-gray-700"
                 >
-                  Masuk
+                  Sign In
                 </Link>
                 <Link
                   href="/register"
                   className="w-full rounded-md bg-cyan-500 py-2.5 text-center text-sm font-semibold text-white"
                 >
-                  Daftar
+                  Sign Up
                 </Link>
               </div>
             )}

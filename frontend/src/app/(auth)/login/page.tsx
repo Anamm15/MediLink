@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/form/Input";
@@ -15,11 +15,11 @@ export default function LoginPage() {
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const { mutate } = useLogin();
+  const { mutate: login } = useLogin();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    mutate(data);
+    login(data);
   };
 
   return (

@@ -69,7 +69,12 @@ func (h *AuthHandler) Login(ctx *gin.Context) {
 }
 
 func (h *AuthHandler) RefreshToken(ctx *gin.Context) {
-	refreshToken, _ := ctx.Cookie("refresh_token")
+	refreshToken, err := ctx.Cookie("refresh_token")
+	if err != nil {
+		res := utils.BuildResponseFailed("Failed to get refresh token", err.Error(), nil)
+		ctx.JSON(http.StatusInternalServerError, res)
+		return
+	}
 
 	newAccessToken, newRefreshToken, err := h.authUsecase.RefreshToken(ctx, refreshToken)
 	if err != nil {

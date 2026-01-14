@@ -5,6 +5,12 @@ import axios, {
 } from "axios";
 import { BASE_URL } from "@/helpers/constant";
 
+declare module "axios" {
+  export interface InternalAxiosRequestConfig {
+    skipAuthRedirect?: boolean;
+  }
+}
+
 interface RefreshTokenResponse {
   data: string;
 }
@@ -81,8 +87,9 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const response = await axios.get<RefreshTokenResponse>(
+        const response = await axios.post<RefreshTokenResponse>(
           `${BASE_URL}/auth/refresh-token`,
+          {},
           { withCredentials: true }
         );
 
@@ -102,9 +109,14 @@ api.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null);
 
-        if (typeof window !== "undefined") {
+        if (
+          typeof window !== "undefined" &&
+          !originalRequest.skipAuthRedirect
+        ) {
           const currentPath = window.location.pathname + window.location.search;
+
           localStorage.removeItem("access_token");
+
           window.location.href = `/login?returnTo=${encodeURIComponent(
             currentPath
           )}`;
