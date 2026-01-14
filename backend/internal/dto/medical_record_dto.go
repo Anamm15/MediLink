@@ -11,6 +11,8 @@ import (
 type MedicalRecordResponse struct {
 	ID            uuid.UUID `json:"id"`
 	AppointmentID uuid.UUID `json:"appointment_id"`
+	PatientID     uuid.UUID `json:"patient_id"`
+	DoctorID      uuid.UUID `json:"doctor_id"`
 	Title         string    `json:"title"`
 	Date          string    `json:"date"`
 	Subjective    *string   `json:"subjective"`
@@ -47,6 +49,8 @@ func ToMedicalRecordResponse(medicalRecord *entity.MedicalRecord) MedicalRecordR
 	return MedicalRecordResponse{
 		ID:            medicalRecord.ID,
 		AppointmentID: medicalRecord.AppointmentID,
+		PatientID:     medicalRecord.PatientID,
+		DoctorID:      medicalRecord.DoctorID,
 		Title:         medicalRecord.Title,
 		Subjective:    medicalRecord.Subjective,
 		Objective:     medicalRecord.Objective,

@@ -41,7 +41,11 @@ func (r *MedicineRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity
 func (r *MedicineRepository) Search(ctx context.Context, name string, limit int, offset int) ([]entity.Medicine, error) {
 	var medicines []entity.Medicine
 	if err := r.db.WithContext(ctx).
-		Where("name LIKE ?", "%"+name+"%").
+		Where(
+			"name ILIKE ? OR generic_name ILIKE ?",
+			"%"+name+"%",
+			"%"+name+"%",
+		).
 		Limit(limit).
 		Offset(offset).
 		Find(&medicines).Error; err != nil {

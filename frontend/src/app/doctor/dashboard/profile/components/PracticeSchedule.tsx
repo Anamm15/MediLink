@@ -43,11 +43,7 @@ export const PracticeSchedule = ({ doctor_id }: { doctor_id: string }) => {
     if (data) setSchedules(formatSchedule(data));
   }, [data]);
 
-  const handleToggleSlot = async (
-    id: string,
-    day: string,
-    is_active: boolean
-  ) => {
+  const handleToggleSlot = async (id: string, is_active: boolean) => {
     setSelectedSlotId(id);
     await updateStatus({
       id: id,
@@ -119,11 +115,7 @@ export const PracticeSchedule = ({ doctor_id }: { doctor_id: string }) => {
                         {/* Toggle Switch Per Slot */}
                         <button
                           onClick={() =>
-                            handleToggleSlot(
-                              slot.id,
-                              schedule.day,
-                              slot.isActive
-                            )
+                            handleToggleSlot(slot.id, slot.isActive)
                           }
                           className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${
                             slot.isActive ? "bg-cyan-500" : "bg-gray-400"

@@ -84,7 +84,7 @@ type DoctorUpdateScheduleRequest struct {
 }
 
 type DoctorUpdateStatusScheduleRequest struct {
-	IsActive bool `json:"is_active" binding:"required" validate:"required"`
+	IsActive *bool `json:"is_active"`
 }
 
 func ToDoctorResponse(entity *entity.Doctor) DoctorProfileResponse {

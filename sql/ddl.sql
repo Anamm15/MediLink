@@ -228,7 +228,7 @@ CREATE TABLE appointments (
 -- Follows SOAP Standard (Subjective, Objective, Assessment, Plan)
 CREATE TABLE medical_records (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    appointment_id UUID UNIQUE REFERENCES appointments(id), -- 1-to-1 with appointment
+    appointment_id UUID UNIQUE NOT NULL REFERENCES appointments(id), -- 1-to-1 with appointment
     patient_id UUID NOT NULL REFERENCES patients(id),
     doctor_id UUID NOT NULL REFERENCES doctors(id),
     

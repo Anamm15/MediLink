@@ -18,9 +18,9 @@ const doctorMenuItems = [
     icon: <User className="h-4 w-4" />,
   },
   {
-    href: "/doctor/dashboard/prescriptions",
-    text: "Prescriptions",
-    icon: <ClipboardPlus className="h-4 w-4" />,
+    href: "/doctor/dashboard/appointments",
+    text: "Appointments",
+    icon: <CalendarDays className="h-4 w-4" />,
   },
   {
     href: "/doctor/dashboard/medical-records",
@@ -28,14 +28,9 @@ const doctorMenuItems = [
     icon: <HeartPulse className="h-4 w-4" />,
   },
   {
-    href: "/doctor/dashboard/appointments",
-    text: "Appointments",
-    icon: <CalendarDays className="h-4 w-4" />,
-  },
-  {
-    href: "/doctor/dashboard/consultation-history",
-    text: "Consultation History",
-    icon: <History className="h-4 w-4" />,
+    href: "/doctor/dashboard/prescriptions",
+    text: "Prescriptions",
+    icon: <ClipboardPlus className="h-4 w-4" />,
   },
   {
     href: "/doctor/dashboard/setting",
@@ -46,7 +41,7 @@ const doctorMenuItems = [
 
 export const DoctorSidebar = () => {
   return (
-    <aside className="hidden w-64 flex-col border-r bg-white md:flex">
+    <aside className="hidden w-64 sticky flex-col border-r bg-white md:flex h-screen top-0">
       <div className="flex h-16 items-center border-b px-6">
         <Link
           href="/"
@@ -65,7 +60,7 @@ export const DoctorSidebar = () => {
           </ul>
         </nav>
       </div>
-      <div className="mt-auto p-4 border-t">
+      <div className="p-4 border-t">
         <SidebarMenuItem
           href="/logout"
           text="Logout"

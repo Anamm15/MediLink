@@ -1,53 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { UserPrescriptionCard } from "@/components/cards/UserPrescriptionCard";
-
-// --- DATA DUMMY ---
-const mockActivePrescriptions = [
-  {
-    id: "RX-USER-01",
-    doctor: {
-      name: "Dr. Adinda Melati, Sp.A",
-      specialty: "Dokter Anak",
-      avatarUrl: "https://i.pravatar.cc/150?u=adinda",
-    },
-    date: "19 Sep 2025",
-    status: "Aktif",
-    medicines: [
-      { name: "Paracetamol Sirup", quantity: "1 botol" },
-      { name: "Cetirizine 10mg", quantity: "1 strip" },
-    ],
-  },
-];
-
-const mockPastPrescriptions = [
-  {
-    id: "RX-USER-02",
-    doctor: {
-      name: "Dr. Citra Ayu, Sp.KK",
-      specialty: "Kulit & Kelamin",
-      avatarUrl: "https://i.pravatar.cc/150?u=citra",
-    },
-    date: "15 Agustus 2025",
-    status: "Sudah Ditebus",
-    medicines: [{ name: "Hydrocortisone Cream 1%", quantity: "1 tube" }],
-  },
-  {
-    id: "RX-USER-03",
-    doctor: {
-      name: "Dr. Budi Santoso, Sp.PD",
-      specialty: "Penyakit Dalam",
-      avatarUrl: "https://i.pravatar.cc/150?u=budi",
-    },
-    date: "10 Juli 2025",
-    status: "Sudah Ditebus",
-    medicines: [
-      { name: "Amoxicillin 500mg", quantity: "15 tablet" },
-      { name: "Ibuprofen 400mg", quantity: "10 tablet" },
-    ],
-  },
-];
+import { usePatientIdQuery } from "@/hooks/usePatient";
+import { usePatientPrescriptionQuery } from "./hooks/usePatientPrescription";
+import { PrescriptionResponse } from "@/types/prescription.type";
+import PrescriptionCard from "./components/PrescriptionCard";
 
 const listVariants = {
   hidden: { opacity: 0 },
@@ -56,13 +13,34 @@ const listVariants = {
 
 export default function UserPrescriptionPage() {
   const [activeTab, setActiveTab] = useState("active");
+  const { data: patientId } = usePatientIdQuery();
+  const { data: prescriptions } = usePatientPrescriptionQuery(patientId!);
+  const [redeemedPrescriptions, setRedeemedPrescriptions] = useState<
+    PrescriptionResponse[]
+  >([]);
+  const [unredeemedPrescriptions, setUnredeemedPrescriptions] = useState<
+    PrescriptionResponse[]
+  >([]);
+
+  useEffect(() => {
+    if (prescriptions) {
+      const redeemed = prescriptions.filter(
+        (prescription) => prescription.is_redeemed === true
+      );
+      const unredeemed = prescriptions.filter(
+        (prescription) => prescription.is_redeemed === false
+      );
+      setRedeemedPrescriptions(redeemed);
+      setUnredeemedPrescriptions(unredeemed);
+    }
+  }, [prescriptions]);
 
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-3xl font-bold text-gray-800">Resep Digital Saya</h1>
+        <h1 className="text-3xl font-bold text-gray-800">My Prescriptions</h1>
         <p className="mt-1 text-gray-500">
-          Lihat dan tebus resep yang diberikan oleh dokter Anda.
+          View and redeem prescriptions given by your doctor.
         </p>
       </header>
 
@@ -76,7 +54,7 @@ export default function UserPrescriptionPage() {
               : "text-gray-500 hover:text-gray-800"
           }`}
         >
-          Resep Aktif ({mockActivePrescriptions.length})
+          Active ({unredeemedPrescriptions.length})
         </button>
         <button
           onClick={() => setActiveTab("history")}
@@ -86,7 +64,7 @@ export default function UserPrescriptionPage() {
               : "text-gray-500 hover:text-gray-800"
           }`}
         >
-          Riwayat ({mockPastPrescriptions.length})
+          History ({redeemedPrescriptions.length})
         </button>
       </div>
 
@@ -101,25 +79,27 @@ export default function UserPrescriptionPage() {
           className="space-y-4"
         >
           {(activeTab === "active"
-            ? mockActivePrescriptions
-            : mockPastPrescriptions
+            ? unredeemedPrescriptions
+            : redeemedPrescriptions
           ).map((rx) => (
-            <UserPrescriptionCard key={rx.id} prescription={rx} />
+            <PrescriptionCard key={rx.id} prescription={rx} />
           ))}
 
-          {activeTab === "active" && mockActivePrescriptions.length === 0 && (
+          {activeTab === "active" && unredeemedPrescriptions.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-500">Anda tidak memiliki resep aktif.</p>
+              <p className="text-gray-500">
+                You don not have any active prescription.
+              </p>
               <p className="text-sm text-gray-400 mt-1">
-                Resep baru akan muncul di sini setelah konsultasi.
+                New prescription will be appear here after consultation.
               </p>
             </div>
           )}
 
-          {activeTab === "history" && mockPastPrescriptions.length === 0 && (
+          {activeTab === "history" && redeemedPrescriptions.length === 0 && (
             <div className="text-center py-12">
               <p className="text-gray-500">
-                Anda belum memiliki riwayat resep.
+                You don not have any prescription history yet.
               </p>
             </div>
           )}

@@ -1,6 +1,8 @@
 export type MedicalRecordResponse = {
   id: string;
   appointment_id: string;
+  patient_id: string;
+  doctor_id: string;
   title: string;
   date: string;
   subjective?: string;

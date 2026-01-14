@@ -32,7 +32,7 @@ export const UserAppointmentCard = ({ appointment }: CardProps) => {
   return (
     <motion.div
       variants={cardVariants}
-      className="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row"
+      className="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row hover:border-cyan-200"
     >
       {/* Kiri: Info Dokter */}
       <div className="flex-shrink-0 w-full sm:w-1/3 md:w-1/4 p-4 flex items-center gap-4 sm:flex-col sm:justify-center sm:text-center sm:border-r">

@@ -1,12 +1,12 @@
 @baseUrl = http://localhost:5000/api/v1/medicines
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzAwYzg4NzQtMTM3MS00ZWQzLTllMzgtNjFlODYwYTQ3MjM1Iiwicm9sZSI6ImFkbWluIiwiaXNzIjoibWVkaWxpbmstYXBwIiwiZXhwIjoxNzY2ODAzMjc4LCJpYXQiOjE3NjY3MTY4Nzh9.7x_MHw7C2PhaiPjFFxmdYMgT8v1pHZbL3rru3TapS8Y
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZDA5YmMzMGEtY2NlNS00NDUwLWI0NzctODgyMDdlOGM0OWVlIiwicm9sZSI6ImFkbWluIiwiaXNzIjoibWVkaWxpbmstYXBwIiwiZXhwIjoxNzY4NDMxNTU3LCJpYXQiOjE3NjgzNDUxNTd9.oxffUjL1T24eounEWs1brduQVQdFpzvOvawBGLGIg7o
 
 ###
 POST http://localhost:5000/api/v1/auth/login
 Content-Type: application/json
 
 {
-   "email": "irulxartal@gmail.com",
+   "email": "choirulanm.15@gmail.com",
    "password": "SecurePass123"
 }
 ###
@@ -24,7 +24,7 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-   "name": "Vitamin C 1000mg",
+   "name": "Vitamin D 1000mg",
    "description": null,
    "generic_name": "Ascorbic Acid",
    "category": "Supplement",

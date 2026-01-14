@@ -217,7 +217,7 @@ func (u *doctorUsecase) UpdateStatusSchedule(ctx context.Context, userID uuid.UU
 		return errors.New("You do not have permission to update this schedule")
 	}
 
-	return u.doctorScheduleRepository.UpdateStatus(ctx, scheduleID, request.IsActive)
+	return u.doctorScheduleRepository.UpdateStatus(ctx, scheduleID, *request.IsActive)
 }
 
 func (u *doctorUsecase) DeleteSchedule(ctx context.Context, userID uuid.UUID, scheduleID uuid.UUID) error {

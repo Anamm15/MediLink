@@ -22,13 +22,10 @@ func NewPrescriptionRepository(db *gorm.DB) repository.PrescriptionRepository {
 	}
 }
 
-func (r *PrescriptionRepository) GetByPatient(ctx context.Context, userID uuid.UUID,
-) ([]entity.Prescription, error) {
+func (r *PrescriptionRepository) GetByPatient(ctx context.Context, patientID uuid.UUID) ([]entity.Prescription, error) {
 	var prescriptions []entity.Prescription
 
 	err := r.db.WithContext(ctx).
-		Joins("JOIN patients ON patients.id = prescriptions.patient_id").
-		Where("patients.user_id = ?", userID).
 		Preload("Doctor", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "user_id", "specialization")
 		}).
@@ -37,6 +34,7 @@ func (r *PrescriptionRepository) GetByPatient(ctx context.Context, userID uuid.U
 		}).
 		Preload("Medicines").
 		Preload("Medicines.Medicine").
+		Where("patient_id = ?", patientID).
 		Find(&prescriptions).Error
 	if err != nil {
 		return nil, err
@@ -45,20 +43,19 @@ func (r *PrescriptionRepository) GetByPatient(ctx context.Context, userID uuid.U
 	return prescriptions, nil
 }
 
-func (r *PrescriptionRepository) GetByDoctor(ctx context.Context, userID uuid.UUID) ([]entity.Prescription, error) {
+func (r *PrescriptionRepository) GetByDoctor(ctx context.Context, doctorID uuid.UUID) ([]entity.Prescription, error) {
 	var prescriptions []entity.Prescription
 
 	err := r.db.WithContext(ctx).
-		Joins("JOIN doctors ON doctors.id = prescriptions.doctor_id").
-		Where("doctors.user_id = ?", userID).
 		Preload("Patient", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "user_id")
 		}).
 		Preload("Patient.User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "name")
+			return db.Select("id", "name", "email", "phone_number")
 		}).
 		Preload("Medicines").
 		Preload("Medicines.Medicine").
+		Where("doctor_id = ?", doctorID).
 		Find(&prescriptions).Error
 	if err != nil {
 		return nil, err

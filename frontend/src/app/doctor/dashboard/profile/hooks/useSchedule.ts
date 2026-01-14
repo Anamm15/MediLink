@@ -1,7 +1,6 @@
 import {
   createSchedule,
   deleteSchedule,
-  getAvailableSchedules,
   getSchedules,
   updateSchedule,
   updateStatusSchedule,
@@ -85,9 +84,15 @@ export function useUpdateStatusSchedule(
   slotId: string
 ) {
   return useMutation({
-    mutationFn: ({ id, is_active }: { id: string; is_active: boolean }) => {
-      const payload: UpdateStatusScheduleRequest = { is_active };
-      return updateStatusSchedule(id, payload);
+    mutationFn: async ({
+      id,
+      is_active,
+    }: {
+      id: string;
+      is_active: boolean;
+    }) => {
+      const data = await updateStatusSchedule(id, is_active);
+      return data;
     },
 
     onMutate: () => {

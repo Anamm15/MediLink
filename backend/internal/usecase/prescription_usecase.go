@@ -35,16 +35,16 @@ func NewPrescriptionUsecase(
 	}
 }
 
-func (u *PrescriptionUsecase) GetByPatient(ctx context.Context, userID uuid.UUID) ([]dto.PrescriptionResponse, error) {
-	prescriptions, err := u.prescriptionRepository.GetByPatient(ctx, userID)
+func (u *PrescriptionUsecase) GetByPatient(ctx context.Context, patientID uuid.UUID) ([]dto.PrescriptionResponse, error) {
+	prescriptions, err := u.prescriptionRepository.GetByPatient(ctx, patientID)
 	if err != nil {
 		return nil, err
 	}
 	return dto.ToListPrescriptionResponseDTO(prescriptions), nil
 }
 
-func (u *PrescriptionUsecase) GetByDoctor(ctx context.Context, userID uuid.UUID) ([]dto.PrescriptionResponse, error) {
-	prescriptions, err := u.prescriptionRepository.GetByDoctor(ctx, userID)
+func (u *PrescriptionUsecase) GetByDoctor(ctx context.Context, doctorID uuid.UUID) ([]dto.PrescriptionResponse, error) {
+	prescriptions, err := u.prescriptionRepository.GetByDoctor(ctx, doctorID)
 	if err != nil {
 		return nil, err
 	}

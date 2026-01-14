@@ -9,8 +9,8 @@ import (
 )
 
 type PrescriptionUsecase interface {
-	GetByPatient(ctx context.Context, userID uuid.UUID) ([]dto.PrescriptionResponse, error)
-	GetByDoctor(ctx context.Context, userID uuid.UUID) ([]dto.PrescriptionResponse, error)
+	GetByPatient(ctx context.Context, patientID uuid.UUID) ([]dto.PrescriptionResponse, error)
+	GetByDoctor(ctx context.Context, doctorID uuid.UUID) ([]dto.PrescriptionResponse, error)
 	GetDetailByID(ctx context.Context, id uuid.UUID) (*dto.PrescriptionResponse, error)
 	Create(ctx context.Context, userID uuid.UUID, request *dto.PrescriptionCreate) (dto.PrescriptionResponse, error)
 	Update(ctx context.Context, id uuid.UUID, userID uuid.UUID, request *dto.PrescriptionUpdate) (dto.PrescriptionResponse, error)

@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:5000/api/v1/prescriptions
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTE3NWQ1MzgtZjJjMS00MzhhLWE3N2UtODc4NjFiNjllMWRkIiwicm9sZSI6ImRvY3RvciIsImlzcyI6Im1lZGlsaW5rLWFwcCIsImV4cCI6MTc2NjY0MjAxNCwiaWF0IjoxNzY2NTU1NjE0fQ.WwGKDqWjRUnDWrwEbp2s1m8B15bBBZI4zaxF2zXgMqE
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZGRmNjdkOWUtZTE0NC00MDY3LWEzYmMtMzJjMjFiN2E0ZGMwIiwicm9sZSI6ImRvY3RvciIsImlzcyI6Im1lZGlsaW5rLWFwcCIsImV4cCI6MTc2ODQzMTM5OCwiaWF0IjoxNzY4MzQ0OTk4fQ.fn8ISF0Sm5X0S5M2OK7POxp0AYU80cJoo7aNTlspKUI
 
 ###
 POST http://localhost:5000/api/v1/auth/login
@@ -11,7 +11,7 @@ Content-Type: application/json
 }
 
 ###
-GET {{baseUrl}}/doctor
+GET {{baseUrl}}/doctor/d877e585-306e-4cb6-a4e5-69d41b5d2428
 Authorization: Bearer {{token}}
 
 ###
@@ -28,14 +28,15 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-   "patient_id": "97ad4851-9652-4b3c-8653-0e7ce98ebde7",
-   "doctor_id": "0902d466-40c2-4bb7-9884-81035819ebdc",
-   "notes": "Silahkan diminum setelah makan",
+   "patient_id": "94c001e2-ea7b-460d-8260-5ed3c0178d05",
+   "doctor_id": "d877e585-306e-4cb6-a4e5-69d41b5d2428",
+   "medical_record_id": "78135c88-c50a-4923-a5c5-be30ba6ce72a",
+   "notes": "Please take the medicine before eating",
    "medicines": [{
-      "medicine_id": "3e9f0cca-ae47-4fea-9b00-77fe2106232a",
+      "medicine_id": "2ba03ac8-2c26-477a-9033-1e530374bea0",
       "quantity": 5
    }, {
-      "medicine_id": "77019542-1785-4e68-a93e-f5a06a690138",
+      "medicine_id": "6c9cd20a-6f98-4a98-9815-50953bc5e96b",
       "quantity": 10
    }]
 }

@@ -202,8 +202,9 @@ func (h *doctorHandler) UpdateScheduleStatus(ctx *gin.Context) {
 	}
 
 	var req dto.DoctorUpdateStatusScheduleRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		res := utils.BuildResponseFailed("Invalid request", err.Error(), nil)
+	ctx.ShouldBindJSON(&req)
+	if req.IsActive == nil {
+		res := utils.BuildResponseFailed("Invalid request", "is_active is required", nil)
 		ctx.JSON(http.StatusBadRequest, res)
 		return
 	}

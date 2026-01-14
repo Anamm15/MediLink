@@ -32,3 +32,11 @@ export const getToday = () => {
   const day = DAYS[new Date().getDay()];
   return { date, day };
 };
+
+export const formatIDDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};

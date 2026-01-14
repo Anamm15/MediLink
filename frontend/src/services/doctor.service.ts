@@ -100,11 +100,11 @@ export async function updateSchedule(
 
 export async function updateStatusSchedule(
   id: string,
-  payload: UpdateStatusScheduleRequest
+  is_active: boolean
 ): Promise<DoctorScheduleResponse> {
   const response = await api.patch<ApiResponse<DoctorScheduleResponse>>(
     `${SCHEDULE_BASE_PATH}/${id}/status`,
-    payload
+    { is_active }
   );
   return unwrapResponse(response.data);
 }

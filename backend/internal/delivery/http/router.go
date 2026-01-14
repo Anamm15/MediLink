@@ -132,15 +132,15 @@ func MedicalRecordRoute(server *gin.Engine, medicalRecordHandler handler.Medical
 func PrescriptionRoute(server *gin.Engine, prescriptionHandler handler.PrescriptionHandler) {
 	prescriptions := server.Group("/api/v1/prescriptions")
 	{
-		prescriptions.GET("/patient", middlewares.Authenticate(), middlewares.AuthorizeRole("patient"), prescriptionHandler.GetByPatient)
-		prescriptions.GET("/doctor", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), prescriptionHandler.GetByDoctor)
+		prescriptions.GET("/patient/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("patient"), prescriptionHandler.GetByPatient)
+		prescriptions.GET("/doctor/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), prescriptionHandler.GetByDoctor)
 		prescriptions.GET("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("patient", "doctor"), prescriptionHandler.GetDetailByID)
 		prescriptions.POST("", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), prescriptionHandler.Create)
 		prescriptions.PUT("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), prescriptionHandler.Update)
 		prescriptions.DELETE("/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), prescriptionHandler.Delete)
-		prescriptions.POST("/:id/add-medicine", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), prescriptionHandler.AddMedicine)
-		prescriptions.PATCH("/:id/update-medicine/:prescription_medicine_id", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), prescriptionHandler.UpdateMedicine)
-		prescriptions.DELETE("/:id/remove-medicine/:prescription_medicine_id", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), prescriptionHandler.RemoveMedicine)
+		prescriptions.POST("/:id/medicine", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), prescriptionHandler.AddMedicine)
+		prescriptions.PATCH("/:id/medicine/:prescription_medicine_id", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), prescriptionHandler.UpdateMedicine)
+		prescriptions.DELETE("/:id/medicine/:prescription_medicine_id", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), prescriptionHandler.RemoveMedicine)
 	}
 }
 

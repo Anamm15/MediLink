@@ -12,15 +12,23 @@ import {
   Pill,
   ExternalLink,
   Calendar,
+  Plus,
 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { MedicalRecordResponse } from "@/types/medical_record.type";
+import { Button } from "@/components/ui/Button";
 
 export const MedicalRecordItem = ({
   record,
+  setSelectedField,
+  setIsPrescriptionModalOpen,
 }: {
   record: MedicalRecordResponse;
+  setSelectedField: React.Dispatch<
+    React.SetStateAction<{ patient_id: string; medical_record_id: string }>
+  >;
+  setIsPrescriptionModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -82,7 +90,7 @@ export const MedicalRecordItem = ({
             : "border-gray-200 hover:border-cyan-200"
         }`}
       >
-        {/* Card Header (Click to Expand) */}
+        {/* Card Header  */}
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="w-full flex items-center justify-between p-5 text-left focus:outline-none"
@@ -171,6 +179,22 @@ export const MedicalRecordItem = ({
                     View Appointment Details{" "}
                     <ExternalLink className="w-3 h-3" />
                   </Link>
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    onClick={() => {
+                      setSelectedField({
+                        patient_id: record.patient_id,
+                        medical_record_id: record.id,
+                      });
+                      setIsPrescriptionModalOpen(true);
+                    }}
+                    className="px-8"
+                    startIcon={<Plus className="w-5 h-5" />}
+                  >
+                    Add Prescription
+                  </Button>
                 </div>
               </div>
             </motion.div>

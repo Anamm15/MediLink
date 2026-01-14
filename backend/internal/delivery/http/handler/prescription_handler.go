@@ -21,8 +21,15 @@ func NewPrescriptionHandler(prescriptionUsecase usecase.PrescriptionUsecase) han
 }
 
 func (h *PrescriptionHandler) GetByPatient(c *gin.Context) {
-	userID := c.MustGet("user_id").(uuid.UUID)
-	prescriptions, err := h.prescriptionUsecase.GetByPatient(c.Request.Context(), userID)
+	idParam := c.Param("id")
+	patientID, err := uuid.Parse(idParam)
+	if err != nil {
+		res := utils.BuildResponseFailed("Invalid user ID", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	prescriptions, err := h.prescriptionUsecase.GetByPatient(c.Request.Context(), patientID)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve prescriptions", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, res)
@@ -33,8 +40,14 @@ func (h *PrescriptionHandler) GetByPatient(c *gin.Context) {
 }
 
 func (h *PrescriptionHandler) GetByDoctor(c *gin.Context) {
-	userID := c.MustGet("user_id").(uuid.UUID)
-	prescriptions, err := h.prescriptionUsecase.GetByDoctor(c.Request.Context(), userID)
+	idParam := c.Param("id")
+	doctorID, err := uuid.Parse(idParam)
+	if err != nil {
+		res := utils.BuildResponseFailed("Invalid doctor ID", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, res)
+		return
+	}
+	prescriptions, err := h.prescriptionUsecase.GetByDoctor(c.Request.Context(), doctorID)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve prescriptions", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, res)
