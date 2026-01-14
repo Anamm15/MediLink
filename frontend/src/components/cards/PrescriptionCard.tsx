@@ -20,7 +20,7 @@ export const PrescriptionCard = ({
       </div>
       <div className="flex-grow">
         <p className="text-sm text-gray-500">
-          Resep dari{" "}
+          Prescription from{" "}
           <span className="font-semibold text-gray-700">
             {prescription.doctorName}
           </span>
@@ -30,7 +30,7 @@ export const PrescriptionCard = ({
         </p>
       </div>
       <div className="flex items-center gap-2 text-sm font-semibold text-cyan-600">
-        Lihat Detail
+        View Details
         <ChevronRight className="w-4 h-4" />
       </div>
     </button>

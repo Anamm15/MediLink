@@ -9,49 +9,49 @@ const mockNotifications = [
   {
     id: 1,
     type: "appointment_reminder",
-    title: "Pengingat Janji Temu",
+    title: "Appointment Reminder",
     description:
-      "Anda memiliki jadwal konsultasi dengan Dr. Adinda Melati besok pukul 10:00.",
-    timestamp: "5 menit lalu",
+      "You have a scheduled consultation with Dr. Adinda Melati tomorrow at 10:00 AM.",
+    timestamp: "5 minutes ago",
     isRead: false,
-    action: { text: "Lihat Detail Janji Temu", href: "/appointment" },
+    action: { text: "View Appointment Details", href: "/appointment" },
   },
   {
     id: 2,
     type: "prescription_ready",
-    title: "Resep Baru Telah Terbit",
-    description: "Dr. Adinda Melati telah menerbitkan resep baru untuk Anda.",
-    timestamp: "1 jam lalu",
+    title: "New Prescription Issued",
+    description: "Dr. Adinda Melati has issued a new prescription for you.",
+    timestamp: "1 hour ago",
     isRead: false,
-    action: { text: "Lihat & Tebus Resep", href: "/prescriptions" },
+    action: { text: "View & Redeem Prescription", href: "/prescriptions" },
   },
   {
     id: 3,
     type: "payment_success",
-    title: "Pembayaran Berhasil",
+    title: "Payment Successful",
     description:
-      "Pembayaran sebesar Rp 150.000 untuk konsultasi telah berhasil.",
-    timestamp: "3 jam lalu",
+      "A payment of IDR 150,000 for the consultation was completed successfully.",
+    timestamp: "3 hours ago",
     isRead: true,
-    action: { text: "Lihat Invoice", href: "/payment-history" },
+    action: { text: "View Invoice", href: "/payment-history" },
   },
   {
     id: 4,
     type: "promo",
-    title: "Diskon Spesial Untuk Anda!",
+    title: "Special Discount Just for You!",
     description:
-      "Dapatkan diskon 30% untuk konsultasi dengan dokter spesialis kulit minggu ini.",
-    timestamp: "1 hari lalu",
+      "Enjoy a 30% discount on consultations with dermatology specialists this week.",
+    timestamp: "1 day ago",
     isRead: true,
-    action: { text: "Lihat Promo", href: "#" },
+    action: { text: "View Promotion", href: "#" },
   },
   {
     id: 5,
     type: "appointment_reminder",
-    title: "Janji Temu Dibatalkan",
+    title: "Appointment Cancelled",
     description:
-      "Jadwal konsultasi Anda dengan Dr. Budi Santoso telah dibatalkan.",
-    timestamp: "2 hari lalu",
+      "Your consultation appointment with Dr. Budi Santoso has been cancelled.",
+    timestamp: "2 days ago",
     isRead: true,
   },
 ];
@@ -72,13 +72,13 @@ export default function NotificationsPage() {
     <div className="space-y-6">
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Notifikasi</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Notification</h1>
           <p className="mt-1 text-gray-500">
-            Semua pembaruan penting Anda ada di sini.
+            All your important updates are here.
           </p>
         </div>
         <button className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-gray-600 bg-white border rounded-lg shadow-sm hover:bg-gray-100">
-          <CheckCheck className="w-4 h-4" /> Tandai semua sudah dibaca
+          <CheckCheck className="w-4 h-4" /> Mark all as read
         </button>
       </header>
 
@@ -92,7 +92,7 @@ export default function NotificationsPage() {
               : "text-gray-500 hover:text-gray-800"
           }`}
         >
-          Semua
+          All
         </button>
         <button
           onClick={() => setActiveTab("important")}
@@ -102,7 +102,7 @@ export default function NotificationsPage() {
               : "text-gray-500 hover:text-gray-800"
           }`}
         >
-          Penting
+          Important
         </button>
         <button
           onClick={() => setActiveTab("info")}
@@ -112,7 +112,7 @@ export default function NotificationsPage() {
               : "text-gray-500 hover:text-gray-800"
           }`}
         >
-          Info & Promosi
+          Info & Promotions
         </button>
       </div>
 
@@ -132,10 +132,10 @@ export default function NotificationsPage() {
           ) : (
             <div className="text-center py-16">
               <p className="font-semibold text-gray-700">
-                Tidak ada notifikasi di kategori ini
+                There are no notifications in this category
               </p>
               <p className="text-sm text-gray-400 mt-1">
-                Semua notifikasi Anda yang relevan akan muncul di sini.
+                All your relevant notifications will appear here.
               </p>
             </div>
           )}

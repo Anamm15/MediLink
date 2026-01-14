@@ -5,18 +5,18 @@ const mockMessages = [
   {
     id: 1,
     sender: "doctor",
-    text: "Selamat pagi, Pak Budi. Ada yang bisa saya bantu?",
+    text: "Good morning, Mr. Budi. How can I help you today?",
   },
   {
     id: 2,
     sender: "patient",
-    text: "Pagi, Dok. Saya ada keluhan ruam di kulit lengan saya.",
+    text: "Good morning, Doctor. I have a rash on the skin of my arm.",
   },
-  { id: 3, sender: "patient", type: "image", url: "/ruam.jpg" }, // Placeholder gambar
+  { id: 3, sender: "patient", type: "image", url: "/ruam.jpg" },
   {
     id: 4,
     sender: "doctor",
-    text: "Baik, terima kasih fotonya. Sejak kapan ruam ini muncul?",
+    text: "Alright, thank you for the photo. When did this rash first appear?",
   },
   {
     id: 5,
@@ -50,14 +50,16 @@ export const ChatInterface = () => {
             >
               {msg.type === "prescription" ? (
                 <div>
-                  <h4 className="font-bold mb-2">Resep Digital Diterbitkan</h4>
+                  <h4 className="font-bold mb-2">
+                    Digital Prescription Published
+                  </h4>
                   <ul className="list-disc list-inside text-sm mb-3">
                     {msg.items?.map((item) => (
                       <li key={item}>{item}</li>
                     ))}
                   </ul>
                   <button className="w-full text-xs font-semibold bg-white text-cyan-600 py-2 rounded-md">
-                    Tebus Resep
+                    Redeem Prescription
                   </button>
                 </div>
               ) : msg.type === "image" ? (

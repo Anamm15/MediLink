@@ -5,6 +5,7 @@ import { PrescriptionCard } from "@/components/cards/PrescriptionCard";
 import { Prescription } from "@/types/index.type";
 import { Search } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
+import { Input } from "@/components/ui/form/Input";
 
 // --- DATA MOCK (Ganti dengan data asli dari API) ---
 const mockPrescriptions: Prescription[] = [
@@ -66,17 +67,17 @@ export default function PharmacyPage() {
         <div className="container mx-auto px-4 py-8 md:py-12">
           {/* Hero Section */}
           <div className="text-center bg-cyan-600 text-white p-10 rounded-xl shadow-lg">
-            <h1 className="text-4xl font-bold">Apotek Online HealthApp</h1>
+            <h1 className="text-4xl font-bold">HealthApp Online Pharmacy</h1>
             <p className="mt-2 max-w-2xl mx-auto">
-              Tebus resep digital dari dokter Anda dengan cepat, aman, dan
-              mudah. Obat asli, lengkap, dan diantar langsung ke rumah Anda.
+              Fill your doctor's digital prescription quickly, safely, and
+              easily. Get genuine, complete medications, and have them delivered
+              directly to your door.
             </p>
           </div>
 
-          {/* Seksi Resep Saya */}
           <section className="mt-12">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              Resep Digital Anda
+              Your Unredeemed Prescriptions
             </h2>
             {activePrescriptions.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -91,7 +92,7 @@ export default function PharmacyPage() {
             ) : (
               <div className="text-center p-8 bg-white rounded-lg border border-dashed">
                 <p className="text-gray-500">
-                  Anda tidak memiliki resep aktif saat ini.
+                  You do not have an unredeemed prescription at this time.
                 </p>
               </div>
             )}
@@ -100,16 +101,14 @@ export default function PharmacyPage() {
           {/* Seksi Pencarian Obat Bebas */}
           <section className="mt-12">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              Cari Produk Kesehatan Lainnya
+              Search What You Need
             </h2>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Cari vitamin, obat batuk, atau produk lainnya..."
-                className="w-full p-4 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500"
-              />
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            </div>
+            <Input
+              type="text"
+              placeholder="search vitamin, antibiotics, medicines, and more..."
+              startIcon={<Search className="w-5 h-5 text-gray-400" />}
+              className="w-full text-md py-6 rounded-lg"
+            />
           </section>
         </div>
       </main>

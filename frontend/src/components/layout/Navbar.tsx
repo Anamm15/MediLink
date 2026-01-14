@@ -3,16 +3,23 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ShieldCheck, Menu, X, LogOut, LayoutDashboard } from "lucide-react";
+import {
+  ShieldCheck,
+  Menu,
+  X,
+  LogOut,
+  LayoutDashboard,
+  ChevronDown,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useLogout, useSession } from "@/hooks/useAuth";
 import { DEFAULT_PROFILE } from "@/helpers/constant";
 
 const menuItems = [
-  { text: "Beranda", href: "/" },
-  { text: "Cari Dokter", href: "/doctor" },
-  { text: "Apotek", href: "/pharmacy" },
-  { text: "Artikel", href: "/articles" },
+  { text: "Home", href: "/" },
+  { text: "Find Doctor", href: "/doctor" },
+  { text: "Pharmacy", href: "/pharmacy" },
+  { text: "Articles", href: "/articles" },
 ];
 
 const mapRoleToDashboard = (role: string): string => {
@@ -98,9 +105,8 @@ export const Navbar = () => {
                   height={36}
                   className="rounded-full"
                 />
-                <span className="text-sm font-medium text-gray-700">
-                  {user.name}
-                </span>
+                <span className="font-medium text-gray-700">{user.name}</span>
+                <ChevronDown className="h-4 w-4 text-gray-700" />
               </Link>
               <div className="absolute right-0 top-full mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
                 <div className="py-1">

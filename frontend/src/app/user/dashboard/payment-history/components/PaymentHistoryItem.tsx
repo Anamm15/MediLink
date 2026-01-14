@@ -10,14 +10,14 @@ interface ItemProps {
 }
 
 const statusStyles = {
-  Berhasil: "bg-green-100 text-green-800",
-  Tertunda: "bg-yellow-100 text-yellow-800",
-  Gagal: "bg-red-100 text-red-800",
+  Success: "bg-green-100 text-green-800",
+  Pending: "bg-yellow-100 text-yellow-800",
+  Failed: "bg-red-100 text-red-800",
 };
 
 const typeIcons = {
-  Konsultasi: <Stethoscope className="w-6 h-6 text-cyan-600" />,
-  Apotek: <Pill className="w-6 h-6 text-purple-600" />,
+  Consultation: <Stethoscope className="w-6 h-6 text-cyan-600" />,
+  Pharmacy: <Pill className="w-6 h-6 text-purple-600" />,
 };
 
 export const PaymentHistoryItem = ({ transaction }: ItemProps) => {

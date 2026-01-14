@@ -6,17 +6,17 @@ const stats = [
   {
     icon: <Users className="w-8 h-8 text-cyan-500" />,
     value: "10,000+",
-    label: "Pasien Puas",
+    label: "Satisfied Patient",
   },
   {
     icon: <Stethoscope className="w-8 h-8 text-cyan-500" />,
     value: "500+",
-    label: "Dokter Profesional",
+    label: "Profesional Doctor",
   },
   {
     icon: <Star className="w-8 h-8 text-cyan-500" />,
     value: "4.9/5",
-    label: "Rating Aplikasi",
+    label: "App Rating",
   },
 ];
 

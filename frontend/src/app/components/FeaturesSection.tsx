@@ -5,35 +5,35 @@ import { CheckCircle } from "lucide-react";
 
 const features = [
   {
-    title: "Konsultasi Video & Chat Tanpa Batas",
+    title: "Unlimited Video & Chat Consultation",
     description:
-      "Bicaralah dengan dokter spesialis melalui video call atau chat. Dapatkan diagnosis awal dan saran medis profesional dari kenyamanan rumah Anda.",
+      "Talk to specialist doctors via video call or chat. Get an initial diagnosis and professional medical advice from the comfort of your home.",
     points: [
-      "Pilih dokter sesuai spesialisasi",
-      "Jadwalkan sesi secara fleksibel",
-      "Privasi dan keamanan terjamin",
+      "Choose doctors by specialization",
+      "Schedule sessions flexibly",
+      "Guaranteed privacy and security",
     ],
     imageUrl: "/images/home/consultation.png",
   },
   {
-    title: "Resep Digital yang Sah dan Cepat",
+    title: "Fast & Valid Digital Prescriptions",
     description:
-      "Setelah konsultasi, dokter dapat menerbitkan resep digital yang langsung tersimpan di akun Anda. Sah, aman, dan tanpa kertas.",
+      "After the consultation, doctors can issue digital prescriptions that are instantly saved to your account. Legal, secure, and paperless.",
     points: [
-      "Resep langsung tersedia",
-      "Terintegrasi dengan apotek",
-      "Hindari salah baca resep",
+      "Prescriptions available instantly",
+      "Integrated with pharmacies",
+      "Avoid prescription misinterpretation",
     ],
     imageUrl: "/images/home/drug.png",
   },
   {
-    title: "Apotek Antar, Obat Sampai di Hari yang Sama",
+    title: "Same-Day Medicine Delivery from Partner Pharmacies",
     description:
-      "Tebus resep atau beli produk kesehatan lainnya dari apotek terpercaya kami. Pesanan Anda akan kami antar dengan cepat dan aman.",
+      "Redeem prescriptions or purchase other health products from our trusted partner pharmacies. Your order will be delivered quickly and safely.",
     points: [
-      "Jangkauan pengiriman luas",
-      "Stok obat terjamin",
-      "Lacak pesanan secara real-time",
+      "Wide delivery coverage",
+      "Guaranteed medicine availability",
+      "Real-time order tracking",
     ],
     imageUrl: "/images/home/pharmacy.png",
   },
@@ -50,7 +50,7 @@ export const FeaturesSection = () => {
           transition={{ duration: 0.5 }}
           className="text-3xl font-bold text-gray-800 text-center mb-16"
         >
-          Semua Kebutuhan Kesehatan dalam Satu Genggaman
+          All your health needs in one hand
         </motion.h2>
 
         <div className="space-y-20 max-w-6xl mx-auto">
@@ -63,7 +63,6 @@ export const FeaturesSection = () => {
               transition={{ duration: 0.8 }}
               className="grid md:grid-cols-2 items-center"
             >
-              {/* Kolom Teks */}
               <div className={index % 2 === 1 ? "md:order-last" : ""}>
                 <h3 className="text-2xl font-bold text-gray-800">
                   {feature.title}
@@ -79,7 +78,6 @@ export const FeaturesSection = () => {
                 </ul>
               </div>
 
-              {/* Kolom Gambar */}
               <div className="flex items-center justify-center">
                 <Image
                   src={feature.imageUrl}

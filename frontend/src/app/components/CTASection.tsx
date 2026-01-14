@@ -31,7 +31,7 @@ export const CtaSection = () => {
           transition={{ duration: 0.5 }}
           className="text-3xl md:text-4xl font-bold"
         >
-          Siap Mengambil Kendali Kesehatan Anda?
+          Ready to Take Control of Your Health?
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -40,8 +40,8 @@ export const CtaSection = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="mt-4 max-w-xl mx-auto text-cyan-100"
         >
-          Bergabunglah dengan ribuan pengguna lainnya dan nikmati kemudahan
-          akses layanan kesehatan profesional di mana pun Anda berada.
+          Join thousands of other users and enjoy easy access to professional
+          healthcare services wherever you are.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
@@ -54,7 +54,7 @@ export const CtaSection = () => {
             href="/register"
             className="rounded-full bg-white px-10 py-4 text-base font-semibold text-cyan-600 shadow-lg hover:bg-slate-100 transition-transform hover:scale-105 inline-block"
           >
-            Daftar Gratis Sekarang
+            Get Started Now
           </Link>
         </motion.div>
       </div>

@@ -37,8 +37,8 @@ export default function ConsultationPage({
           {/* Header dengan Toggle */}
           <header className="flex-shrink-0 bg-white border-b border-gray-200 p-4 flex justify-between items-center">
             <div>
-              <h1 className="font-bold text-gray-800">Ruang Konsultasi</h1>
-              <p className="text-xs text-gray-500">ID Sesi: {params.id}</p>
+              <h1 className="font-bold text-gray-800">Consultation Room</h1>
+              <p className="text-xs text-gray-500">Session ID: {params.id}</p>
             </div>
             <div className="flex items-center p-1 bg-slate-100 rounded-lg">
               <button

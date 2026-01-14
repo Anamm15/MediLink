@@ -6,7 +6,6 @@ import { Footer } from "@/components/layout/Footer";
 import { StatsSection } from "./components/StatsSection";
 import { FeaturesSection } from "./components/FeaturesSection";
 import { CtaSection } from "./components/CTASection";
-// Import komponen lain seperti FeaturesSection dan CtaSection jika sudah dibuat
 
 export default function LandingPage() {
   return (

@@ -5,23 +5,23 @@ import Image from "next/image";
 const testimonials = [
   {
     name: "Sarah L.",
-    role: "Ibu Rumah Tangga",
+    role: "Homemaker",
     comment:
-      "Sangat membantu saat anak sakit tengah malam. Dokter responsif dan obat cepat sampai. Terima kasih HealthApp!",
+      "Extremely helpful when my child got sick late at night. The doctor was responsive and the medicine arrived quickly. Thank you, HealthApp!",
     avatar: "https://i.pravatar.cc/150?u=sarah",
   },
   {
     name: "Rian D.",
-    role: "Pekerja Kantoran",
+    role: "Office Worker",
     comment:
-      "Tidak perlu izin kantor untuk konsultasi ringan. Efisien dan sangat profesional. Highly recommended!",
+      "No need to take time off work for a minor consultation. Efficient and very professional. Highly recommended!",
     avatar: "https://i.pravatar.cc/150?u=rian",
   },
   {
     name: "Anita P.",
-    role: "Mahasiswi",
+    role: "College Student",
     comment:
-      "Tebus resep kulit dari dokter jadi gampang banget. Nggak perlu antre di apotek lagi. Aplikasinya juga mudah dipakai.",
+      "Redeeming a dermatology prescription from the doctor was super easy. No more waiting in line at the pharmacy. The app is also very easy to use.",
     avatar: "https://i.pravatar.cc/150?u=anita",
   },
 ];
@@ -37,7 +37,7 @@ export const TestimonialSection = () => {
           transition={{ duration: 0.5 }}
           className="text-3xl font-bold text-gray-800 text-center"
         >
-          Apa Kata Mereka yang Sudah Menggunakan?
+          What do those who have used it say?
         </motion.h2>
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {testimonials.map((t, i) => (

@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Clock, FileText } from "lucide-react";
-import { Doctor } from "@/types/index.type"; // Gunakan tipe Doctor yang sudah ada
+import { Doctor } from "@/types/index.type";
 
 interface SessionInfoPanelProps {
   doctor: Doctor;
@@ -27,7 +27,7 @@ export const SessionInfoPanel = ({
 
   return (
     <aside className="w-80 flex-shrink-0 bg-white border-l border-gray-200 p-6 flex flex-col">
-      <h2 className="text-lg font-bold text-gray-800 mb-4">Detail Sesi</h2>
+      <h2 className="text-lg font-bold text-gray-800 mb-4">Session Detail</h2>
 
       {/* Doctor Info */}
       <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg">
@@ -47,7 +47,7 @@ export const SessionInfoPanel = ({
       {/* Session Timer */}
       <div className="mt-8">
         <h3 className="font-semibold text-gray-700 mb-3 flex items-center">
-          <Clock className="w-5 h-5 mr-2 text-gray-400" /> Sisa Waktu
+          <Clock className="w-5 h-5 mr-2 text-gray-400" /> Remaining Time
         </h3>
         <div className="w-full bg-gray-200 rounded-full h-2.5">
           <div
@@ -62,10 +62,10 @@ export const SessionInfoPanel = ({
 
       <div className="mt-auto space-y-3">
         <button className="w-full flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-semibold rounded-lg border border-cyan-500 text-cyan-500 hover:bg-cyan-50">
-          <FileText className="w-4 h-4" /> Minta Ringkasan Medis
+          <FileText className="w-4 h-4" /> Ask for summary of consultations
         </button>
         <button className="w-full py-2.5 px-4 text-sm font-semibold rounded-lg bg-red-500 text-white hover:bg-red-600">
-          Akhiri Konsultasi
+          End consultation
         </button>
       </div>
     </aside>

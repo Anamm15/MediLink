@@ -5,21 +5,20 @@ import { Search, MessageSquare, Pill } from "lucide-react";
 const steps = [
   {
     icon: <Search />,
-    title: "1. Cari Dokter",
+    title: "1. Find a Doctor",
     description:
-      "Temukan dokter spesialis atau umum yang sesuai dengan kebutuhan Anda.",
+      "Find a specialist or general practitioner that matches your needs.",
   },
   {
     icon: <MessageSquare />,
-    title: "2. Konsultasi Online",
-    description:
-      "Lakukan konsultasi via chat atau video call dengan nyaman dari rumah.",
+    title: "2. Online Consultation",
+    description: "Consult via chat or video call comfortably from your home.",
   },
   {
     icon: <Pill />,
-    title: "3. Tebus Resep & Obat",
+    title: "3. Redeem Prescriptions & Medicines",
     description:
-      "Dapatkan resep digital dan tebus obat langsung diantar ke lokasi Anda.",
+      "Receive digital prescriptions and have your medicines delivered directly to your location.",
   },
 ];
 
@@ -34,7 +33,7 @@ export const HowItWorksSection = () => {
           transition={{ duration: 0.5 }}
           className="text-3xl font-bold text-gray-800"
         >
-          Kesehatan Jadi Mudah dalam 3 Langkah
+          Health Made Easy in 3 Steps
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -43,7 +42,7 @@ export const HowItWorksSection = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="mt-2 max-w-2xl mx-auto text-gray-500"
         >
-          Kami menyederhanakan proses perawatan kesehatan untuk Anda.
+          We simplify the healthcare process for you.
         </motion.p>
 
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">

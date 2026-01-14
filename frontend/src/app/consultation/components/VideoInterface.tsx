@@ -4,9 +4,7 @@ import Image from "next/image";
 export const VideoInterface = () => {
   return (
     <div className="flex-grow flex flex-col bg-slate-900 h-full relative text-white items-center justify-center rounded-lg">
-      {/* Doctor's Video (Main) */}
       <div className="absolute inset-0 flex items-center justify-center">
-        {/* Placeholder: Ganti dengan tag <video> sesungguhnya */}
         <div className="text-center">
           <Image
             src="https://i.pravatar.cc/150?u=adinda"
@@ -16,15 +14,14 @@ export const VideoInterface = () => {
             className="rounded-full mx-auto"
           />
           <p className="mt-4 font-semibold">Dr. Adinda Melati, Sp.A</p>
-          <p className="text-sm text-gray-400">Menghubungkan...</p>
+          <p className="text-sm text-gray-400">Connecting...</p>
         </div>
       </div>
 
       {/* Patient's Video (Picture-in-Picture) */}
       <div className="absolute bottom-6 right-6 w-48 h-36 bg-slate-800 rounded-lg border-2 border-slate-700 overflow-hidden">
-        {/* Placeholder: Ganti dengan tag <video> sesungguhnya */}
         <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
-          Video Anda
+          Your Video
         </div>
       </div>
 
