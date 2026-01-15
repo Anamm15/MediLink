@@ -9,9 +9,9 @@ import (
 )
 
 type MedicineRepository interface {
-	GetAll(ctx context.Context, limit int, offset int) ([]entity.Medicine, error)
+	GetAll(ctx context.Context, limit int, offset int) ([]entity.Medicine, int64, error)
 	GetByID(ctx context.Context, id uuid.UUID) (*entity.Medicine, error)
-	Search(ctx context.Context, name string, limit int, offset int) ([]entity.Medicine, error)
+	Search(ctx context.Context, name string, limit int, offset int) ([]entity.Medicine, int64, error)
 	Create(ctx context.Context, medicine *entity.Medicine) error
 	Update(ctx context.Context, medicine *entity.Medicine) error
 	Delete(ctx context.Context, id uuid.UUID) error

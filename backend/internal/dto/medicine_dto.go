@@ -20,6 +20,11 @@ type MedicineResponse struct {
 	CreatedAt string `json:"created_at"`
 }
 
+type MedicineSearchResponse struct {
+	Data     []MedicineResponse `json:"data"`
+	Metadata Metadata           `json:"metadata"`
+}
+
 type MedicineCreate struct {
 	Name         string  `json:"name" binding:"required"`
 	Description  *string `json:"description"`
@@ -98,4 +103,8 @@ func ToListMedicineResponse(medicines []entity.Medicine) []MedicineResponse {
 		response = append(response, *ToMedicineResponse(&m))
 	}
 	return response
+}
+
+func ToMedicineSearchResponse(medicines []entity.Medicine, metadata Metadata) MedicineSearchResponse {
+	return MedicineSearchResponse{Data: ToListMedicineResponse(medicines), Metadata: metadata}
 }

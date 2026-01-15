@@ -21,9 +21,10 @@ func NewAppointmentHandler(appointmentUsecase usecase.AppointmentUsecase) handle
 }
 
 func (h *AppointmentHandler) GetAll(ctx *gin.Context) {
-	queryPage := ctx.Query("page")
-	page := utils.StringToInt(queryPage)
-	appointments, err := h.appointmentUsecase.GetAll(ctx, page)
+	page := ctx.Query("page")
+	limit := ctx.Query("limit")
+
+	appointments, err := h.appointmentUsecase.GetAll(ctx, page, limit)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve appointments", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -56,9 +57,10 @@ func (h *AppointmentHandler) GetDetailByID(ctx *gin.Context) {
 
 func (h *AppointmentHandler) GetByDoctor(ctx *gin.Context) {
 	userID := ctx.MustGet("user_id").(uuid.UUID)
-	pageQuery := ctx.Query("page")
-	page := utils.StringToInt(pageQuery)
-	appointments, err := h.appointmentUsecase.GetByDoctor(ctx, userID, page)
+	page := ctx.Query("page")
+	limit := ctx.Query("limit")
+
+	appointments, err := h.appointmentUsecase.GetByDoctor(ctx, userID, page, limit)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve appointments", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -71,9 +73,9 @@ func (h *AppointmentHandler) GetByDoctor(ctx *gin.Context) {
 
 func (h *AppointmentHandler) GetByPatient(ctx *gin.Context) {
 	userID := ctx.MustGet("user_id").(uuid.UUID)
-	pageQuery := ctx.Query("page")
-	page := utils.StringToInt(pageQuery)
-	appointments, err := h.appointmentUsecase.GetByPatient(ctx, userID, page)
+	page := ctx.Query("page")
+	limit := ctx.Query("limit")
+	appointments, err := h.appointmentUsecase.GetByPatient(ctx, userID, page, limit)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve appointments", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)

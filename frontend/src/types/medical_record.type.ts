@@ -1,3 +1,5 @@
+import { Metadata } from "./metadata.type";
+
 export type MedicalRecordResponse = {
   id: string;
   appointment_id: string;
@@ -10,6 +12,11 @@ export type MedicalRecordResponse = {
   assessment?: string;
   plan?: string;
   created_at: string;
+};
+
+export type MedicalRecordPaginateResponse = {
+  data: MedicalRecordResponse[];
+  metadata: Metadata;
 };
 
 export type MedicalRecordCreateRequest = {

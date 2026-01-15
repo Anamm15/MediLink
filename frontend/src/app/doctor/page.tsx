@@ -5,12 +5,17 @@ import { DoctorList } from "./components/DoctorList";
 import { SearchFilter } from "@/components/ui/SearchFilter";
 import { useSearchDoctor } from "@/hooks/useDoctor";
 import { useState } from "react";
+import { DOCTOR_LIMIT_QUERY } from "@/helpers/constant";
 
 export default function DoctorsPage() {
   const [doctorNameFiltered, setDoctorNameFiltered] = useState<string>("");
   const [page, setPage] = useState(1);
 
-  const { data: doctors } = useSearchDoctor(doctorNameFiltered, page);
+  const { data: doctors } = useSearchDoctor(
+    doctorNameFiltered,
+    page,
+    DOCTOR_LIMIT_QUERY
+  );
 
   return (
     <>
@@ -28,7 +33,9 @@ export default function DoctorsPage() {
           </header>
 
           <SearchFilter setDoctorNameFiltered={setDoctorNameFiltered} />
-          <DoctorList doctors={doctors || []} />
+          {doctors && (
+            <DoctorList doctors={doctors} page={page} setPage={setPage} />
+          )}
         </div>
       </main>
     </>

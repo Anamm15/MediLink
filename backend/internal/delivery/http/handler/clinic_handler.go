@@ -21,9 +21,9 @@ func NewClinicHandler(clinicUsecase usecase.ClinicUsecase) handler.ClinicHandler
 }
 
 func (h *clinicHandler) GetAll(ctx *gin.Context) {
-	pageQuery := ctx.DefaultQuery("page", "1")
-	page := utils.StringToInt(pageQuery)
-	clinics, err := h.clinicUsecase.GetAll(ctx, page)
+	page := ctx.Query("page")
+	limit := ctx.Query("limit")
+	clinics, err := h.clinicUsecase.GetAll(ctx, page, limit)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve clinics", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -56,9 +56,9 @@ func (h *clinicHandler) GetByID(ctx *gin.Context) {
 
 func (h *clinicHandler) Find(ctx *gin.Context) {
 	name := ctx.Query("name")
-	pageQuery := ctx.Query("page")
-	page := utils.StringToInt(pageQuery)
-	clinics, err := h.clinicUsecase.Find(ctx, name, page)
+	page := ctx.Query("page")
+	limit := ctx.Query("limit")
+	clinics, err := h.clinicUsecase.Find(ctx, name, page, limit)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to find clinics", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)

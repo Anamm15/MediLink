@@ -22,7 +22,8 @@ func NewMedicineHandler(medicineUsecase usecase.MedicineUsecase) handler.Medicin
 
 func (h *MedicineHandler) GetAll(ctx *gin.Context) {
 	page := ctx.Query("page")
-	medicines, err := h.medicineUsecase.GetAll(ctx.Request.Context(), utils.StringToInt(page))
+	limit := ctx.Query("limit")
+	medicines, err := h.medicineUsecase.GetAll(ctx.Request.Context(), page, limit)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve medicines", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -56,7 +57,8 @@ func (h *MedicineHandler) GetByID(ctx *gin.Context) {
 func (h *MedicineHandler) Search(ctx *gin.Context) {
 	name := ctx.Query("name")
 	page := ctx.Query("page")
-	medicines, err := h.medicineUsecase.Search(ctx.Request.Context(), name, utils.StringToInt(page))
+	limit := ctx.Query("limit")
+	medicines, err := h.medicineUsecase.Search(ctx.Request.Context(), name, page, limit)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to search medicines", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)

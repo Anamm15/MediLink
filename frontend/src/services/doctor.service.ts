@@ -3,6 +3,7 @@ import { ApiResponse } from "@/types/api.type";
 import { unwrapResponse } from "@/helpers/response";
 import {
   DoctorProfileResponse,
+  DoctorSearchResponse,
   DoctorUpdateRequest,
 } from "@/types/doctor.type";
 
@@ -10,7 +11,6 @@ import {
   DoctorScheduleResponse,
   CreateScheduleRequest,
   UpdateScheduleRequest,
-  UpdateStatusScheduleRequest,
 } from "@/types/schedule.type";
 
 const BASE_PATH = "/doctors";
@@ -18,10 +18,11 @@ const SCHEDULE_BASE_PATH = `${BASE_PATH}/schedules`;
 
 export async function searchDoctor(
   name: string,
-  page: number
-): Promise<DoctorProfileResponse[]> {
-  const response = await api.get<ApiResponse<DoctorProfileResponse[]>>(
-    `${BASE_PATH}/search?name=${name}&page=${page}`
+  page: number,
+  limit: number
+): Promise<DoctorSearchResponse> {
+  const response = await api.get<ApiResponse<DoctorSearchResponse>>(
+    `${BASE_PATH}/search?name=${name}&page=${page}&limit=${limit}`
   );
   return unwrapResponse(response.data);
 }

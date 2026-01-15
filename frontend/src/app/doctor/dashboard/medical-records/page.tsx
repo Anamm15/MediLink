@@ -3,17 +3,34 @@
 import { useDoctorIdQuery } from "@/hooks/useDoctor";
 import { MedicalRecordItem } from "./components/MedicalRecordItem";
 import { useDoctorMedicalRecord } from "./hooks/useDoctorMedicalRecord";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PrescriptionCreateModal from "./components/PrescriptionModal";
+import { DEFAULT_LIMIT_QUERY, DEFAULT_PAGE_QUERY } from "@/helpers/constant";
+import { MedicalRecordResponse } from "@/types/medical_record.type";
+import { DefaultPagination } from "@/components/ui/pagination/DefaultPagination";
 
 export default function MedicalRecordsPage() {
   const { data: doctorId } = useDoctorIdQuery();
-  const { data: records } = useDoctorMedicalRecord(doctorId!);
+  const [page, setPage] = useState(DEFAULT_PAGE_QUERY);
+  const [totalPage, setTotalPage] = useState(0);
+  const [records, setRecords] = useState<MedicalRecordResponse[]>([]);
+  const { data: recordsWithMetadata } = useDoctorMedicalRecord(
+    doctorId!,
+    page,
+    DEFAULT_LIMIT_QUERY
+  );
   const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false);
   const [selectedField, setSelectedField] = useState({
     patient_id: "",
     medical_record_id: "",
   });
+
+  useEffect(() => {
+    if (!recordsWithMetadata) return;
+    const { data, metadata } = recordsWithMetadata;
+    setTotalPage(metadata.total_pages);
+    setRecords(data);
+  }, [recordsWithMetadata]);
 
   return (
     <div className="space-y-6">
@@ -41,6 +58,12 @@ export default function MedicalRecordsPage() {
               />
             ))}
         </div>
+
+        <DefaultPagination
+          page={page}
+          totalPages={totalPage}
+          onPageChange={setPage}
+        />
       </div>
 
       <div className="text-center text-sm text-gray-400 pt-8">

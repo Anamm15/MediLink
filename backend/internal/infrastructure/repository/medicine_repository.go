@@ -18,15 +18,27 @@ func NewMedicineRepository(db *gorm.DB) repository.MedicineRepository {
 	return &MedicineRepository{db: db}
 }
 
-func (r *MedicineRepository) GetAll(ctx context.Context, limit int, offset int) ([]entity.Medicine, error) {
-	var medicines []entity.Medicine
-	if err := r.db.WithContext(ctx).
+func (r *MedicineRepository) GetAll(ctx context.Context, limit int, offset int) ([]entity.Medicine, int64, error) {
+	var (
+		medicines []entity.Medicine
+		total     int64
+	)
+
+	baseQuery := r.db.WithContext(ctx).
+		Model(entity.Medicine{})
+
+	if err := baseQuery.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if err := baseQuery.
 		Limit(limit).
 		Offset(offset).
 		Find(&medicines).Error; err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return medicines, nil
+
+	return medicines, total, nil
 }
 
 func (r *MedicineRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity.Medicine, error) {
@@ -38,20 +50,31 @@ func (r *MedicineRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity
 	return &medicine, nil
 }
 
-func (r *MedicineRepository) Search(ctx context.Context, name string, limit int, offset int) ([]entity.Medicine, error) {
-	var medicines []entity.Medicine
-	if err := r.db.WithContext(ctx).
+func (r *MedicineRepository) Search(ctx context.Context, name string, limit int, offset int) ([]entity.Medicine, int64, error) {
+	var (
+		medicines []entity.Medicine
+		total     int64
+	)
+
+	baseQuery := r.db.WithContext(ctx).
+		Model(entity.Medicine{}).
 		Where(
 			"name ILIKE ? OR generic_name ILIKE ?",
 			"%"+name+"%",
 			"%"+name+"%",
-		).
+		)
+
+	if err := baseQuery.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if err := baseQuery.
 		Limit(limit).
 		Offset(offset).
 		Find(&medicines).Error; err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return medicines, nil
+	return medicines, total, nil
 }
 
 func (r *MedicineRepository) Create(ctx context.Context, medicine *entity.Medicine) error {

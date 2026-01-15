@@ -8,6 +8,7 @@ import (
 	"MediLink/internal/domain/usecase"
 	"MediLink/internal/dto"
 	"MediLink/internal/helpers/constants"
+	"MediLink/internal/utils"
 
 	"github.com/google/uuid"
 )
@@ -27,19 +28,25 @@ func NewClinicUsecase(
 	}
 }
 
-func (u *clinicUsecase) GetAll(ctx context.Context, page int) ([]dto.ClinicResponse, error) {
-	limit := constants.PAGE_LIMIT_DEFAULT
-	offset := (page - 1) * limit
-
-	clinic, err := u.clinicRepo.GetAll(ctx, limit, offset)
+func (u *clinicUsecase) GetAll(ctx context.Context, pageStr string, limitStr string) (dto.ClinicSearchResponse, error) {
+	limit, err := utils.StringToInt(limitStr)
 	if err != nil {
-		return nil, err
+		limit = constants.PAGE_LIMIT_DEFAULT
 	}
 
-	var clinicDTOs []dto.ClinicResponse
-	for _, clinic := range clinic {
-		clinicDTOs = append(clinicDTOs, dto.ToClinicResponse(&clinic))
+	page, err := utils.StringToInt(pageStr)
+	if err != nil {
+		page = 1
 	}
+
+	offset := (page - 1) * limit
+	clinic, count, err := u.clinicRepo.GetAll(ctx, limit, offset)
+	if err != nil {
+		return dto.ClinicSearchResponse{}, err
+	}
+
+	metadata := dto.NewMetadata(int64(page), int64(limit), count)
+	clinicDTOs := dto.ToClinicSearchResponse(clinic, metadata)
 	return clinicDTOs, nil
 }
 
@@ -51,18 +58,25 @@ func (u *clinicUsecase) GetByID(ctx context.Context, id uuid.UUID) (dto.ClinicRe
 	return dto.ToClinicResponse(clinic), nil
 }
 
-func (u *clinicUsecase) Find(ctx context.Context, name string, page int) ([]dto.ClinicResponse, error) {
-	limit := constants.PAGE_LIMIT_DEFAULT
-	offset := (page - 1) * limit
-
-	clinic, err := u.clinicRepo.Find(ctx, name, limit, offset)
+func (u *clinicUsecase) Find(ctx context.Context, name string, pageStr string, limitStr string) (dto.ClinicSearchResponse, error) {
+	limit, err := utils.StringToInt(limitStr)
 	if err != nil {
-		return nil, err
+		limit = constants.PAGE_LIMIT_DEFAULT
 	}
-	var clinicDTOs []dto.ClinicResponse
-	for _, clinic := range clinic {
-		clinicDTOs = append(clinicDTOs, dto.ToClinicResponse(&clinic))
+
+	page, err := utils.StringToInt(pageStr)
+	if err != nil {
+		page = 1
 	}
+
+	offset := (page - 1) * limit
+	clinic, count, err := u.clinicRepo.Find(ctx, name, limit, offset)
+	if err != nil {
+		return dto.ClinicSearchResponse{}, err
+	}
+
+	metadata := dto.NewMetadata(int64(page), int64(limit), count)
+	clinicDTOs := dto.ToClinicSearchResponse(clinic, metadata)
 	return clinicDTOs, nil
 }
 

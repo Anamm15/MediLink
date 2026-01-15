@@ -1,11 +1,11 @@
 import Image from "next/image";
-import { Star, Calendar } from "lucide-react";
-import { DoctorProfileResponse } from "@/types/doctor.type";
+import { Star } from "lucide-react";
+import { DoctorMinimumResponse } from "@/types/doctor.type";
 import Link from "next/link";
 import { DEFAULT_PROFILE } from "@/helpers/constant";
 
 interface DoctorCardProps {
-  doctor: DoctorProfileResponse;
+  doctor: DoctorMinimumResponse;
 }
 
 export const DoctorCard = ({ doctor }: DoctorCardProps) => {

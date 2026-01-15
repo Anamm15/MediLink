@@ -1,8 +1,11 @@
 package utils
 
-import "strconv"
+import (
+	"strconv"
+	"strings"
+)
 
-func StringToInt(s string) int {
-	i, _ := strconv.Atoi(s)
-	return i
+func StringToInt(s string) (int, error) {
+	s = strings.TrimSpace(s)
+	return strconv.Atoi(s)
 }

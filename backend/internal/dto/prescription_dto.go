@@ -31,6 +31,11 @@ type PrescriptionResponse struct {
 	Medicines []MedicineItem `json:"medicines"`
 }
 
+type PrescriptionSearchResponse struct {
+	Data     []PrescriptionResponse `json:"data"`
+	Metadata Metadata               `json:"metadata"`
+}
+
 type PrescriptionCreate struct {
 	PatientID       uuid.UUID                     `json:"patient_id" binding:"required"`
 	MedicalRecordID uuid.UUID                     `json:"medical_record_id" binding:"required"`
@@ -52,6 +57,7 @@ func ToPrescriptionResponse(prescription *entity.Prescription) *PrescriptionResp
 		ID:             prescription.Doctor.ID,
 		Name:           prescription.Doctor.User.Name,
 		Specialization: prescription.Doctor.Specialization,
+		AvatarUrl:      prescription.Doctor.User.AvatarUrl,
 	}
 
 	patient = &PatientMinimumResponse{
@@ -87,6 +93,13 @@ func ToListPrescriptionResponseDTO(prescriptions []entity.Prescription) []Prescr
 		prescriptionsDTO = append(prescriptionsDTO, *ToPrescriptionResponse(&prescription))
 	}
 	return prescriptionsDTO
+}
+
+func ToPrescriptionSearchResponse(prescription []entity.Prescription, metadata Metadata) PrescriptionSearchResponse {
+	return PrescriptionSearchResponse{
+		Data:     ToListPrescriptionResponseDTO(prescription),
+		Metadata: metadata,
+	}
 }
 
 func (dto *PrescriptionCreate) ToModel(prescription *entity.Prescription) {

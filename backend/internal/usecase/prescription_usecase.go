@@ -10,6 +10,7 @@ import (
 	"MediLink/internal/domain/usecase"
 	"MediLink/internal/dto"
 	"MediLink/internal/helpers/constants"
+	"MediLink/internal/utils"
 
 	"github.com/google/uuid"
 )
@@ -35,20 +36,48 @@ func NewPrescriptionUsecase(
 	}
 }
 
-func (u *PrescriptionUsecase) GetByPatient(ctx context.Context, patientID uuid.UUID) ([]dto.PrescriptionResponse, error) {
-	prescriptions, err := u.prescriptionRepository.GetByPatient(ctx, patientID)
+func (u *PrescriptionUsecase) GetByPatient(ctx context.Context, patientID uuid.UUID, pageStr string, limitStr string) (dto.PrescriptionSearchResponse, error) {
+	limit, err := utils.StringToInt(limitStr)
 	if err != nil {
-		return nil, err
+		limit = constants.PAGE_LIMIT_DEFAULT
 	}
-	return dto.ToListPrescriptionResponseDTO(prescriptions), nil
+
+	page, err := utils.StringToInt(pageStr)
+	if err != nil {
+		page = 1
+	}
+
+	offset := (page - 1) * limit
+	prescriptions, count, err := u.prescriptionRepository.GetByPatient(ctx, patientID, limit, offset)
+	if err != nil {
+		return dto.PrescriptionSearchResponse{}, err
+	}
+
+	metadata := dto.NewMetadata(int64(page), int64(limit), count)
+	results := dto.ToPrescriptionSearchResponse(prescriptions, metadata)
+	return results, nil
 }
 
-func (u *PrescriptionUsecase) GetByDoctor(ctx context.Context, doctorID uuid.UUID) ([]dto.PrescriptionResponse, error) {
-	prescriptions, err := u.prescriptionRepository.GetByDoctor(ctx, doctorID)
+func (u *PrescriptionUsecase) GetByDoctor(ctx context.Context, doctorID uuid.UUID, pageStr string, limitStr string) (dto.PrescriptionSearchResponse, error) {
+	limit, err := utils.StringToInt(limitStr)
 	if err != nil {
-		return nil, err
+		limit = constants.PAGE_LIMIT_DEFAULT
 	}
-	return dto.ToListPrescriptionResponseDTO(prescriptions), nil
+
+	page, err := utils.StringToInt(pageStr)
+	if err != nil {
+		page = 1
+	}
+
+	offset := (page - 1) * limit
+	prescriptions, count, err := u.prescriptionRepository.GetByDoctor(ctx, doctorID, limit, offset)
+	if err != nil {
+		return dto.PrescriptionSearchResponse{}, err
+	}
+
+	metadata := dto.NewMetadata(int64(page), int64(limit), count)
+	results := dto.ToPrescriptionSearchResponse(prescriptions, metadata)
+	return results, nil
 }
 
 func (u *PrescriptionUsecase) GetDetailByID(ctx context.Context, id uuid.UUID) (*dto.PrescriptionResponse, error) {

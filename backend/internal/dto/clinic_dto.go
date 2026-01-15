@@ -32,6 +32,11 @@ type ClinicResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type ClinicSearchResponse struct {
+	Data     []ClinicResponse `json:"data"`
+	Metadata Metadata         `json:"metadata"`
+}
+
 type ClinicCreateRequest struct {
 	Name    string `json:"name" validate:"required,min=3,max=255"`
 	Address string `json:"address" validate:"required"`
@@ -78,6 +83,22 @@ type AssignDoctorRequest struct {
 type RemoveDoctorRequest struct {
 	ClinicID uuid.UUID `json:"clinic_id" validate:"required"`
 	DoctorID uuid.UUID `json:"doctor_id" validate:"required"`
+}
+
+func ToClinicSearchResponse(
+	clinics []entity.Clinic,
+	metadata Metadata,
+) ClinicSearchResponse {
+	responses := make([]ClinicResponse, 0, len(clinics))
+
+	for _, clinic := range clinics {
+		responses = append(responses, ToClinicResponse(&clinic))
+	}
+
+	return ClinicSearchResponse{
+		Data:     responses,
+		Metadata: metadata,
+	}
 }
 
 func ToClinicResponse(clinic *entity.Clinic) ClinicResponse {

@@ -1,8 +1,12 @@
+import { Metadata } from "./metadata.type";
+
 export type DoctorMinimumResponse = {
   id: string;
+  avatar_url?: string;
   name: string;
   specialization: string;
-  avatar_url?: string;
+  rating_total: number;
+  review_count: number;
 };
 
 export type DoctorClinicRepsonse = {
@@ -11,6 +15,11 @@ export type DoctorClinicRepsonse = {
   address: string;
   city: string;
   is_active: string;
+};
+
+export type DoctorSearchResponse = {
+  data: DoctorMinimumResponse[];
+  metadata: Metadata;
 };
 
 export type DoctorProfileResponse = {

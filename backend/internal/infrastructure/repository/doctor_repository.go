@@ -22,7 +22,7 @@ func (r *doctorRepository) GetProfileByUserID(ctx context.Context, userID uuid.U
 	var doctor entity.Doctor
 	if err := r.db.WithContext(ctx).
 		Preload("User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "name", "email", "phone_number")
+			return db.Select("id", "name", "email", "phone_number", "avatar_url")
 		}).
 		Preload("DoctorClinicPlacements.Clinic", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "name", "address", "city", "is_active")
@@ -38,7 +38,7 @@ func (r *doctorRepository) GetProfileByID(ctx context.Context, id uuid.UUID) (*e
 	var doctor entity.Doctor
 	if err := r.db.WithContext(ctx).
 		Preload("User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "name", "email", "phone_number")
+			return db.Select("id", "name", "email", "phone_number", "avatar_url")
 		}).
 		Preload("DoctorClinicPlacements.Clinic", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "name", "address", "city", "is_active")
@@ -68,26 +68,39 @@ func (r *doctorRepository) GetByUserID(ctx context.Context, userID uuid.UUID) (*
 	return &doctor, nil
 }
 
-func (r *doctorRepository) Find(ctx context.Context, name string, limit int, offset int) ([]entity.Doctor, error) {
-	var doctors []entity.Doctor
-	if err := r.db.WithContext(ctx).
+func (r *doctorRepository) Find(ctx context.Context, name string, limit int, offset int) ([]entity.Doctor, int64, error) {
+	var (
+		doctors []entity.Doctor
+		total   int64
+	)
+
+	baseQuery := r.db.WithContext(ctx).
 		Model(&entity.Doctor{}).
-		Preload("DoctorSchedules").
-		Preload("User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "name", "email", "phone_number")
-		}).
-		Preload("DoctorClinicPlacements.Clinic", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "name", "address", "city", "is_active")
-		}).
 		Joins("JOIN users u ON u.id = doctors.user_id").
-		Where("u.name ILIKE ?", "%"+name+"%").
+		Where("u.name ILIKE ?", "%"+name+"%")
+
+	if err := baseQuery.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if err := baseQuery.
+		Select(
+			"doctors.id",
+			"doctors.user_id",
+			"doctors.specialization",
+			"doctors.rating_total",
+			"doctors.review_count",
+		).
+		Preload("User", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id", "name", "email", "phone_number", "avatar_url")
+		}).
 		Limit(limit).
 		Offset(offset).
 		Find(&doctors).Error; err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return doctors, nil
+	return doctors, total, nil
 }
 
 func (r *doctorRepository) Create(ctx context.Context, doctor *entity.Doctor) (*entity.Doctor, error) {

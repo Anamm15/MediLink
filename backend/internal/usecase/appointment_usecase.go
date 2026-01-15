@@ -54,15 +54,25 @@ func NewAppointmentUseCase(
 	}
 }
 
-func (u *AppointmentUsecase) GetAll(ctx context.Context, page int) ([]dto.AppointmentDetailResponse, error) {
-	limit := constants.PAGE_LIMIT_DEFAULT
-	offset := (page - 1) * limit
-	appointments, err := u.appointmentRepo.GetAll(ctx, limit, offset)
+func (u *AppointmentUsecase) GetAll(ctx context.Context, pageStr string, limitStr string) (dto.AppointmentResponse, error) {
+	limit, err := utils.StringToInt(limitStr)
 	if err != nil {
-		return nil, err
+		limit = constants.PAGE_LIMIT_DEFAULT
 	}
 
-	appointmentResponses := dto.ToListAppointmentDetailResponse(appointments)
+	page, err := utils.StringToInt(pageStr)
+	if err != nil {
+		page = 1
+	}
+
+	offset := (page - 1) * limit
+	appointments, count, err := u.appointmentRepo.GetAll(ctx, limit, offset)
+	if err != nil {
+		return dto.AppointmentResponse{}, err
+	}
+
+	metadata := dto.NewMetadata(int64(page), int64(limit), count)
+	appointmentResponses := dto.ToAppointmentResponse(appointments, metadata)
 	return appointmentResponses, nil
 }
 
@@ -76,10 +86,18 @@ func (u *AppointmentUsecase) GetDetailByID(ctx context.Context, appointmentID uu
 	return *appointmentResponse, nil
 }
 
-func (u *AppointmentUsecase) GetByDoctor(ctx context.Context, userID uuid.UUID, page int) ([]dto.AppointmentDetailResponse, error) {
-	limit := constants.PAGE_LIMIT_DEFAULT
-	offset := (page - 1) * limit
+func (u *AppointmentUsecase) GetByDoctor(ctx context.Context, userID uuid.UUID, pageStr string, limitStr string) (dto.AppointmentResponse, error) {
+	limit, err := utils.StringToInt(limitStr)
+	if err != nil {
+		limit = constants.PAGE_LIMIT_DEFAULT
+	}
 
+	page, err := utils.StringToInt(pageStr)
+	if err != nil {
+		page = 1
+	}
+
+	offset := (page - 1) * limit
 	var doctorID uuid.UUID
 	key := fmt.Sprintf(constants.RedisKeyPatient, userID.String())
 	doctorIDStr, err := u.cacheRepo.Get(ctx, key)
@@ -89,24 +107,33 @@ func (u *AppointmentUsecase) GetByDoctor(ctx context.Context, userID uuid.UUID, 
 	} else {
 		patient, err := u.doctorRepo.GetByUserID(ctx, userID)
 		if err != nil {
-			return nil, err
+			return dto.AppointmentResponse{}, err
 		}
 		doctorID = patient.ID
 	}
 
-	appointments, err := u.appointmentRepo.GetByDoctorID(ctx, doctorID, limit, offset)
+	appointments, count, err := u.appointmentRepo.GetByDoctorID(ctx, doctorID, limit, offset)
 	if err != nil {
-		return nil, err
+		return dto.AppointmentResponse{}, err
 	}
 
-	appointmentResponses := dto.ToListAppointmentDetailResponse(appointments)
+	metadata := dto.NewMetadata(int64(page), int64(limit), count)
+	appointmentResponses := dto.ToAppointmentResponse(appointments, metadata)
 	return appointmentResponses, nil
 }
 
-func (u *AppointmentUsecase) GetByPatient(ctx context.Context, userID uuid.UUID, page int) ([]dto.AppointmentDetailResponse, error) {
-	limit := constants.PAGE_LIMIT_DEFAULT
-	offset := (page - 1) * limit
+func (u *AppointmentUsecase) GetByPatient(ctx context.Context, userID uuid.UUID, pageStr string, limitStr string) (dto.AppointmentResponse, error) {
+	limit, err := utils.StringToInt(limitStr)
+	if err != nil {
+		limit = constants.PAGE_LIMIT_DEFAULT
+	}
 
+	page, err := utils.StringToInt(pageStr)
+	if err != nil {
+		page = 1
+	}
+
+	offset := (page - 1) * limit
 	var patientID uuid.UUID
 	key := fmt.Sprintf(constants.RedisKeyPatient, userID.String())
 	patientIDStr, err := u.cacheRepo.Get(ctx, key)
@@ -116,17 +143,18 @@ func (u *AppointmentUsecase) GetByPatient(ctx context.Context, userID uuid.UUID,
 	} else {
 		patient, err := u.patientRepo.GetByUserID(ctx, userID)
 		if err != nil {
-			return nil, err
+			return dto.AppointmentResponse{}, err
 		}
 		patientID = patient.ID
 	}
 
-	appointments, err := u.appointmentRepo.GetByPatientID(ctx, patientID, limit, offset)
+	appointments, count, err := u.appointmentRepo.GetByPatientID(ctx, patientID, limit, offset)
 	if err != nil {
-		return nil, err
+		return dto.AppointmentResponse{}, err
 	}
 
-	appointmentResponses := dto.ToListAppointmentDetailResponse(appointments)
+	metadata := dto.NewMetadata(int64(page), int64(limit), count)
+	appointmentResponses := dto.ToAppointmentResponse(appointments, metadata)
 	return appointmentResponses, nil
 }
 

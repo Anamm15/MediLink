@@ -38,27 +38,50 @@ func (r *clinicRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity.C
 	return &clinic, nil
 }
 
-func (r *clinicRepository) GetAll(ctx context.Context, limit int, offset int) ([]entity.Clinic, error) {
-	var clinics []entity.Clinic
-	if err := r.db.WithContext(ctx).
+func (r *clinicRepository) GetAll(ctx context.Context, limit int, offset int) ([]entity.Clinic, int64, error) {
+	var (
+		clinics []entity.Clinic
+		total   int64
+	)
+
+	baseQuery := r.db.WithContext(ctx).
+		Model(&entity.Clinic{})
+
+	if err := baseQuery.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if err := baseQuery.
 		Limit(limit).
 		Offset(offset).
 		Find(&clinics).Error; err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return clinics, nil
+
+	return clinics, total, nil
 }
 
-func (r *clinicRepository) Find(ctx context.Context, name string, limit int, offset int) ([]entity.Clinic, error) {
-	var clinics []entity.Clinic
-	if err := r.db.WithContext(ctx).
+func (r *clinicRepository) Find(ctx context.Context, name string, limit int, offset int) ([]entity.Clinic, int64, error) {
+	var (
+		clinics []entity.Clinic
+		total   int64
+	)
+
+	baseQuery := r.db.WithContext(ctx).
+		Model(&entity.Clinic{}).
+		Where("name LIKE ?", "%"+name+"%")
+
+	if err := baseQuery.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+	if err := baseQuery.
 		Limit(limit).
 		Offset(offset).
 		Where("name LIKE ?", "%"+name+"%").
 		Find(&clinics).Error; err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return clinics, nil
+	return clinics, total, nil
 }
 
 func (r *clinicRepository) Update(ctx context.Context, clinic *entity.Clinic) error {

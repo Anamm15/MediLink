@@ -7,6 +7,7 @@ import (
 	"MediLink/internal/domain/usecase"
 	"MediLink/internal/dto"
 	"MediLink/internal/helpers/constants"
+	"MediLink/internal/utils"
 
 	"github.com/google/uuid"
 )
@@ -21,16 +22,25 @@ func NewMedicineUsecase(medicineRepo repository.MedicineRepository) usecase.Medi
 	}
 }
 
-func (u *MedicineUsecase) GetAll(ctx context.Context, page int) ([]dto.MedicineResponse, error) {
-	limit := constants.PAGE_LIMIT_DEFAULT
-	offset := (page - 1) * limit
-
-	medicines, err := u.medicineRepo.GetAll(ctx, limit, offset)
+func (u *MedicineUsecase) GetAll(ctx context.Context, pageStr string, limitStr string) (dto.MedicineSearchResponse, error) {
+	limit, err := utils.StringToInt(limitStr)
 	if err != nil {
-		return nil, err
+		limit = constants.PAGE_LIMIT_DEFAULT
 	}
 
-	result := dto.ToListMedicineResponse(medicines)
+	page, err := utils.StringToInt(pageStr)
+	if err != nil {
+		page = 1
+	}
+
+	offset := (page - 1) * limit
+	medicines, count, err := u.medicineRepo.GetAll(ctx, limit, offset)
+	if err != nil {
+		return dto.MedicineSearchResponse{}, err
+	}
+
+	metadata := dto.NewMetadata(int64(page), int64(limit), count)
+	result := dto.ToMedicineSearchResponse(medicines, metadata)
 	return result, nil
 }
 
@@ -43,15 +53,25 @@ func (u *MedicineUsecase) GetByID(ctx context.Context, id uuid.UUID) (dto.Medici
 	return *response, nil
 }
 
-func (u *MedicineUsecase) Search(ctx context.Context, name string, page int) ([]dto.MedicineResponse, error) {
-	limit := constants.PAGE_LIMIT_DEFAULT
-	offset := (page - 1) * limit
-
-	medicines, err := u.medicineRepo.Search(ctx, name, limit, offset)
+func (u *MedicineUsecase) Search(ctx context.Context, name string, pageStr string, limitStr string) (dto.MedicineSearchResponse, error) {
+	limit, err := utils.StringToInt(limitStr)
 	if err != nil {
-		return nil, err
+		limit = constants.PAGE_LIMIT_DEFAULT
 	}
-	result := dto.ToListMedicineResponse(medicines)
+
+	page, err := utils.StringToInt(pageStr)
+	if err != nil {
+		page = 1
+	}
+
+	offset := (page - 1) * limit
+	medicines, count, err := u.medicineRepo.Search(ctx, name, limit, offset)
+	if err != nil {
+		return dto.MedicineSearchResponse{}, err
+	}
+
+	metadata := dto.NewMetadata(int64(page), int64(limit), count)
+	result := dto.ToMedicineSearchResponse(medicines, metadata)
 	return result, nil
 }
 

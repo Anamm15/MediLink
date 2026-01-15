@@ -3,25 +3,33 @@ import { useEffect, useState } from "react";
 import { AppointmentList } from "./components/AppointmentList";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDoctorAppointmentsQuery } from "./hooks/useDoctorAppointment";
-import { AppointmentDetailResponse } from "@/types/appointment.type";
+import { AppointmentResponse } from "@/types/appointment.type";
 import { groupAppointmentsByTime } from "@/helpers/appointments";
+import { DEFAULT_LIMIT_QUERY, DEFAULT_PAGE_QUERY } from "@/helpers/constant";
 
 export default function DoctorAppointmentPage() {
   const [activeTab, setActiveTab] = useState("upcoming");
-  const { data: appointments } = useDoctorAppointmentsQuery();
+  const [page, setPage] = useState(DEFAULT_PAGE_QUERY);
+  const [totalPage, setTotalPage] = useState(0);
+  const { data: appointmentsWithMetadata } = useDoctorAppointmentsQuery(
+    page,
+    DEFAULT_LIMIT_QUERY
+  );
   const [upComingAppointments, setUpComingAppointments] = useState<
-    AppointmentDetailResponse[]
+    AppointmentResponse[]
   >([]);
   const [pastAppointments, setPastAppointments] = useState<
-    AppointmentDetailResponse[]
+    AppointmentResponse[]
   >([]);
 
   useEffect(() => {
-    if (!appointments) return;
-    const { upcoming, past } = groupAppointmentsByTime(appointments);
+    if (!appointmentsWithMetadata) return;
+    const { data, metadata } = appointmentsWithMetadata;
+    setTotalPage(metadata.total_pages);
+    const { upcoming, past } = groupAppointmentsByTime(data);
     setUpComingAppointments(upcoming);
     setPastAppointments(past);
-  }, [appointments]);
+  }, [appointmentsWithMetadata]);
 
   return (
     <div className="flex flex-col h-full">
@@ -66,9 +74,19 @@ export default function DoctorAppointmentPage() {
           transition={{ duration: 0.2 }}
         >
           {activeTab === "upcoming" ? (
-            <AppointmentList appointments={upComingAppointments} />
+            <AppointmentList
+              appointments={upComingAppointments}
+              page={page}
+              totalPage={totalPage}
+              setPage={setPage}
+            />
           ) : (
-            <AppointmentList appointments={pastAppointments} />
+            <AppointmentList
+              appointments={pastAppointments}
+              page={page}
+              totalPage={totalPage}
+              setPage={setPage}
+            />
           )}
         </motion.div>
       </AnimatePresence>

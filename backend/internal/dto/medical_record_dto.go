@@ -22,6 +22,11 @@ type MedicalRecordResponse struct {
 	CreatedAt     time.Time `json:"created_at"`
 }
 
+type MedicalRecordSearchResponse struct {
+	Data     []MedicalRecordResponse `json:"data"`
+	Metadata Metadata                `json:"metadata"`
+}
+
 type MedicalRecordCreateRequest struct {
 	PatientID     uuid.UUID `json:"patient_id" binding:"required"`
 	AppointmentID uuid.UUID `json:"appointment_id" binding:"required"`
@@ -66,6 +71,13 @@ func ToListMedicalRecordResponse(medicalRecords []entity.MedicalRecord) []Medica
 		medicalRecordResponses = append(medicalRecordResponses, ToMedicalRecordResponse(&medicalRecord))
 	}
 	return medicalRecordResponses
+}
+
+func ToMedicalRecordSearchResponse(medicalRecord []entity.MedicalRecord, metadata Metadata) MedicalRecordSearchResponse {
+	return MedicalRecordSearchResponse{
+		Data:     ToListMedicalRecordResponse(medicalRecord),
+		Metadata: metadata,
+	}
 }
 
 func (medicalRecord *MedicalRecordCreateRequest) ToModel(entity *entity.MedicalRecord) {

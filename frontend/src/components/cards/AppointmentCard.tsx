@@ -1,12 +1,12 @@
 import Image from "next/image";
 import { Video, MessageSquare, Clock } from "lucide-react";
-import { AppointmentDetailResponse } from "@/types/appointment.type";
+import { AppointmentResponse } from "@/types/appointment.type";
 import Link from "next/link";
 import { useState } from "react";
 import MedicalRecordModal from "@/app/doctor/dashboard/appointments/components/MedicalRecordModal";
 
 interface AppointmentCardProps {
-  appointment: AppointmentDetailResponse;
+  appointment: AppointmentResponse;
   isUpcoming: boolean;
   isActionable: boolean;
 }

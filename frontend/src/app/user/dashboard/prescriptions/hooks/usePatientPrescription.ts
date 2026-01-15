@@ -1,10 +1,15 @@
 import { getPatientPrescriptions } from "@/services/prescription.service";
 import { useQuery } from "@tanstack/react-query";
 
-export function usePatientPrescriptionQuery(id: string) {
+export function usePatientPrescriptionQuery(
+  id: string,
+  page: number,
+  limit: number
+) {
   return useQuery({
-    queryKey: ["patient-prescriptions"],
-    queryFn: () => getPatientPrescriptions(id),
+    queryKey: ["patient-prescriptions", page],
+    queryFn: () => getPatientPrescriptions(id, page, limit),
     enabled: !!id,
+    staleTime: 3 * 60 * 1000,
   });
 }

@@ -1,3 +1,5 @@
+import { Metadata } from "./metadata.type";
+
 export type MedicineResponse = {
   id: string;
   name: string;
@@ -7,4 +9,9 @@ export type MedicineResponse = {
   manufacturer: string;
   base_price: number;
   created_at: string;
+};
+
+export type MedicinePaginationResponse = {
+  data: MedicineResponse[];
+  metadata: Metadata;
 };

@@ -5,6 +5,8 @@ import { usePatientIdQuery } from "@/hooks/usePatient";
 import { usePatientPrescriptionQuery } from "./hooks/usePatientPrescription";
 import { PrescriptionResponse } from "@/types/prescription.type";
 import PrescriptionCard from "./components/PrescriptionCard";
+import { DefaultPagination } from "@/components/ui/pagination/DefaultPagination";
+import { DEFAULT_LIMIT_QUERY, DEFAULT_PAGE_QUERY } from "@/helpers/constant";
 
 const listVariants = {
   hidden: { opacity: 0 },
@@ -13,8 +15,14 @@ const listVariants = {
 
 export default function UserPrescriptionPage() {
   const [activeTab, setActiveTab] = useState("active");
+  const [page, setPage] = useState(DEFAULT_PAGE_QUERY);
+  const [totalPages, setTotalPages] = useState(0);
   const { data: patientId } = usePatientIdQuery();
-  const { data: prescriptions } = usePatientPrescriptionQuery(patientId!);
+  const { data: prescriptionsWithMetadata } = usePatientPrescriptionQuery(
+    patientId!,
+    page,
+    DEFAULT_LIMIT_QUERY
+  );
   const [redeemedPrescriptions, setRedeemedPrescriptions] = useState<
     PrescriptionResponse[]
   >([]);
@@ -23,6 +31,10 @@ export default function UserPrescriptionPage() {
   >([]);
 
   useEffect(() => {
+    if (!prescriptionsWithMetadata) return;
+    const { data: prescriptions, metadata } = prescriptionsWithMetadata;
+    setTotalPages(metadata.total_pages);
+
     if (prescriptions) {
       const redeemed = prescriptions.filter(
         (prescription) => prescription.is_redeemed === true
@@ -33,7 +45,7 @@ export default function UserPrescriptionPage() {
       setRedeemedPrescriptions(redeemed);
       setUnredeemedPrescriptions(unredeemed);
     }
-  }, [prescriptions]);
+  }, [prescriptionsWithMetadata]);
 
   return (
     <div className="space-y-6">
@@ -103,6 +115,26 @@ export default function UserPrescriptionPage() {
               </p>
             </div>
           )}
+
+          {activeTab === "active" &&
+            totalPages > 1 &&
+            unredeemedPrescriptions.length > 0 && (
+              <DefaultPagination
+                page={page}
+                onPageChange={setPage}
+                totalPages={totalPages}
+              />
+            )}
+
+          {activeTab === "history" &&
+            totalPages > 1 &&
+            redeemedPrescriptions.length > 0 && (
+              <DefaultPagination
+                page={page}
+                onPageChange={setPage}
+                totalPages={totalPages}
+              />
+            )}
         </motion.div>
       </AnimatePresence>
     </div>

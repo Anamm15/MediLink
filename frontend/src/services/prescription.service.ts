@@ -3,6 +3,7 @@ import api from "@/lib/api";
 import { ApiResponse } from "@/types/api.type";
 import {
   PrescriptionCreateRequest,
+  PrescriptionPaginateResponse,
   PrescriptionResponse,
   PrescriptionUpdateRequest,
 } from "@/types/prescription.type";
@@ -10,19 +11,23 @@ import {
 const BASE_PATH = "/prescriptions";
 
 export async function getPatientPrescriptions(
-  id: string
-): Promise<PrescriptionResponse[]> {
-  const response = await api.get<ApiResponse<PrescriptionResponse[]>>(
-    `${BASE_PATH}/patient/${id}`
+  id: string,
+  page: number,
+  limit: number
+): Promise<PrescriptionPaginateResponse> {
+  const response = await api.get<ApiResponse<PrescriptionPaginateResponse>>(
+    `${BASE_PATH}/patient/${id}?page=${page}&limit=${limit}`
   );
   return unwrapResponse(response.data);
 }
 
 export async function getDoctorPrescriptions(
-  id: string
-): Promise<PrescriptionResponse[]> {
-  const response = await api.get<ApiResponse<PrescriptionResponse[]>>(
-    `${BASE_PATH}/doctor/${id}`
+  id: string,
+  page: number,
+  limit: number
+): Promise<PrescriptionPaginateResponse> {
+  const response = await api.get<ApiResponse<PrescriptionPaginateResponse>>(
+    `${BASE_PATH}/doctor/${id}?page=${page}&limit=${limit}`
   );
   return unwrapResponse(response.data);
 }

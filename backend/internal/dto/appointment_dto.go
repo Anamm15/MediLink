@@ -8,6 +8,25 @@ import (
 	"github.com/google/uuid"
 )
 
+type AppointmentMinimumResponse struct {
+	ID               uuid.UUID              `json:"id"`
+	Doctor           DoctorMinimumResponse  `json:"doctor"`
+	Patient          PatientMinimumResponse `json:"patient"`
+	AppointmentDate  string                 `json:"appointment_date"`
+	StartTime        string                 `json:"start_time"`
+	EndTime          string                 `json:"end_time"`
+	Type             enum.AppointmentType   `json:"type"`
+	Status           enum.AppointmentStatus `json:"status"`
+	QueueNumber      *int                   `json:"queue_number"`
+	MeetingLink      *string                `json:"meeting_link"`
+	SymptomComplaint *string                `json:"symptom_complaint"`
+}
+
+type AppointmentResponse struct {
+	Data     []AppointmentMinimumResponse `json:"data"`
+	Metadata Metadata                     `json:"metadata"`
+}
+
 type AppointmentDetailResponse struct {
 	ID              uuid.UUID              `json:"id"`
 	Doctor          DoctorMinimumResponse  `json:"doctor"`
@@ -33,12 +52,58 @@ type CreateBookingRequest struct {
 	SymptomComplaint *string   `json:"symptom_complaint"`
 }
 
+func ToAppointmentResponse(
+	appointments []entity.Appointment,
+	metadata Metadata,
+) AppointmentResponse {
+	responses := make([]AppointmentMinimumResponse, 0, len(appointments))
+
+	for _, appt := range appointments {
+		doctor := DoctorMinimumResponse{
+			ID:             appt.Doctor.ID,
+			Name:           appt.Doctor.User.Name,
+			Specialization: appt.Doctor.Specialization,
+			PhoneNumber:    appt.Doctor.User.PhoneNumber,
+			AvatarUrl:      appt.Doctor.User.AvatarUrl,
+		}
+
+		patient := PatientMinimumResponse{
+			ID:          appt.Patient.ID,
+			Name:        appt.Patient.User.Name,
+			Email:       appt.Patient.User.Email,
+			PhoneNumber: appt.Patient.User.PhoneNumber,
+		}
+
+		response := AppointmentMinimumResponse{
+			ID:               appt.ID,
+			Doctor:           doctor,
+			Patient:          patient,
+			AppointmentDate:  utils.FormatDate(appt.AppointmentDate),
+			StartTime:        appt.StartTime,
+			EndTime:          appt.EndTime,
+			Type:             appt.Type,
+			Status:           appt.Status,
+			QueueNumber:      appt.QueueNumber,
+			MeetingLink:      appt.MeetingLink,
+			SymptomComplaint: appt.SymptomComplaint,
+		}
+
+		responses = append(responses, response)
+	}
+
+	return AppointmentResponse{
+		Data:     responses,
+		Metadata: metadata,
+	}
+}
+
 func ToAppointmentDetailResponse(appointment *entity.Appointment) *AppointmentDetailResponse {
 	doctorResponse := DoctorMinimumResponse{
 		ID:             appointment.Doctor.ID,
 		Name:           appointment.Doctor.User.Name,
 		Specialization: appointment.Doctor.Specialization,
 		PhoneNumber:    appointment.Doctor.User.PhoneNumber,
+		AvatarUrl:      appointment.Doctor.User.AvatarUrl,
 	}
 
 	patientResponse := PatientMinimumResponse{

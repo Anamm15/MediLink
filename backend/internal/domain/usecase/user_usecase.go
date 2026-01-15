@@ -9,7 +9,7 @@ import (
 )
 
 type UserUsecase interface {
-	GetAll(ctx context.Context, page int) ([]dto.UserResponse, error)
+	GetAll(ctx context.Context, page string, limit string) ([]dto.UserResponse, error)
 	Me(ctx context.Context, userID uuid.UUID) (dto.UserResponse, error)
 	GetProfile(ctx context.Context, userID uuid.UUID) (dto.UserProfileResponse, error)
 	UpdateProfile(ctx context.Context, userID uuid.UUID, request dto.UserUpdateProfileRequest) error

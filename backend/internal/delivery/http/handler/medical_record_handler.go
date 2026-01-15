@@ -29,7 +29,9 @@ func (h *MedicalRecordHandler) GetByPatient(c *gin.Context) {
 		return
 	}
 
-	medicalRecords, err := h.medicalRecordUsecase.GetByPatient(c.Request.Context(), patientID)
+	page := c.Query("page")
+	limit := c.Query("limit")
+	medicalRecords, err := h.medicalRecordUsecase.GetByPatient(c.Request.Context(), patientID, page, limit)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve medical records", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, res)
@@ -49,7 +51,9 @@ func (h *MedicalRecordHandler) GetByDoctor(c *gin.Context) {
 		return
 	}
 
-	medicalRecords, err := h.medicalRecordUsecase.GetByDoctor(c.Request.Context(), doctorID)
+	page := c.Query("page")
+	limit := c.Query("limit")
+	medicalRecords, err := h.medicalRecordUsecase.GetByDoctor(c.Request.Context(), doctorID, page, limit)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve medical records", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, res)

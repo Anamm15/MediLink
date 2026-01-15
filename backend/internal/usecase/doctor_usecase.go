@@ -53,18 +53,25 @@ func (u *doctorUsecase) GetProfile(ctx context.Context, doctorID uuid.UUID) (dto
 	return dto.ToDoctorResponse(doctor), nil
 }
 
-func (u *doctorUsecase) Find(ctx context.Context, name string, page int) ([]dto.DoctorProfileResponse, error) {
-	limit := constants.PAGE_LIMIT_DEFAULT
-	offset := (page - 1) * limit
-	doctors, err := u.doctorRepository.Find(ctx, name, limit, offset)
+func (u *doctorUsecase) Find(ctx context.Context, name string, pageStr string, limitStr string) (dto.DoctorSearchResponse, error) {
+	limit, err := utils.StringToInt(limitStr)
 	if err != nil {
-		return nil, err
+		limit = constants.PAGE_LIMIT_DEFAULT
 	}
 
-	var results []dto.DoctorProfileResponse
-	for _, doctor := range doctors {
-		results = append(results, dto.ToDoctorResponse(&doctor))
+	page, err := utils.StringToInt(pageStr)
+	if err != nil {
+		page = 1
 	}
+
+	offset := (page - 1) * limit
+	doctors, count, err := u.doctorRepository.Find(ctx, name, limit, offset)
+	if err != nil {
+		return dto.DoctorSearchResponse{}, err
+	}
+
+	metadata := dto.NewMetadata(int64(page), int64(limit), count)
+	results := dto.ToSearchDoctorResponse(doctors, metadata)
 	return results, nil
 }
 

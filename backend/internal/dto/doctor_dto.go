@@ -11,8 +11,11 @@ import (
 type DoctorMinimumResponse struct {
 	ID             uuid.UUID `json:"id"`
 	Name           string    `json:"name"`
+	AvatarUrl      string    `json:"avatar_url"`
 	Specialization string    `json:"specialization"`
 	PhoneNumber    string    `json:"phone_number"`
+	RatingTotal    float64   `json:"rating_total"`
+	ReviewCount    int       `json:"review_count"`
 }
 
 type DoctorClinicResponse struct {
@@ -23,6 +26,10 @@ type DoctorClinicResponse struct {
 	IsActive bool      `json:"is_active"`
 }
 
+type DoctorSearchResponse struct {
+	Data     []DoctorMinimumResponse `json:"data"`
+	Metadata Metadata                `json:"metadata"`
+}
 type DoctorProfileResponse struct {
 	ID          uuid.UUID `json:"id" gorm:"column:id"`
 	Name        string    `json:"name"`
@@ -85,6 +92,25 @@ type DoctorUpdateScheduleRequest struct {
 
 type DoctorUpdateStatusScheduleRequest struct {
 	IsActive *bool `json:"is_active"`
+}
+
+func ToSearchDoctorResponse(entity []entity.Doctor, metadata Metadata) DoctorSearchResponse {
+	doctorRespone := make([]DoctorMinimumResponse, 0)
+	for _, doctor := range entity {
+		doctorRespone = append(doctorRespone, DoctorMinimumResponse{
+			ID:             doctor.ID,
+			Name:           doctor.User.Name,
+			AvatarUrl:      doctor.User.AvatarUrl,
+			Specialization: doctor.Specialization,
+			RatingTotal:    doctor.RatingTotal,
+			ReviewCount:    doctor.ReviewCount,
+		})
+	}
+
+	return DoctorSearchResponse{
+		Data:     doctorRespone,
+		Metadata: metadata,
+	}
 }
 
 func ToDoctorResponse(entity *entity.Doctor) DoctorProfileResponse {

@@ -3,14 +3,15 @@ import api from "@/lib/api";
 import { ApiResponse } from "@/types/api.type";
 import {
   AppointmentDetailResponse,
+  AppointmentPaginateResponse,
   BookingResponse,
   CreateBookingRequest,
 } from "@/types/appointment.type";
 
 const BASE_PATH = "/appointments";
 
-export async function getAppointments(): Promise<AppointmentDetailResponse[]> {
-  const response = await api.get<ApiResponse<AppointmentDetailResponse[]>>(
+export async function getAppointments(): Promise<AppointmentPaginateResponse> {
+  const response = await api.get<ApiResponse<AppointmentPaginateResponse>>(
     BASE_PATH
   );
   return unwrapResponse(response.data);
@@ -35,20 +36,22 @@ export async function createAppointment(
   return unwrapResponse(response.data);
 }
 
-export async function getDoctorAppointments(): Promise<
-  AppointmentDetailResponse[]
-> {
-  const response = await api.get<ApiResponse<AppointmentDetailResponse[]>>(
-    `${BASE_PATH}/doctor`
+export async function getDoctorAppointments(
+  page: number,
+  limit: number
+): Promise<AppointmentPaginateResponse> {
+  const response = await api.get<ApiResponse<AppointmentPaginateResponse>>(
+    `${BASE_PATH}/doctor?page=${page}&limit=${limit}`
   );
   return unwrapResponse(response.data);
 }
 
-export async function getPatientAppointments(): Promise<
-  AppointmentDetailResponse[]
-> {
-  const response = await api.get<ApiResponse<AppointmentDetailResponse[]>>(
-    `${BASE_PATH}/patient`
+export async function getPatientAppointments(
+  page: number,
+  limit: number
+): Promise<AppointmentPaginateResponse> {
+  const response = await api.get<ApiResponse<AppointmentPaginateResponse>>(
+    `${BASE_PATH}/patient?page=${page}&limit=${limit}`
   );
   return unwrapResponse(response.data);
 }

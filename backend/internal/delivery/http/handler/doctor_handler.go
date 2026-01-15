@@ -54,14 +54,15 @@ func (h *doctorHandler) GetProfile(ctx *gin.Context) {
 
 func (h *doctorHandler) Find(ctx *gin.Context) {
 	name := ctx.Query("name")
-	pageQuery := ctx.Query("page")
-	page := utils.StringToInt(pageQuery)
-	doctors, err := h.doctorUsecase.Find(ctx, name, page)
+	page := ctx.Query("page")
+	limit := ctx.Query("limit")
+	doctors, err := h.doctorUsecase.Find(ctx, name, page, limit)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to find doctors", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
 		return
 	}
+
 	res := utils.BuildResponseSuccess("Doctors found successfully", doctors)
 	ctx.JSON(http.StatusOK, res)
 }

@@ -1,17 +1,17 @@
-import { AppointmentDetailResponse } from "@/types/appointment.type";
+import { AppointmentResponse } from "@/types/appointment.type";
 
 export type GroupedAppointments = {
-  upcoming: AppointmentDetailResponse[];
-  past: AppointmentDetailResponse[];
+  upcoming: AppointmentResponse[];
+  past: AppointmentResponse[];
 };
 
 export function groupAppointmentsByTime(
-  appointments: AppointmentDetailResponse[]
+  appointments: AppointmentResponse[]
 ): GroupedAppointments {
   const now = new Date();
 
-  const upcoming: AppointmentDetailResponse[] = [];
-  const past: AppointmentDetailResponse[] = [];
+  const upcoming: AppointmentResponse[] = [];
+  const past: AppointmentResponse[] = [];
 
   appointments.forEach((appointment) => {
     const appointmentDateTime = new Date(

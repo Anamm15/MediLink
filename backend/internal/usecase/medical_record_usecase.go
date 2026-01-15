@@ -10,6 +10,7 @@ import (
 	"MediLink/internal/domain/usecase"
 	"MediLink/internal/dto"
 	"MediLink/internal/helpers/constants"
+	"MediLink/internal/utils"
 
 	"github.com/google/uuid"
 )
@@ -32,22 +33,48 @@ func NewMedicalRecordUsecase(
 	}
 }
 
-func (u *MedicalRecordUsecase) GetByDoctor(ctx context.Context, doctorID uuid.UUID) ([]dto.MedicalRecordResponse, error) {
-	medicalRecords, err := u.MedicalRecordRepository.GetByDoctorID(ctx, doctorID)
+func (u *MedicalRecordUsecase) GetByDoctor(ctx context.Context, doctorID uuid.UUID, pageStr string, limitStr string) (dto.MedicalRecordSearchResponse, error) {
+	limit, err := utils.StringToInt(limitStr)
 	if err != nil {
-		return nil, err
+		limit = constants.PAGE_LIMIT_DEFAULT
 	}
 
-	return dto.ToListMedicalRecordResponse(medicalRecords), nil
+	page, err := utils.StringToInt(pageStr)
+	if err != nil {
+		page = 1
+	}
+
+	offset := (page - 1) * limit
+	medicalRecords, count, err := u.MedicalRecordRepository.GetByDoctorID(ctx, doctorID, limit, offset)
+	if err != nil {
+		return dto.MedicalRecordSearchResponse{}, err
+	}
+
+	metadata := dto.NewMetadata(int64(page), int64(limit), count)
+	results := dto.ToMedicalRecordSearchResponse(medicalRecords, metadata)
+	return results, nil
 }
 
-func (u *MedicalRecordUsecase) GetByPatient(ctx context.Context, patientID uuid.UUID) ([]dto.MedicalRecordResponse, error) {
-	medicalRecords, err := u.MedicalRecordRepository.GetByPatientID(ctx, patientID)
+func (u *MedicalRecordUsecase) GetByPatient(ctx context.Context, patientID uuid.UUID, pageStr string, limitStr string) (dto.MedicalRecordSearchResponse, error) {
+	limit, err := utils.StringToInt(limitStr)
 	if err != nil {
-		return nil, err
+		limit = constants.PAGE_LIMIT_DEFAULT
 	}
 
-	return dto.ToListMedicalRecordResponse(medicalRecords), nil
+	page, err := utils.StringToInt(pageStr)
+	if err != nil {
+		page = 1
+	}
+
+	offset := (page - 1) * limit
+	medicalRecords, count, err := u.MedicalRecordRepository.GetByPatientID(ctx, patientID, limit, offset)
+	if err != nil {
+		return dto.MedicalRecordSearchResponse{}, err
+	}
+
+	metadata := dto.NewMetadata(int64(page), int64(limit), count)
+	results := dto.ToMedicalRecordSearchResponse(medicalRecords, metadata)
+	return results, nil
 }
 
 func (u *MedicalRecordUsecase) GetById(ctx context.Context, id uuid.UUID) (dto.MedicalRecordResponse, error) {

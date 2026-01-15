@@ -17,10 +17,10 @@ export function useDoctorIdQuery() {
   });
 }
 
-export function useSearchDoctor(name: string, page: number) {
+export function useSearchDoctor(name: string, page: number, limit: number) {
   return useQuery({
     queryKey: ["doctors", name, page],
-    queryFn: () => searchDoctor(name, page),
+    queryFn: () => searchDoctor(name, page, limit),
     staleTime: 60 * 1000,
   });
 }

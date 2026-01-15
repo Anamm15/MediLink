@@ -11,7 +11,7 @@ import (
 type DoctorUsecase interface {
 	Me(ctx context.Context, userID uuid.UUID) (dto.DoctorProfileResponse, error)
 	GetProfile(ctx context.Context, doctorID uuid.UUID) (dto.DoctorProfileResponse, error)
-	Find(ctx context.Context, name string, page int) ([]dto.DoctorProfileResponse, error)
+	Find(ctx context.Context, name string, page string, limit string) (dto.DoctorSearchResponse, error)
 	Update(ctx context.Context, userID uuid.UUID, request dto.DoctorUpdateRequest) error
 	GetDoctorSchedules(ctx context.Context, doctorID uuid.UUID) ([]dto.DoctorScheduleResponse, error)
 	GetScheduleByID(ctx context.Context, scheduleID uuid.UUID) (dto.DoctorScheduleResponse, error)

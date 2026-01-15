@@ -10,13 +10,13 @@ import {
   FileText,
   Repeat,
 } from "lucide-react";
-import { AppointmentDetailResponse } from "@/types/appointment.type";
+import { AppointmentResponse } from "@/types/appointment.type";
 import { DEFAULT_PROFILE } from "@/helpers/constant";
 import Link from "next/link";
 import { formatIDDate } from "@/helpers/datetime";
 
 interface CardProps {
-  appointment: AppointmentDetailResponse;
+  appointment: AppointmentResponse;
 }
 
 export const UserAppointmentCard = ({ appointment }: CardProps) => {

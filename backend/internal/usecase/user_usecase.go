@@ -12,6 +12,7 @@ import (
 	"MediLink/internal/dto"
 	"MediLink/internal/helpers/constants"
 	"MediLink/internal/helpers/enum"
+	"MediLink/internal/utils"
 
 	"github.com/google/uuid"
 	"golang.org/x/sync/errgroup"
@@ -39,8 +40,17 @@ func NewUserUsecase(
 	}
 }
 
-func (u *userUsecase) GetAll(ctx context.Context, page int) ([]dto.UserResponse, error) {
-	limit := constants.PAGE_LIMIT_DEFAULT
+func (u *userUsecase) GetAll(ctx context.Context, pageStr string, limitStr string) ([]dto.UserResponse, error) {
+	limit, err := utils.StringToInt(limitStr)
+	if err != nil {
+		limit = constants.PAGE_LIMIT_DEFAULT
+	}
+
+	page, err := utils.StringToInt(pageStr)
+	if err != nil {
+		page = 1
+	}
+
 	offset := (page - 1) * limit
 	users, err := u.userRepo.GetAll(ctx, limit, offset)
 	if err != nil {

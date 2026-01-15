@@ -22,46 +22,54 @@ func NewPrescriptionRepository(db *gorm.DB) repository.PrescriptionRepository {
 	}
 }
 
-func (r *PrescriptionRepository) GetByPatient(ctx context.Context, patientID uuid.UUID) ([]entity.Prescription, error) {
-	var prescriptions []entity.Prescription
+func (r *PrescriptionRepository) GetByPatient(ctx context.Context, patientID uuid.UUID, limit int, offset int) ([]entity.Prescription, int64, error) {
+	var (
+		prescriptions []entity.Prescription
+		total         int64
+	)
 
 	err := r.db.WithContext(ctx).
 		Preload("Doctor", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "user_id", "specialization")
 		}).
 		Preload("Doctor.User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "name")
+			return db.Select("id", "name", "avatar_url")
 		}).
 		Preload("Medicines").
 		Preload("Medicines.Medicine").
 		Where("patient_id = ?", patientID).
 		Find(&prescriptions).Error
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return prescriptions, nil
+	total = int64(len(prescriptions))
+	return prescriptions, total, nil
 }
 
-func (r *PrescriptionRepository) GetByDoctor(ctx context.Context, doctorID uuid.UUID) ([]entity.Prescription, error) {
-	var prescriptions []entity.Prescription
+func (r *PrescriptionRepository) GetByDoctor(ctx context.Context, doctorID uuid.UUID, limit int, offset int) ([]entity.Prescription, int64, error) {
+	var (
+		prescriptions []entity.Prescription
+		total         int64
+	)
 
 	err := r.db.WithContext(ctx).
 		Preload("Patient", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "user_id")
 		}).
 		Preload("Patient.User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "name", "email", "phone_number")
+			return db.Select("id", "name", "email", "phone_number", "avatar_url")
 		}).
 		Preload("Medicines").
 		Preload("Medicines.Medicine").
 		Where("doctor_id = ?", doctorID).
 		Find(&prescriptions).Error
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return prescriptions, nil
+	total = int64(len(prescriptions))
+	return prescriptions, total, nil
 }
 
 func (r *PrescriptionRepository) GetDetailByID(ctx context.Context, id uuid.UUID) (*entity.Prescription, error) {
@@ -72,13 +80,13 @@ func (r *PrescriptionRepository) GetDetailByID(ctx context.Context, id uuid.UUID
 			return db.Select("id", "user_id")
 		}).
 		Preload("Patient.User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "name")
+			return db.Select("id", "name", "avatar_url")
 		}).
 		Preload("Doctor", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "user_id", "specialization")
 		}).
 		Preload("Doctor.User", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "name")
+			return db.Select("id", "name", "avatar_url")
 		}).
 		Preload("Medicines").
 		Preload("Medicines.Medicine").

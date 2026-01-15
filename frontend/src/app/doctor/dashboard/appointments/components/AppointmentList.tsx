@@ -1,21 +1,28 @@
 "use client";
 import { motion } from "framer-motion";
 import { AppointmentCard } from "@/components/cards/AppointmentCard";
-import { AppointmentDetailResponse } from "@/types/appointment.type";
+import { AppointmentResponse } from "@/types/appointment.type";
 import { formatIDDate } from "@/helpers/datetime";
+import { DefaultPagination } from "@/components/ui/pagination/DefaultPagination";
 
-const groupAppointmentsByDate = (appointments: AppointmentDetailResponse[]) => {
+const groupAppointmentsByDate = (appointments: AppointmentResponse[]) => {
   const groups = appointments.reduce((acc, app) => {
     (acc[app.appointment_date] = acc[app.appointment_date] || []).push(app);
     return acc;
-  }, {} as Record<string, AppointmentDetailResponse[]>);
+  }, {} as Record<string, AppointmentResponse[]>);
   return groups;
 };
 
 export const AppointmentList = ({
   appointments,
+  page,
+  setPage,
+  totalPage,
 }: {
-  appointments: AppointmentDetailResponse[];
+  appointments: AppointmentResponse[];
+  page: number;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
+  totalPage: number;
 }) => {
   const groupedAppointments = groupAppointmentsByDate(appointments);
 
@@ -58,6 +65,15 @@ export const AppointmentList = ({
           </div>
         </motion.div>
       ))}
+
+      {totalPage > 1 && (
+        <DefaultPagination
+          page={page}
+          totalPages={totalPage}
+          onPageChange={setPage}
+          siblingCount={3}
+        />
+      )}
     </div>
   );
 };

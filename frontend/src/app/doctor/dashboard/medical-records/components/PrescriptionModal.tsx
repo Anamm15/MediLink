@@ -9,6 +9,8 @@ import { useSearchMedicineQuery } from "@/hooks/useMedicine";
 import { Button } from "@/components/ui/Button";
 import { toast } from "sonner";
 import { useDoctorIdQuery } from "@/hooks/useDoctor";
+import { DEFAULT_LIMIT_QUERY, DEFAULT_PAGE_QUERY } from "@/helpers/constant";
+import { MedicineResponse } from "@/types/medicine.type";
 // import { useDebounce } from "@/hooks/useDebounce";
 
 interface SelectedMedicine {
@@ -38,10 +40,21 @@ export default function PrescriptionCreateModal({
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { data: doctorId } = useDoctorIdQuery();
-  const { data: searchResults, isLoading: isSearching } =
-    useSearchMedicineQuery(searchQuery);
+  const { data: searchResultsWithMetadata, isLoading: isSearching } =
+    useSearchMedicineQuery(
+      searchQuery,
+      DEFAULT_PAGE_QUERY,
+      DEFAULT_LIMIT_QUERY
+    );
+  const [medicine, setMedicine] = useState<MedicineResponse[]>([]);
   const { mutateAsync: createPrescription, isPending: isSubmitting } =
     useCreatePrescription(doctorId!);
+
+  useEffect(() => {
+    if (!searchResultsWithMetadata) return;
+    const { data } = searchResultsWithMetadata;
+    setMedicine(data);
+  }, [searchResultsWithMetadata]);
 
   useEffect(() => {
     if (isOpen) {
@@ -159,9 +172,9 @@ export default function PrescriptionCreateModal({
                 <div className="p-4 text-center text-sm text-gray-500">
                   Searching...
                 </div>
-              ) : searchResults && searchResults.length > 0 ? (
+              ) : medicine && medicine.length > 0 ? (
                 <ul>
-                  {searchResults.map((med: any) => (
+                  {medicine.map((med: any) => (
                     <li
                       key={med.id}
                       onClick={() => handleAddMedicine(med)}

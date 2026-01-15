@@ -2,11 +2,14 @@
 import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { UserAppointmentCard } from "@/components/cards/UserAppointmentCard";
+import { UserAppointmentCard } from "./components/UserAppointmentCard";
 import Link from "next/link";
 import { usePatientAppointmentsQuery } from "./hooks/usePatientAppointment";
-import { AppointmentDetailResponse } from "@/types/appointment.type";
+import { AppointmentResponse } from "@/types/appointment.type";
 import { groupAppointmentsByTime } from "@/helpers/appointments";
+import { DefaultPagination } from "@/components/ui/pagination/DefaultPagination";
+import { Metadata } from "@/types/metadata.type";
+import { DEFAULT_LIMIT_QUERY } from "@/helpers/constant";
 
 const listVariants = {
   hidden: { opacity: 0 },
@@ -15,20 +18,28 @@ const listVariants = {
 
 export default function UserAppointmentPage() {
   const [activeTab, setActiveTab] = useState("upcoming");
-  const { data: appointments } = usePatientAppointmentsQuery();
+  const [page, setPage] = useState(1);
+  const { data: appointmentsWithMetadata } = usePatientAppointmentsQuery(
+    page,
+    DEFAULT_LIMIT_QUERY
+  );
+  const [totalPages, setTotalPages] = useState(0);
   const [upComingAppointments, setUpComingAppointments] = useState<
-    AppointmentDetailResponse[]
+    AppointmentResponse[]
   >([]);
   const [pastAppointments, setPastAppointments] = useState<
-    AppointmentDetailResponse[]
+    AppointmentResponse[]
   >([]);
 
   useEffect(() => {
-    if (!appointments) return;
+    if (!appointmentsWithMetadata) return;
+    const { data: appointments, metadata } = appointmentsWithMetadata;
+    setTotalPages(metadata.total_pages);
+
     const { upcoming, past } = groupAppointmentsByTime(appointments);
     setUpComingAppointments(upcoming);
     setPastAppointments(past);
-  }, [appointments]);
+  }, [appointmentsWithMetadata]);
 
   return (
     <div className="space-y-6">
@@ -98,6 +109,26 @@ export default function UserAppointmentPage() {
               You have no consultation history yet.
             </p>
           )}
+
+          {activeTab === "upcoming" &&
+            totalPages > 1 &&
+            upComingAppointments.length > 0 && (
+              <DefaultPagination
+                page={page}
+                onPageChange={setPage}
+                totalPages={totalPages}
+              />
+            )}
+
+          {activeTab === "history" &&
+            totalPages > 1 &&
+            pastAppointments.length > 0 && (
+              <DefaultPagination
+                page={page}
+                onPageChange={setPage}
+                totalPages={totalPages}
+              />
+            )}
         </motion.div>
       </AnimatePresence>
     </div>

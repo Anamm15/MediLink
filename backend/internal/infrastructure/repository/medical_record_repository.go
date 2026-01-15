@@ -18,24 +18,52 @@ func NewMedicalRecordRepository(db *gorm.DB) repository.MedicalRecordRepository 
 	return &MedicalRecordRepository{db: db}
 }
 
-func (r *MedicalRecordRepository) GetByPatientID(ctx context.Context, patientID uuid.UUID) ([]entity.MedicalRecord, error) {
-	var medicalRecords []entity.MedicalRecord
-	if err := r.db.WithContext(ctx).
-		Where("patient_id = ?", patientID).
-		Find(&medicalRecords).Error; err != nil {
-		return nil, err
+func (r *MedicalRecordRepository) GetByPatientID(ctx context.Context, patientID uuid.UUID, limit int, offset int) ([]entity.MedicalRecord, int64, error) {
+	var (
+		medicalRecords []entity.MedicalRecord
+		total          int64
+	)
+
+	baseQuery := r.db.WithContext(ctx).
+		Model(&entity.MedicalRecord{}).
+		Where("patient_id = ?", patientID)
+
+	if err := baseQuery.Count(&total).Error; err != nil {
+		return nil, 0, err
 	}
-	return medicalRecords, nil
+
+	if err := baseQuery.
+		Limit(limit).
+		Offset(offset).
+		Find(&medicalRecords).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return medicalRecords, total, nil
 }
 
-func (r *MedicalRecordRepository) GetByDoctorID(ctx context.Context, doctorID uuid.UUID) ([]entity.MedicalRecord, error) {
-	var medicalRecords []entity.MedicalRecord
-	if err := r.db.WithContext(ctx).
-		Where("doctor_id = ?", doctorID).
-		Find(&medicalRecords).Error; err != nil {
-		return nil, err
+func (r *MedicalRecordRepository) GetByDoctorID(ctx context.Context, doctorID uuid.UUID, limit int, offset int) ([]entity.MedicalRecord, int64, error) {
+	var (
+		medicalRecords []entity.MedicalRecord
+		total          int64
+	)
+
+	baseQuery := r.db.WithContext(ctx).
+		Model(&entity.MedicalRecord{}).
+		Where("doctor_id = ?", doctorID)
+
+	if err := baseQuery.Count(&total).Error; err != nil {
+		return nil, 0, err
 	}
-	return medicalRecords, nil
+
+	if err := baseQuery.
+		Limit(limit).
+		Offset(offset).
+		Find(&medicalRecords).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return medicalRecords, total, nil
 }
 
 func (r *MedicalRecordRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity.MedicalRecord, error) {

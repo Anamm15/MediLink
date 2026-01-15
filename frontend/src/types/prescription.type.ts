@@ -1,5 +1,6 @@
 import { DoctorMinimumResponse } from "./doctor.type";
 import { MedicineResponse } from "./medicine.type";
+import { Metadata } from "./metadata.type";
 import { PatientMinimumResponse } from "./patient.type";
 
 export type PrescriptionMedicinesCreate = {
@@ -17,6 +18,11 @@ export type PrescriptionResponse = {
   is_redeemed: boolean;
   medicines: (MedicineResponse & { quantity: number })[];
   created_at: string;
+};
+
+export type PrescriptionPaginateResponse = {
+  data: PrescriptionResponse[];
+  metadata: Metadata;
 };
 
 export type PrescriptionCreateRequest = {

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { CreatePrescriptionModal } from "./components/CreatePrescriptionModal";
 import { AnimatePresence, motion } from "framer-motion";
@@ -7,6 +7,9 @@ import { Input } from "@/components/ui/form/Input";
 import { useDoctorIdQuery } from "@/hooks/useDoctor";
 import { useDoctorPrescriptionQuery } from "./hooks/useDoctorPrescription";
 import PrescriptionCard from "./components/PrescriptionCard";
+import { DEFAULT_LIMIT_QUERY, DEFAULT_PAGE_QUERY } from "@/helpers/constant";
+import { PrescriptionResponse } from "@/types/prescription.type";
+import { DefaultPagination } from "@/components/ui/pagination/DefaultPagination";
 
 const listVariants = {
   hidden: { opacity: 0 },
@@ -17,7 +20,24 @@ export default function DoctorPrescriptionPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState("");
   const { data: doctorId } = useDoctorIdQuery();
-  const { data: prescriptions } = useDoctorPrescriptionQuery(doctorId!);
+  const [page, setPage] = useState(DEFAULT_PAGE_QUERY);
+  const [totalPages, setTotalPages] = useState(0);
+  const { data: prescriptionsWithMetadata } = useDoctorPrescriptionQuery(
+    doctorId!,
+    page,
+    DEFAULT_LIMIT_QUERY
+  );
+  const [prescriptions, setPrescriptions] = useState<PrescriptionResponse[]>(
+    []
+  );
+
+  useEffect(() => {
+    if (!prescriptionsWithMetadata) return;
+
+    const { metadata, data } = prescriptionsWithMetadata;
+    setTotalPages(metadata.total_pages);
+    setPrescriptions(data);
+  }, [prescriptionsWithMetadata]);
 
   return (
     <>
@@ -54,6 +74,13 @@ export default function DoctorPrescriptionPage() {
               prescriptions.map((item) => (
                 <PrescriptionCard key={item.id} prescription={item} />
               ))}
+
+            <DefaultPagination
+              page={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+              siblingCount={3}
+            />
           </motion.div>
         </AnimatePresence>
       </div>

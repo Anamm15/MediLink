@@ -29,7 +29,9 @@ func (h *PrescriptionHandler) GetByPatient(c *gin.Context) {
 		return
 	}
 
-	prescriptions, err := h.prescriptionUsecase.GetByPatient(c.Request.Context(), patientID)
+	page := c.Query("page")
+	limit := c.Query("limit")
+	prescriptions, err := h.prescriptionUsecase.GetByPatient(c.Request.Context(), patientID, page, limit)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve prescriptions", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, res)
@@ -47,7 +49,10 @@ func (h *PrescriptionHandler) GetByDoctor(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, res)
 		return
 	}
-	prescriptions, err := h.prescriptionUsecase.GetByDoctor(c.Request.Context(), doctorID)
+
+	page := c.Query("page")
+	limit := c.Query("limit")
+	prescriptions, err := h.prescriptionUsecase.GetByDoctor(c.Request.Context(), doctorID, page, limit)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve prescriptions", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, res)

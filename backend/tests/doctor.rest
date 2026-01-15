@@ -15,7 +15,7 @@ GET {{baseUrl}}/me
 Authorization: Bearer {{token}}
 
 ###
-GET {{baseUrl}}?name=muhajir
+GET {{baseUrl}}/search?name=
 
 ###
 GET {{baseUrl}}/d877e585-306e-4cb6-a4e5-69d41b5d2428

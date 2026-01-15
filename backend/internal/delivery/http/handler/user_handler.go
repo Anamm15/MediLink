@@ -23,9 +23,9 @@ func NewUserHandler(userUsecase usecase.UserUsecase) handler.UserHandler {
 }
 
 func (h *userHandler) GetAll(ctx *gin.Context) {
-	pageQuery := ctx.DefaultQuery("page", "1")
-	page := utils.StringToInt(pageQuery)
-	users, err := h.userUsecase.GetAll(ctx, page)
+	page := ctx.Query("page")
+	limit := ctx.Query("limit")
+	users, err := h.userUsecase.GetAll(ctx, page, limit)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve users", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
