@@ -31,7 +31,26 @@ export default function RootLayout({
       >
         <QueryProvider>
           {children}
-          <Toaster position="top-center" />
+          <Toaster
+            position="top-center"
+            richColors
+            theme="light"
+            toastOptions={{
+              classNames: {
+                toast:
+                  "rounded-xl shadow-lg border border-gray-200 bg-white text-gray-900",
+                title: "font-semibold",
+                description: "text-sm text-gray-600",
+                actionButton:
+                  "bg-primary text-white rounded-lg px-3 py-1 hover:bg-primary/90",
+                cancelButton: "bg-gray-100 text-gray-700 rounded-lg px-3 py-1",
+                success: "border-green-500",
+                error: "border-red-500",
+                warning: "border-yellow-500",
+                info: "border-blue-500",
+              },
+            }}
+          />
         </QueryProvider>
       </body>
     </html>

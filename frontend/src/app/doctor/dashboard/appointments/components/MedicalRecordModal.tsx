@@ -8,6 +8,7 @@ import { getCurrentDate } from "@/helpers/datetime";
 import { MedicalRecordCreateRequest } from "@/types/medical_record.type";
 import React, { useState } from "react";
 import { useCreateMedicalRecord } from "../hooks/useMedicalRecord";
+import { useDoctorIdQuery } from "@/hooks/useDoctor";
 
 type MedicalRecordModalProps = {
   isOpen: boolean;
@@ -32,7 +33,10 @@ export default function MedicalRecordModal({
     assessment: "",
     plan: "",
   });
-  const { mutateAsync: createMedicalRecord } = useCreateMedicalRecord();
+  const { data: doctor_id } = useDoctorIdQuery();
+  const { mutateAsync: createMedicalRecord } = useCreateMedicalRecord(
+    doctor_id!
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

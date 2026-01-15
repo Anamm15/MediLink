@@ -18,6 +18,7 @@ import Link from "next/link";
 import React from "react";
 import { MedicalRecordResponse } from "@/types/medical_record.type";
 import { Button } from "@/components/ui/Button";
+import { formatIDDate, formatIDDatetime } from "@/helpers/datetime";
 
 export const MedicalRecordItem = ({
   record,
@@ -107,7 +108,7 @@ export const MedicalRecordItem = ({
             <h3 className="font-bold text-gray-800 text-lg">{record.title}</h3>
             <p className="text-sm text-gray-500 mt-1 flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5" />
-              {record.date}
+              {formatIDDate(record.created_at)}
             </p>
           </div>
 
@@ -164,10 +165,7 @@ export const MedicalRecordItem = ({
                 {/* Footer: Metadata & Link */}
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-2 pt-4 border-t border-gray-200/60">
                   <div className="text-[11px] text-gray-400">
-                    <p>
-                      Created:{" "}
-                      {new Date(record.created_at).toLocaleString("en-US")}
-                    </p>
+                    <p>Created: {formatIDDatetime(record.created_at)}</p>
                     <p>Appointment ID: {record.appointment_id}</p>
                   </div>
 

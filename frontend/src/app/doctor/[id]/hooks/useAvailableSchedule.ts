@@ -7,7 +7,8 @@ export function useAvailableSchedulesQuery(
   day: string
 ) {
   return useQuery({
-    queryKey: ["schedule", doctor_id],
+    queryKey: ["schedule", doctor_id, day, date],
     queryFn: () => getAvailableSchedules(doctor_id, date, day),
+    staleTime: 3 * 60 * 1000,
   });
 }

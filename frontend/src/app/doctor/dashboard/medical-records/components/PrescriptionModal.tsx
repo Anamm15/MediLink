@@ -8,6 +8,7 @@ import { useCreatePrescription } from "../hooks/useCreatePrescription";
 import { useSearchMedicineQuery } from "@/hooks/useMedicine";
 import { Button } from "@/components/ui/Button";
 import { toast } from "sonner";
+import { useDoctorIdQuery } from "@/hooks/useDoctor";
 // import { useDebounce } from "@/hooks/useDebounce";
 
 interface SelectedMedicine {
@@ -36,10 +37,11 @@ export default function PrescriptionCreateModal({
   >([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { data: doctorId } = useDoctorIdQuery();
   const { data: searchResults, isLoading: isSearching } =
     useSearchMedicineQuery(searchQuery);
   const { mutateAsync: createPrescription, isPending: isSubmitting } =
-    useCreatePrescription();
+    useCreatePrescription(doctorId!);
 
   useEffect(() => {
     if (isOpen) {

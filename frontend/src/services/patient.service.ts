@@ -13,9 +13,6 @@ export async function patientMe(): Promise<PatientResponse> {
 }
 
 export async function updatePatient(payload: PatientUpdateRequest) {
-  const response = await api.put<ApiResponse<PatientResponse>>(
-    `${BASE_PATH}`,
-    payload
-  );
-  return unwrapResponse(response.data);
+  const response = await api.put<ApiResponse<null>>(`${BASE_PATH}`, payload);
+  response.data;
 }

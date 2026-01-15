@@ -19,6 +19,34 @@
   }
 }
 
+[data-sonner-toast][data-state="open"] {
+  animation: slideDown 0.3s ease-out;
+}
+
+[data-sonner-toast][data-state="closed"] {
+  animation: fadeOut 0.2s ease-in;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

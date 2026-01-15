@@ -23,7 +23,11 @@ export type DoctorProfileResponse = {
   bio: string;
   avatar_url: string;
   experience_years: number;
-  education: string;
+  education: {
+    year: string;
+    degree: string;
+    institution: string;
+  }[];
   review_count: number;
   rating_total: number;
   rating_count: number;

@@ -1,8 +1,9 @@
 import { createMedicalRecord } from "@/services/medical_record.service";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export function useCreateMedicalRecord() {
+export function useCreateMedicalRecord(doctor_id: string) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createMedicalRecord,
 
@@ -12,6 +13,9 @@ export function useCreateMedicalRecord() {
     },
 
     onSuccess: async (data, variables, context) => {
+      queryClient.removeQueries({
+        queryKey: ["doctor-medical-records", doctor_id],
+      });
       toast.success("Medical record created successfully", {
         id: context?.toastId,
         duration: 3000,

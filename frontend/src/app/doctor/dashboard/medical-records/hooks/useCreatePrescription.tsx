@@ -1,8 +1,9 @@
 import { createPrescription } from "@/services/prescription.service";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export function useCreatePrescription() {
+export function useCreatePrescription(doctor_id: string) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createPrescription,
 
@@ -12,6 +13,9 @@ export function useCreatePrescription() {
     },
 
     onSuccess: (data, variables, context) => {
+      queryClient.removeQueries({
+        queryKey: ["doctor-prescriptions", doctor_id],
+      });
       toast.success("Prescription created successfully", {
         id: context?.toastId,
         duration: 3000,

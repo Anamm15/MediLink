@@ -40,15 +40,12 @@ export const DoctorCard = ({ doctor }: DoctorCardProps) => {
 
       <div className="border-t border-gray-100 my-4"></div>
 
-      <div className="flex items-center text-sm text-gray-500 mt-auto">
+      {/* <div className="flex items-center text-sm text-gray-500 mt-auto">
         <Calendar className="w-4 h-4 mr-2 text-gray-400" />
         <span>
-          Available:{" "}
-          <span className="font-semibold text-gray-700">
-            {/* {doctor.nextAvailable} */}
-          </span>
+          Available: <span className="font-semibold text-gray-700"></span>
         </span>
-      </div>
+      </div> */}
 
       <Link
         href={`/doctor/${doctor.id}`}

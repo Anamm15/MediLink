@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { AppointmentCard } from "@/components/cards/AppointmentCard";
 import { AppointmentDetailResponse } from "@/types/appointment.type";
+import { formatIDDate } from "@/helpers/datetime";
 
 const groupAppointmentsByDate = (appointments: AppointmentDetailResponse[]) => {
   const groups = appointments.reduce((acc, app) => {
@@ -34,7 +35,7 @@ export const AppointmentList = ({
           transition={{ duration: 0.5, delay: index * 0.1 }}
         >
           <h2 className="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-cyan-500 inline-block">
-            {date}
+            {formatIDDate(date)}
           </h2>
           <div className="space-y-4">
             {apps.map((app, appIndex) => (

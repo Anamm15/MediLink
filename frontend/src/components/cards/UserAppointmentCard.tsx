@@ -13,6 +13,7 @@ import {
 import { AppointmentDetailResponse } from "@/types/appointment.type";
 import { DEFAULT_PROFILE } from "@/helpers/constant";
 import Link from "next/link";
+import { formatIDDate } from "@/helpers/datetime";
 
 interface CardProps {
   appointment: AppointmentDetailResponse;
@@ -53,7 +54,8 @@ export const UserAppointmentCard = ({ appointment }: CardProps) => {
       <div className="flex-grow p-4 border-t sm:border-t-0">
         <div className="flex items-center gap-4 text-sm text-gray-600">
           <span className="flex items-center gap-1.5">
-            <Calendar className="w-4 h-4 text-gray-400" /> {appointment_date}
+            <Calendar className="w-4 h-4 text-gray-400" />{" "}
+            {formatIDDate(appointment_date)}
           </span>
           <span className="flex items-center gap-1.5">
             <Clock className="w-4 h-4 text-gray-400" /> {start_time} -{" "}

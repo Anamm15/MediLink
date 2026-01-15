@@ -6,18 +6,11 @@ import { BookingWidget } from "./components/BookingWidget";
 import { Navbar } from "@/components/layout/Navbar";
 import { useDoctorQuery } from "@/hooks/useDoctor";
 import { useParams } from "next/navigation";
-import { getToday } from "@/helpers/datetime";
-import { useAvailableSchedulesQuery } from "./hooks/useAvailableSchedule";
+import { CheckCircle } from "lucide-react";
 
 export default function DoctorDetailPage() {
   const params = useParams();
-  const { date, day } = getToday();
   const { data: doctor } = useDoctorQuery(params.id as string);
-  const { data: availableSchedules } = useAvailableSchedulesQuery(
-    params.id as string,
-    date,
-    day
-  );
 
   return (
     <>
@@ -31,40 +24,25 @@ export default function DoctorDetailPage() {
                 <InfoSection title="Tentang Dokter">
                   <p>{doctor.bio}</p>
                 </InfoSection>
-                {/* <InfoSection title="Pendidikan">
+                <InfoSection title="Pendidikan">
                   <ul>
-                    {doctor.education.map((edu, index) => (
+                    {doctor.education?.map((edu, index) => (
                       <li key={index} className="flex items-start gap-3 mb-2">
                         <CheckCircle className="w-5 h-5 text-cyan-500 mt-1 flex-shrink-0" />
                         <div>
                           <span className="font-semibold">{edu.degree}</span> -{" "}
-                          {edu.university} ({edu.year})
+                          {edu.institution} ({edu.year})
                         </div>
                       </li>
                     ))}
                   </ul>
                 </InfoSection>
-                <InfoSection title="Pengalaman Kerja">
-                  <ul>
-                    {doctor.experience.map((exp, index) => (
-                      <li key={index} className="flex items-start gap-3 mb-2">
-                        <CheckCircle className="w-5 h-5 text-cyan-500 mt-1 flex-shrink-0" />
-                        <div>
-                          <span className="font-semibold">{exp.position}</span>{" "}
-                          di {exp.hospital} ({exp.period})
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </InfoSection> */}
               </div>
             )}
 
             {/* Kolom Kanan: Widget Booking (Sticky) */}
             <div className="lg:sticky top-32">
-              {availableSchedules && (
-                <BookingWidget schedules={availableSchedules} />
-              )}
+              <BookingWidget />
             </div>
           </div>
         </div>

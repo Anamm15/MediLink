@@ -5,32 +5,56 @@ import { Calendar, Clock, AlertCircle } from "lucide-react";
 import { DoctorScheduleResponse } from "@/types/schedule.type";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { getCurrentDate, getCurrentTime } from "@/helpers/datetime";
+import {
+  formatIDDate,
+  getCurrentDate,
+  getCurrentTime,
+  getDayOfDate,
+  getToday,
+} from "@/helpers/datetime";
+import { useAvailableSchedulesQuery } from "../hooks/useAvailableSchedule";
+import { toCapitalize } from "@/helpers/string";
+import Calender from "@/components/ui/Calender";
 
-interface BookingWidgetProps {
-  schedules: DoctorScheduleResponse[];
-}
-
-export const BookingWidget = ({ schedules }: BookingWidgetProps) => {
+export const BookingWidget = () => {
   const [selectedSchedule, setSelectedSchedule] =
     useState<DoctorScheduleResponse | null>(null);
   const [currentDate, setCurrentDate] = useState("");
   const [currentTime, setCurrentTime] = useState("");
   const { id } = useParams();
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDay, setSelectedDay] = useState("");
+  const [isCalenderOpen, setIsCalenderOpen] = useState(false);
+  const { data: schedules = [], refetch } = useAvailableSchedulesQuery(
+    id as string,
+    selectedDate,
+    selectedDay
+  );
 
   useEffect(() => {
     setCurrentTime(getCurrentTime());
     setCurrentDate(getCurrentDate());
+    const { date, day } = getToday();
+    setSelectedDate(date);
+    setSelectedDay(day);
   }, []);
+
+  useEffect(() => {
+    const day = getDayOfDate(selectedDate);
+    setSelectedDay(day);
+    refetch();
+  }, [selectedDate]);
 
   const isToday = true;
 
   const activeSchedules = useMemo(() => {
+    if (!schedules) return [];
     return schedules.filter((s) => s.is_active);
   }, [schedules]);
 
   const isTimePassed = (startTime: string) => {
     if (!isToday || !currentTime) return false;
+    if (currentDate !== selectedDate) return false;
     return startTime.slice(0, 5) < currentTime;
   };
 
@@ -60,12 +84,13 @@ export const BookingWidget = ({ schedules }: BookingWidgetProps) => {
           <Calendar className="w-5 h-5 text-gray-400" />
           Select Day
         </h3>
-        <div className="p-3 bg-gray-50 rounded-lg border border-gray-100 text-center">
+
+        <div
+          onClick={() => setIsCalenderOpen(true)}
+          className="relative p-3 bg-gray-50 rounded-lg border border-gray-100 text-center cursor-pointer"
+        >
           <p className="text-sm font-semibold text-gray-700">
-            monday, 12 January 2026
-          </p>
-          <p className="text-[10px] text-cyan-600 font-bold uppercase mt-1">
-            Today
+            {toCapitalize(selectedDay)}, {formatIDDate(selectedDate)}{" "}
           </p>
         </div>
       </div>
@@ -153,6 +178,15 @@ export const BookingWidget = ({ schedules }: BookingWidgetProps) => {
       >
         Proceed to Payment
       </Link>
+
+      {isCalenderOpen && (
+        <Calender
+          currentDate={selectedDate}
+          setCurrentDate={setSelectedDate}
+          setIsCalendarOpen={setIsCalenderOpen}
+          threshold={6}
+        />
+      )}
     </div>
   );
 };

@@ -9,11 +9,11 @@ export default function DoctorProfilePage() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-      <div className="lg:col-span-1 lg:sticky top-24">
+      <div className="lg:col-span-1 lg:sticky top-24 left-0">
         {doctor && <ProfileSummaryCard doctorData={doctor} />}
       </div>
 
-      <div className="lg:col-span-2">
+      <div className="lg:col-span-2 h-[calc(100vh-7rem)] overflow-y-auto">
         {doctor && <ProfileTabs doctorData={doctor} />}
       </div>
     </div>

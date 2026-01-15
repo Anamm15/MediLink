@@ -1,10 +1,15 @@
 import { AlertCircle, CheckCircle2 } from "lucide-react";
+import React from "react";
 
 export const statusConfig: Record<
   string,
-  { label: string; color: string; icon: any }
+  {
+    label: string;
+    color: string;
+    icon: React.FC<React.SVGProps<SVGSVGElement>>;
+  }
 > = {
-  confirmmed: {
+  confirmed: {
     label: "confirmed",
     color: "bg-cyan-100 text-cyan-700",
     icon: CheckCircle2,
@@ -22,6 +27,11 @@ export const statusConfig: Record<
   canceled: {
     label: "canceled",
     color: "bg-red-100 text-red-700",
+    icon: AlertCircle,
+  },
+  in_progress: {
+    label: "in progress",
+    color: "bg-amber-100 text-amber-700",
     icon: AlertCircle,
   },
 };

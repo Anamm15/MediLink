@@ -59,16 +59,28 @@ export const ProfileTabs = ({
                     {doctorData.bio}
                   </p>
                 </SectionCard>
-                {/* <SectionCard title="Pendidikan">
+                <SectionCard title="Education">
                   <ul className="space-y-2 text-sm">
-                    {doctorData.education.map((edu: any, index: number) => (
+                    {doctorData.education?.map((edu, index) => (
                       <li key={index}>
                         <span className="font-semibold">{edu.degree}</span> -{" "}
-                        {edu.university} ({edu.year})
+                        {edu.institution} ({edu.year})
                       </li>
                     ))}
                   </ul>
-                </SectionCard> */}
+                </SectionCard>
+                <SectionCard title="Clinic">
+                  <ul className="space-y-2 text-sm">
+                    {doctorData.clinic?.map((clinic, index) => (
+                      <li key={index}>
+                        <div className="font-semibold">{clinic.name}</div>
+                        <div>
+                          {clinic.address}, {clinic.city}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </SectionCard>
               </div>
             )}
             {activeTab === "schedule" && doctorData.id && (

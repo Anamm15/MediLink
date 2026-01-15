@@ -140,12 +140,9 @@ export default function DetailPatient({ setData, data }: DetailPatientProps) {
 
               <div>
                 <label className="text-sm text-gray-500">Birth Date</label>
-                <EditableField
-                  value={temporaryData.patient.birth_date}
-                  isEditing={isEditing}
-                  placeholder="Birth Date"
-                  onChange={(value) => updateFieldPatient("birth_date", value)}
-                />
+                <p className="text-gray-800 font-semibold">
+                  {temporaryData.patient.birth_date}
+                </p>
               </div>
 
               <div>

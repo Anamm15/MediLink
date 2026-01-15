@@ -193,7 +193,7 @@ func (u *AppointmentUsecase) CreateBooking(ctx context.Context, userID uuid.UUID
 		newAppt := entity.Appointment{
 			PatientID:               patientID,
 			DoctorID:                req.DoctorID,
-			ClinicID:                *placement.ClinicID,
+			ClinicID:                placement.ClinicID,
 			AppointmentDate:         parsedDate,
 			StartTime:               schedule.StartTime,
 			EndTime:                 schedule.EndTime,

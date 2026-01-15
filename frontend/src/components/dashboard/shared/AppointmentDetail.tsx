@@ -36,7 +36,8 @@ export default function AppointmentDetail({
   isDoctor = false,
 }: AppointmentDetailProps) {
   const [appointment, setAppointment] = useState(data);
-  const status = statusConfig[appointment.status] || statusConfig.PENDING;
+  const status =
+    statusConfig[appointment.status as string] || statusConfig.PENDING;
   const StatusIcon = status.icon;
   const { mutate: cancelAppointment } = useCancelAppointment(
     appointment,

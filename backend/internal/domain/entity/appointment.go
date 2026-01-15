@@ -9,10 +9,10 @@ import (
 )
 
 type Appointment struct {
-	ID        uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
-	PatientID uuid.UUID `gorm:"type:uuid;not null;index:idx_appointments_patient"`
-	DoctorID  uuid.UUID `gorm:"type:uuid;not null;index:idx_appointments_doctor_date"`
-	ClinicID  uuid.UUID `gorm:"type:uuid;not null;index:idx_appointments_on_clinic_id"`
+	ID        uuid.UUID  `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
+	PatientID uuid.UUID  `gorm:"type:uuid;not null;index:idx_appointments_patient"`
+	DoctorID  uuid.UUID  `gorm:"type:uuid;not null;index:idx_appointments_doctor_date"`
+	ClinicID  *uuid.UUID `gorm:"type:uuid;index:idx_appointments_on_clinic_id"`
 
 	AppointmentDate time.Time `gorm:"type:date;not null"`
 	StartTime       string    `gorm:"type:time;not null;index:idx_appointments_doctor_date"`
