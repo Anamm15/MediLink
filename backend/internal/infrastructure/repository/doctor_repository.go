@@ -96,6 +96,7 @@ func (r *doctorRepository) Find(ctx context.Context, name string, limit int, off
 		}).
 		Limit(limit).
 		Offset(offset).
+		Order("doctors.created_at DESC").
 		Find(&doctors).Error; err != nil {
 		return nil, 0, err
 	}

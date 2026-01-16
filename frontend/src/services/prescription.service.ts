@@ -13,10 +13,11 @@ const BASE_PATH = "/prescriptions";
 export async function getPatientPrescriptions(
   id: string,
   page: number,
-  limit: number
+  limit: number,
+  is_redeemed?: string
 ): Promise<PrescriptionPaginateResponse> {
   const response = await api.get<ApiResponse<PrescriptionPaginateResponse>>(
-    `${BASE_PATH}/patient/${id}?page=${page}&limit=${limit}`
+    `${BASE_PATH}/patient/${id}?page=${page}&limit=${limit}&is_redeemed=${is_redeemed}`
   );
   return unwrapResponse(response.data);
 }

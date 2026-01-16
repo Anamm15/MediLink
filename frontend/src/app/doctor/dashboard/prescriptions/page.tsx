@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Search } from "lucide-react";
 import { CreatePrescriptionModal } from "./components/CreatePrescriptionModal";
 import { AnimatePresence, motion } from "framer-motion";
@@ -8,8 +8,8 @@ import { useDoctorIdQuery } from "@/hooks/useDoctor";
 import { useDoctorPrescriptionQuery } from "./hooks/useDoctorPrescription";
 import PrescriptionCard from "./components/PrescriptionCard";
 import { DEFAULT_LIMIT_QUERY, DEFAULT_PAGE_QUERY } from "@/helpers/constant";
-import { PrescriptionResponse } from "@/types/prescription.type";
 import { DefaultPagination } from "@/components/ui/pagination/DefaultPagination";
+import { Spinner } from "@/components/ui/Spinner";
 
 const listVariants = {
   hidden: { opacity: 0 },
@@ -21,23 +21,13 @@ export default function DoctorPrescriptionPage() {
   const [search, setSearch] = useState("");
   const { data: doctorId } = useDoctorIdQuery();
   const [page, setPage] = useState(DEFAULT_PAGE_QUERY);
-  const [totalPages, setTotalPages] = useState(0);
-  const { data: prescriptionsWithMetadata } = useDoctorPrescriptionQuery(
+  const { data, isLoading } = useDoctorPrescriptionQuery(
     doctorId!,
     page,
     DEFAULT_LIMIT_QUERY
   );
-  const [prescriptions, setPrescriptions] = useState<PrescriptionResponse[]>(
-    []
-  );
-
-  useEffect(() => {
-    if (!prescriptionsWithMetadata) return;
-
-    const { metadata, data } = prescriptionsWithMetadata;
-    setTotalPages(metadata.total_pages);
-    setPrescriptions(data);
-  }, [prescriptionsWithMetadata]);
+  const prescriptions = data?.data ?? [];
+  const metadata = data?.metadata;
 
   return (
     <>
@@ -62,27 +52,35 @@ export default function DoctorPrescriptionPage() {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <AnimatePresence>
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            exit={{ opacity: 0 }}
-            variants={listVariants}
-            className="space-y-4"
-          >
-            {prescriptions &&
-              prescriptions.map((item) => (
-                <PrescriptionCard key={item.id} prescription={item} />
-              ))}
+        {isLoading ? (
+          <div className="flex h-full w-full justify-center items-center mt-40">
+            <Spinner />
+          </div>
+        ) : (
+          <AnimatePresence>
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              exit={{ opacity: 0 }}
+              variants={listVariants}
+              className="space-y-4"
+            >
+              {prescriptions &&
+                prescriptions.map((item) => (
+                  <PrescriptionCard key={item.id} prescription={item} />
+                ))}
 
-            <DefaultPagination
-              page={page}
-              totalPages={totalPages}
-              onPageChange={setPage}
-              siblingCount={3}
-            />
-          </motion.div>
-        </AnimatePresence>
+              {metadata && metadata.total_pages > 1 && (
+                <DefaultPagination
+                  page={page}
+                  totalPages={metadata.total_pages}
+                  onPageChange={setPage}
+                  siblingCount={3}
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
+        )}
       </div>
 
       <AnimatePresence>

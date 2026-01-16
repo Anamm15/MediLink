@@ -32,6 +32,7 @@ func (r *MedicineRepository) GetAll(ctx context.Context, limit int, offset int) 
 	}
 
 	if err := baseQuery.
+		Order("created_at DESC").
 		Limit(limit).
 		Offset(offset).
 		Find(&medicines).Error; err != nil {

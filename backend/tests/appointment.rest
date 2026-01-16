@@ -1,12 +1,12 @@
 @baseUrl = http://localhost:5000/api/v1/appointments
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMWYzOTBlNDYtMDdiMy00OTZlLWI2ZjUtYmZiN2QwOWU3ZDYyIiwicm9sZSI6InBhdGllbnQiLCJpc3MiOiJtZWRpbGluay1hcHAiLCJleHAiOjE3NjgzMDIwNDksImlhdCI6MTc2ODIxNTY0OX0.tCPJTlPGMGI3m7gPMjRYQ8b2V1dzSuw5D15Ycbl3wqg
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYzJlZWJjOTktOWMwYi00ZWY4LWJiNmQtNmJiOWJkMzgwYzA2Iiwicm9sZSI6ImRvY3RvciIsImlzcyI6Im1lZGlsaW5rLWFwcCIsImV4cCI6MTc2ODYxMDkyMiwiaWF0IjoxNzY4NTI0NTIyfQ.pQ5WLxEivxhGw9GNG65gFN1TX10h0MeMzvzh4hNOvms
 
 ###
 POST http://localhost:5000/api/v1/auth/login
 Content-Type: application/json
 
 {
-   "email": "irulxartal@gmail.com",
+   "email": "farhan.dr@hospital.com",
    "password": "SecurePass123"
 }
 
@@ -15,11 +15,11 @@ GET {{baseUrl}}
 Authorization: Bearer {{token}}
 
 ###
-GET {{baseUrl}}/doctor/d3acd040-75b4-46dc-9cc0-1cbebe986a2b
+GET {{baseUrl}}/doctor/d3ffbc99-9c0b-4ef8-bb6d-6bb9bd380d06?status=past
 Authorization: Bearer {{token}}
 
 ###
-GET {{baseUrl}}/patient/d6dcf46a-6320-4468-8bbc-489e0d2acc19
+GET {{baseUrl}}/patient/
 Authorization: Bearer {{token}}
 
 ###

@@ -28,6 +28,7 @@ func (r *userRepository) Create(ctx context.Context, user *entity.User) (*entity
 func (r *userRepository) GetAll(ctx context.Context, limit int, offset int) ([]entity.User, error) {
 	var users []entity.User
 	if err := r.db.WithContext(ctx).
+		Order("created_at DESC").
 		Limit(limit).
 		Offset(offset).
 		Find(&users).Error; err != nil {

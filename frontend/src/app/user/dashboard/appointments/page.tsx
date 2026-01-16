@@ -1,15 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { UserAppointmentCard } from "./components/UserAppointmentCard";
 import Link from "next/link";
-import { usePatientAppointmentsQuery } from "./hooks/usePatientAppointment";
-import { AppointmentResponse } from "@/types/appointment.type";
-import { groupAppointmentsByTime } from "@/helpers/appointments";
-import { DefaultPagination } from "@/components/ui/pagination/DefaultPagination";
-import { Metadata } from "@/types/metadata.type";
-import { DEFAULT_LIMIT_QUERY } from "@/helpers/constant";
+import { usePatientIdQuery } from "@/hooks/usePatient";
+import UpcomingTab from "./components/UpcomingTab";
+import HistoryTab from "./components/HistoryTab";
 
 const listVariants = {
   hidden: { opacity: 0 },
@@ -18,28 +14,7 @@ const listVariants = {
 
 export default function UserAppointmentPage() {
   const [activeTab, setActiveTab] = useState("upcoming");
-  const [page, setPage] = useState(1);
-  const { data: appointmentsWithMetadata } = usePatientAppointmentsQuery(
-    page,
-    DEFAULT_LIMIT_QUERY
-  );
-  const [totalPages, setTotalPages] = useState(0);
-  const [upComingAppointments, setUpComingAppointments] = useState<
-    AppointmentResponse[]
-  >([]);
-  const [pastAppointments, setPastAppointments] = useState<
-    AppointmentResponse[]
-  >([]);
-
-  useEffect(() => {
-    if (!appointmentsWithMetadata) return;
-    const { data: appointments, metadata } = appointmentsWithMetadata;
-    setTotalPages(metadata.total_pages);
-
-    const { upcoming, past } = groupAppointmentsByTime(appointments);
-    setUpComingAppointments(upcoming);
-    setPastAppointments(past);
-  }, [appointmentsWithMetadata]);
+  const { data: patientId } = usePatientIdQuery();
 
   return (
     <div className="space-y-6">
@@ -68,7 +43,7 @@ export default function UserAppointmentPage() {
               : "text-gray-500 hover:text-gray-800"
           }`}
         >
-          Upcoming ({upComingAppointments.length})
+          Upcoming
         </button>
         <button
           onClick={() => setActiveTab("history")}
@@ -78,7 +53,7 @@ export default function UserAppointmentPage() {
               : "text-gray-500 hover:text-gray-800"
           }`}
         >
-          History ({pastAppointments.length})
+          History
         </button>
       </div>
 
@@ -89,46 +64,12 @@ export default function UserAppointmentPage() {
           animate="visible"
           exit={{ opacity: 0 }}
           variants={listVariants}
-          className="space-y-4"
         >
-          {(activeTab === "upcoming"
-            ? upComingAppointments
-            : pastAppointments
-          ).map((app) => (
-            <UserAppointmentCard key={app.id} appointment={app} />
-          ))}
-
-          {activeTab === "upcoming" && upComingAppointments.length === 0 && (
-            <p className="text-center text-gray-500 pt-8">
-              You don't have any upcoming appointments.
-            </p>
+          {activeTab == "upcoming" ? (
+            <UpcomingTab patientId={patientId!} />
+          ) : (
+            <HistoryTab patientId={patientId!} />
           )}
-
-          {activeTab === "history" && pastAppointments.length === 0 && (
-            <p className="text-center text-gray-500 pt-8">
-              You have no consultation history yet.
-            </p>
-          )}
-
-          {activeTab === "upcoming" &&
-            totalPages > 1 &&
-            upComingAppointments.length > 0 && (
-              <DefaultPagination
-                page={page}
-                onPageChange={setPage}
-                totalPages={totalPages}
-              />
-            )}
-
-          {activeTab === "history" &&
-            totalPages > 1 &&
-            pastAppointments.length > 0 && (
-              <DefaultPagination
-                page={page}
-                onPageChange={setPage}
-                totalPages={totalPages}
-              />
-            )}
         </motion.div>
       </AnimatePresence>
     </div>

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"MediLink/internal/domain/entity"
@@ -34,12 +35,13 @@ func (r *AppointmentRepository) GetAll(ctx context.Context, limit int, offset in
 	}
 
 	if err := baseQuery.
-		Limit(limit).
-		Offset(offset).
 		Preload("Doctor", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id", "specialization") }).
 		Preload("Doctor.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name", "phone_number", "avatar_url") }).
 		Preload("Patient", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id") }).
 		Preload("Patient.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name", "email", "phone_number", "avatar_url") }).
+		Order("appointments.created_at DESC").
+		Limit(limit).
+		Offset(offset).
 		Find(&appointments).Error; err != nil {
 		return nil, 0, err
 	}
@@ -71,7 +73,7 @@ func (r *AppointmentRepository) GetByDate(ctx context.Context, date time.Time) (
 	return appointments, nil
 }
 
-func (r *AppointmentRepository) GetByDoctorID(ctx context.Context, doctorID uuid.UUID, limit int, offset int) ([]entity.Appointment, int64, error) {
+func (r *AppointmentRepository) GetByDoctorID(ctx context.Context, doctorID uuid.UUID, limit int, offset int, operator string, dateFilter *string) ([]entity.Appointment, int64, error) {
 	var (
 		appointments []entity.Appointment
 		total        int64
@@ -81,17 +83,23 @@ func (r *AppointmentRepository) GetByDoctorID(ctx context.Context, doctorID uuid
 		Model(&entity.Appointment{}).
 		Where("doctor_id = ?", doctorID)
 
+	if dateFilter != nil {
+		baseQuery = baseQuery.
+			Where(fmt.Sprintf("appointment_date %s ?", operator), *dateFilter)
+	}
+
 	if err := baseQuery.Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 
 	if err := baseQuery.
-		Limit(limit).
-		Offset(offset).
 		Preload("Doctor", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id", "specialization") }).
 		Preload("Doctor.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name", "phone_number", "avatar_url") }).
 		Preload("Patient", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id") }).
 		Preload("Patient.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name", "email", "phone_number", "avatar_url") }).
+		Order("created_at DESC").
+		Limit(limit).
+		Offset(offset).
 		Find(&appointments).Error; err != nil {
 		return nil, 0, err
 	}
@@ -99,7 +107,7 @@ func (r *AppointmentRepository) GetByDoctorID(ctx context.Context, doctorID uuid
 	return appointments, total, nil
 }
 
-func (r *AppointmentRepository) GetByPatientID(ctx context.Context, patientID uuid.UUID, limit int, offset int) ([]entity.Appointment, int64, error) {
+func (r *AppointmentRepository) GetByPatientID(ctx context.Context, patientID uuid.UUID, limit int, offset int, operator string, dateFilter *string) ([]entity.Appointment, int64, error) {
 	var (
 		appointments []entity.Appointment
 		total        int64
@@ -109,20 +117,35 @@ func (r *AppointmentRepository) GetByPatientID(ctx context.Context, patientID uu
 		Model(&entity.Appointment{}).
 		Where("patient_id = ?", patientID)
 
+	if dateFilter != nil {
+		baseQuery = baseQuery.
+			Where(fmt.Sprintf("appointment_date %s ?", operator), *dateFilter)
+	}
+
 	if err := baseQuery.Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 
 	if err := baseQuery.
+		Preload("Doctor", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id", "user_id", "specialization")
+		}).
+		Preload("Doctor.User", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id", "name", "phone_number", "avatar_url")
+		}).
+		Preload("Patient", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id", "user_id")
+		}).
+		Preload("Patient.User", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id", "name", "email", "phone_number", "avatar_url")
+		}).
+		Order("appointments.created_at DESC").
 		Limit(limit).
 		Offset(offset).
-		Preload("Doctor", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id", "specialization") }).
-		Preload("Doctor.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name", "phone_number", "avatar_url") }).
-		Preload("Patient", func(db *gorm.DB) *gorm.DB { return db.Select("id", "user_id") }).
-		Preload("Patient.User", func(db *gorm.DB) *gorm.DB { return db.Select("id", "name", "email", "phone_number", "avatar_url") }).
 		Find(&appointments).Error; err != nil {
 		return nil, 0, err
 	}
+
 	return appointments, total, nil
 }
 

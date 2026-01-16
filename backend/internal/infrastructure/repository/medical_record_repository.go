@@ -33,6 +33,7 @@ func (r *MedicalRecordRepository) GetByPatientID(ctx context.Context, patientID 
 	}
 
 	if err := baseQuery.
+		Order("created_at DESC").
 		Limit(limit).
 		Offset(offset).
 		Find(&medicalRecords).Error; err != nil {
@@ -57,6 +58,7 @@ func (r *MedicalRecordRepository) GetByDoctorID(ctx context.Context, doctorID uu
 	}
 
 	if err := baseQuery.
+		Order("created_at DESC").
 		Limit(limit).
 		Offset(offset).
 		Find(&medicalRecords).Error; err != nil {

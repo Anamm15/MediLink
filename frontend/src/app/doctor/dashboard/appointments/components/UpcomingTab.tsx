@@ -1,34 +1,35 @@
-"use client";
-import { motion } from "framer-motion";
-import { AppointmentCard } from "@/components/cards/AppointmentCard";
-import { AppointmentResponse } from "@/types/appointment.type";
-import { formatIDDate } from "@/helpers/datetime";
+import { DEFAULT_LIMIT_QUERY, DEFAULT_PAGE_QUERY } from "@/helpers/constant";
+import { useState } from "react";
 import { DefaultPagination } from "@/components/ui/pagination/DefaultPagination";
+import { Spinner } from "@/components/ui/Spinner";
+import { useDoctorAppointmentsQuery } from "../hooks/useDoctorAppointment";
+import { AppointmentResponse } from "@/types/appointment.type";
+import { motion } from "framer-motion";
+import { formatIDDate } from "@/helpers/datetime";
+import { AppointmentCard } from "@/components/cards/AppointmentCard";
+import { groupAppointmentsByDate } from "../page";
 
-const groupAppointmentsByDate = (appointments: AppointmentResponse[]) => {
-  const groups = appointments.reduce((acc, app) => {
-    (acc[app.appointment_date] = acc[app.appointment_date] || []).push(app);
-    return acc;
-  }, {} as Record<string, AppointmentResponse[]>);
-  return groups;
-};
+interface UpcomingTabProps {
+  doctorId: string;
+}
 
-export const AppointmentList = ({
-  appointments,
-  page,
-  setPage,
-  totalPage,
-}: {
-  appointments: AppointmentResponse[];
-  page: number;
-  setPage: React.Dispatch<React.SetStateAction<number>>;
-  totalPage: number;
-}) => {
+export default function UpcomingTab({ doctorId }: UpcomingTabProps) {
+  const [page, setPage] = useState(DEFAULT_PAGE_QUERY);
+  const { data, isLoading } = useDoctorAppointmentsQuery(
+    doctorId,
+    page,
+    DEFAULT_LIMIT_QUERY,
+    "upcoming"
+  );
+  const appointments = data?.data ?? [];
   const groupedAppointments = groupAppointmentsByDate(appointments);
+  const metadata = data?.metadata;
 
-  if (appointments.length === 0) {
+  if (isLoading) {
     return (
-      <p className="text-center text-gray-500 mt-10">No appointments yet.</p>
+      <div className="flex h-full w-full justify-center items-center mt-40">
+        <Spinner />
+      </div>
     );
   }
 
@@ -66,14 +67,22 @@ export const AppointmentList = ({
         </motion.div>
       ))}
 
-      {totalPage > 1 && (
+      {appointments.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-gray-500">
+            You don not have any upcoming appointment.
+          </p>
+        </div>
+      )}
+
+      {metadata && metadata.total_pages > 1 && (
         <DefaultPagination
           page={page}
-          totalPages={totalPage}
           onPageChange={setPage}
-          siblingCount={3}
+          totalPages={metadata.total_pages}
+          siblingCount={2}
         />
       )}
     </div>
   );
-};
+}

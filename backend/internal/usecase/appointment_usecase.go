@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"MediLink/internal/domain/entity"
@@ -86,7 +87,7 @@ func (u *AppointmentUsecase) GetDetailByID(ctx context.Context, appointmentID uu
 	return *appointmentResponse, nil
 }
 
-func (u *AppointmentUsecase) GetByDoctor(ctx context.Context, userID uuid.UUID, pageStr string, limitStr string) (dto.AppointmentResponse, error) {
+func (u *AppointmentUsecase) GetByDoctor(ctx context.Context, doctorID uuid.UUID, pageStr string, limitStr string, statusTab string) (dto.AppointmentResponse, error) {
 	limit, err := utils.StringToInt(limitStr)
 	if err != nil {
 		limit = constants.PAGE_LIMIT_DEFAULT
@@ -98,21 +99,24 @@ func (u *AppointmentUsecase) GetByDoctor(ctx context.Context, userID uuid.UUID, 
 	}
 
 	offset := (page - 1) * limit
-	var doctorID uuid.UUID
-	key := fmt.Sprintf(constants.RedisKeyPatient, userID.String())
-	doctorIDStr, err := u.cacheRepo.Get(ctx, key)
-	if err == nil && doctorIDStr != "" {
-		doctorID, _ = uuid.Parse(doctorIDStr)
-		doctorID = userID
-	} else {
-		patient, err := u.doctorRepo.GetByUserID(ctx, userID)
-		if err != nil {
-			return dto.AppointmentResponse{}, err
-		}
-		doctorID = patient.ID
+	today := time.Now().In(time.Local).Format("2006-01-02")
+	statusTab = strings.ToLower(strings.TrimSpace(statusTab))
+
+	var dateFilter *string
+	var operator string
+
+	switch statusTab {
+	case "upcoming":
+		operator = ">="
+		dateFilter = &today
+	case "past":
+		operator = "<"
+		dateFilter = &today
+	default:
+		dateFilter = nil
 	}
 
-	appointments, count, err := u.appointmentRepo.GetByDoctorID(ctx, doctorID, limit, offset)
+	appointments, count, err := u.appointmentRepo.GetByDoctorID(ctx, doctorID, limit, offset, operator, dateFilter)
 	if err != nil {
 		return dto.AppointmentResponse{}, err
 	}
@@ -122,7 +126,13 @@ func (u *AppointmentUsecase) GetByDoctor(ctx context.Context, userID uuid.UUID, 
 	return appointmentResponses, nil
 }
 
-func (u *AppointmentUsecase) GetByPatient(ctx context.Context, userID uuid.UUID, pageStr string, limitStr string) (dto.AppointmentResponse, error) {
+func (u *AppointmentUsecase) GetByPatient(
+	ctx context.Context,
+	patientID uuid.UUID,
+	pageStr string,
+	limitStr string,
+	statusTab string,
+) (dto.AppointmentResponse, error) {
 	limit, err := utils.StringToInt(limitStr)
 	if err != nil {
 		limit = constants.PAGE_LIMIT_DEFAULT
@@ -134,28 +144,37 @@ func (u *AppointmentUsecase) GetByPatient(ctx context.Context, userID uuid.UUID,
 	}
 
 	offset := (page - 1) * limit
-	var patientID uuid.UUID
-	key := fmt.Sprintf(constants.RedisKeyPatient, userID.String())
-	patientIDStr, err := u.cacheRepo.Get(ctx, key)
-	if err == nil && patientIDStr != "" {
-		patientID, _ = uuid.Parse(patientIDStr)
-		patientID = userID
-	} else {
-		patient, err := u.patientRepo.GetByUserID(ctx, userID)
-		if err != nil {
-			return dto.AppointmentResponse{}, err
-		}
-		patientID = patient.ID
+	today := time.Now().In(time.Local).Format("2006-01-02")
+	statusTab = strings.ToLower(strings.TrimSpace(statusTab))
+
+	var dateFilter *string
+	var operator string
+
+	switch statusTab {
+	case "upcoming":
+		operator = ">="
+		dateFilter = &today
+	case "past":
+		operator = "<"
+		dateFilter = &today
+	default:
+		dateFilter = nil
 	}
 
-	appointments, count, err := u.appointmentRepo.GetByPatientID(ctx, patientID, limit, offset)
+	appointments, count, err := u.appointmentRepo.GetByPatientID(
+		ctx,
+		patientID,
+		limit,
+		offset,
+		operator,
+		dateFilter,
+	)
 	if err != nil {
 		return dto.AppointmentResponse{}, err
 	}
 
 	metadata := dto.NewMetadata(int64(page), int64(limit), count)
-	appointmentResponses := dto.ToAppointmentResponse(appointments, metadata)
-	return appointmentResponses, nil
+	return dto.ToAppointmentResponse(appointments, metadata), nil
 }
 
 func (u *AppointmentUsecase) CreateBooking(ctx context.Context, userID uuid.UUID, req dto.CreateBookingRequest) (dto.BookingResponse, error) {

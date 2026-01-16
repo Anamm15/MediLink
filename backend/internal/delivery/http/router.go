@@ -108,8 +108,8 @@ func AppointmentRoute(server *gin.Engine, appointmentHandler handler.Appointment
 	{
 		appointment.GET("", middlewares.Authenticate(), middlewares.AuthorizeRole("admin"), appointmentHandler.GetAll)
 		appointment.GET("/:id", middlewares.Authenticate(), appointmentHandler.GetDetailByID)
-		appointment.GET("/doctor", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), appointmentHandler.GetByDoctor)
-		appointment.GET("/patient", middlewares.Authenticate(), middlewares.AuthorizeRole("patient"), appointmentHandler.GetByPatient)
+		appointment.GET("/doctor/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), appointmentHandler.GetByDoctor)
+		appointment.GET("/patient/:id", middlewares.Authenticate(), middlewares.AuthorizeRole("patient"), appointmentHandler.GetByPatient)
 		appointment.POST("", middlewares.Authenticate(), middlewares.AuthorizeRole("patient", "doctor", "admin"), appointmentHandler.Create)
 		appointment.PATCH("/:id/cancel", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), appointmentHandler.CancelBooking)
 		appointment.PATCH("/:id/complete", middlewares.Authenticate(), middlewares.AuthorizeRole("doctor"), appointmentHandler.CompleteConsultation)

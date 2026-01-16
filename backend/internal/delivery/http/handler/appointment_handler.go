@@ -56,11 +56,18 @@ func (h *AppointmentHandler) GetDetailByID(ctx *gin.Context) {
 }
 
 func (h *AppointmentHandler) GetByDoctor(ctx *gin.Context) {
-	userID := ctx.MustGet("user_id").(uuid.UUID)
+	doctorIDParam, _ := ctx.Params.Get("id")
+	doctorID, err := uuid.Parse(doctorIDParam)
+	if err != nil {
+		res := utils.BuildResponseFailed("Invalid doctor ID", err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
 	page := ctx.Query("page")
 	limit := ctx.Query("limit")
-
-	appointments, err := h.appointmentUsecase.GetByDoctor(ctx, userID, page, limit)
+	statusTab := ctx.Query("status")
+	appointments, err := h.appointmentUsecase.GetByDoctor(ctx, doctorID, page, limit, statusTab)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve appointments", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)
@@ -72,10 +79,18 @@ func (h *AppointmentHandler) GetByDoctor(ctx *gin.Context) {
 }
 
 func (h *AppointmentHandler) GetByPatient(ctx *gin.Context) {
-	userID := ctx.MustGet("user_id").(uuid.UUID)
+	patientIDParam, _ := ctx.Params.Get("id")
+	patientID, err := uuid.Parse(patientIDParam)
+	if err != nil {
+		res := utils.BuildResponseFailed("Invalid doctor ID", err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
 	page := ctx.Query("page")
 	limit := ctx.Query("limit")
-	appointments, err := h.appointmentUsecase.GetByPatient(ctx, userID, page, limit)
+	statusTab := ctx.Query("status")
+	appointments, err := h.appointmentUsecase.GetByPatient(ctx, patientID, page, limit, statusTab)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve appointments", err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, res)

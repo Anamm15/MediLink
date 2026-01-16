@@ -1,8 +1,9 @@
 package enum
 
 type (
-	AppointmentStatus string
-	AppointmentType   string
+	AppointmentStatus     string
+	AppointmentType       string
+	AppointmentDateStatus string
 )
 
 const (
@@ -17,4 +18,9 @@ const (
 	AppointmentVideoCall AppointmentType = "video_call"
 	AppointmentChat      AppointmentType = "chat"
 	AppointmentOnsite    AppointmentType = "onsite"
+)
+
+const (
+	AppointmentUpcoming AppointmentDateStatus = "upcoming"
+	AppointmentPast     AppointmentDateStatus = "past"
 )

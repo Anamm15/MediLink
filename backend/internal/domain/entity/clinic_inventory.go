@@ -18,6 +18,7 @@ type ClinicInventory struct {
 	BatchNumber *string `gorm:"type:varchar(100);"`
 	ExpiryDate  *string `gorm:"type:date;"`
 
+	CreatedAt time.Time `gorm:"type:timestamptz;default:now()"`
 	UpdatedAt time.Time `gorm:"type:timestamptz;default:now()"`
 
 	Clinic   Clinic   `gorm:"foreignKey:ClinicID"`

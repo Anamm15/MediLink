@@ -31,7 +31,8 @@ func (h *PrescriptionHandler) GetByPatient(c *gin.Context) {
 
 	page := c.Query("page")
 	limit := c.Query("limit")
-	prescriptions, err := h.prescriptionUsecase.GetByPatient(c.Request.Context(), patientID, page, limit)
+	isRedeemed := c.Query("is_redeemed")
+	prescriptions, err := h.prescriptionUsecase.GetByPatient(c.Request.Context(), patientID, page, limit, isRedeemed)
 	if err != nil {
 		res := utils.BuildResponseFailed("Failed to retrieve prescriptions", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, res)

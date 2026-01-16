@@ -37,21 +37,25 @@ export async function createAppointment(
 }
 
 export async function getDoctorAppointments(
+  id: string,
   page: number,
-  limit: number
+  limit: number,
+  status?: string
 ): Promise<AppointmentPaginateResponse> {
   const response = await api.get<ApiResponse<AppointmentPaginateResponse>>(
-    `${BASE_PATH}/doctor?page=${page}&limit=${limit}`
+    `${BASE_PATH}/doctor/${id}?page=${page}&limit=${limit}&status=${status}`
   );
   return unwrapResponse(response.data);
 }
 
 export async function getPatientAppointments(
+  id: string,
   page: number,
-  limit: number
+  limit: number,
+  status?: string
 ): Promise<AppointmentPaginateResponse> {
   const response = await api.get<ApiResponse<AppointmentPaginateResponse>>(
-    `${BASE_PATH}/patient?page=${page}&limit=${limit}`
+    `${BASE_PATH}/patient/${id}?page=${page}&limit=${limit}&status=${status}`
   );
   return unwrapResponse(response.data);
 }

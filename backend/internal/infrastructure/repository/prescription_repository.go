@@ -22,13 +22,21 @@ func NewPrescriptionRepository(db *gorm.DB) repository.PrescriptionRepository {
 	}
 }
 
-func (r *PrescriptionRepository) GetByPatient(ctx context.Context, patientID uuid.UUID, limit int, offset int) ([]entity.Prescription, int64, error) {
+func (r *PrescriptionRepository) GetByPatient(ctx context.Context, patientID uuid.UUID, limit int, offset int, isRedeemed bool) ([]entity.Prescription, int64, error) {
 	var (
 		prescriptions []entity.Prescription
 		total         int64
 	)
 
-	err := r.db.WithContext(ctx).
+	baseQuery := r.db.WithContext(ctx).
+		Model(&entity.Prescription{}).
+		Where("patient_id = ? AND is_redeemed = ?", patientID, isRedeemed)
+
+	if err := baseQuery.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	err := baseQuery.
 		Preload("Doctor", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "user_id", "specialization")
 		}).
@@ -37,13 +45,14 @@ func (r *PrescriptionRepository) GetByPatient(ctx context.Context, patientID uui
 		}).
 		Preload("Medicines").
 		Preload("Medicines.Medicine").
-		Where("patient_id = ?", patientID).
+		Order("prescriptions.created_at DESC").
+		Limit(limit).
+		Offset(offset).
 		Find(&prescriptions).Error
 	if err != nil {
 		return nil, 0, err
 	}
 
-	total = int64(len(prescriptions))
 	return prescriptions, total, nil
 }
 
@@ -53,7 +62,15 @@ func (r *PrescriptionRepository) GetByDoctor(ctx context.Context, doctorID uuid.
 		total         int64
 	)
 
-	err := r.db.WithContext(ctx).
+	baseQuery := r.db.WithContext(ctx).
+		Model(&entity.Prescription{}).
+		Where("doctor_id = ?", doctorID)
+
+	if err := baseQuery.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	err := baseQuery.
 		Preload("Patient", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "user_id")
 		}).
@@ -62,13 +79,14 @@ func (r *PrescriptionRepository) GetByDoctor(ctx context.Context, doctorID uuid.
 		}).
 		Preload("Medicines").
 		Preload("Medicines.Medicine").
-		Where("doctor_id = ?", doctorID).
+		Order("prescriptions.created_at DESC").
+		Limit(limit).
+		Offset(offset).
 		Find(&prescriptions).Error
 	if err != nil {
 		return nil, 0, err
 	}
 
-	total = int64(len(prescriptions))
 	return prescriptions, total, nil
 }
 

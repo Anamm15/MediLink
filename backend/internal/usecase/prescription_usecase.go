@@ -36,7 +36,8 @@ func NewPrescriptionUsecase(
 	}
 }
 
-func (u *PrescriptionUsecase) GetByPatient(ctx context.Context, patientID uuid.UUID, pageStr string, limitStr string) (dto.PrescriptionSearchResponse, error) {
+func (u *PrescriptionUsecase) GetByPatient(ctx context.Context, patientID uuid.UUID, pageStr string, limitStr string, isRedeemed string) (dto.PrescriptionSearchResponse, error) {
+	isRedeemedBool := utils.StringToBoolDefault(isRedeemed, false)
 	limit, err := utils.StringToInt(limitStr)
 	if err != nil {
 		limit = constants.PAGE_LIMIT_DEFAULT
@@ -48,7 +49,7 @@ func (u *PrescriptionUsecase) GetByPatient(ctx context.Context, patientID uuid.U
 	}
 
 	offset := (page - 1) * limit
-	prescriptions, count, err := u.prescriptionRepository.GetByPatient(ctx, patientID, limit, offset)
+	prescriptions, count, err := u.prescriptionRepository.GetByPatient(ctx, patientID, limit, offset, isRedeemedBool)
 	if err != nil {
 		return dto.PrescriptionSearchResponse{}, err
 	}

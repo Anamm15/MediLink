@@ -1,35 +1,24 @@
 "use client";
-import { useEffect, useState } from "react";
-import { AppointmentList } from "./components/AppointmentList";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useDoctorAppointmentsQuery } from "./hooks/useDoctorAppointment";
 import { AppointmentResponse } from "@/types/appointment.type";
-import { groupAppointmentsByTime } from "@/helpers/appointments";
-import { DEFAULT_LIMIT_QUERY, DEFAULT_PAGE_QUERY } from "@/helpers/constant";
+import { useDoctorIdQuery } from "@/hooks/useDoctor";
+import UpcomingTab from "./components/UpcomingTab";
+import HistoryTab from "./components/HistoryTab";
+
+export const groupAppointmentsByDate = (
+  appointments: AppointmentResponse[]
+) => {
+  const groups = appointments.reduce((acc, app) => {
+    (acc[app.appointment_date] = acc[app.appointment_date] || []).push(app);
+    return acc;
+  }, {} as Record<string, AppointmentResponse[]>);
+  return groups;
+};
 
 export default function DoctorAppointmentPage() {
   const [activeTab, setActiveTab] = useState("upcoming");
-  const [page, setPage] = useState(DEFAULT_PAGE_QUERY);
-  const [totalPage, setTotalPage] = useState(0);
-  const { data: appointmentsWithMetadata } = useDoctorAppointmentsQuery(
-    page,
-    DEFAULT_LIMIT_QUERY
-  );
-  const [upComingAppointments, setUpComingAppointments] = useState<
-    AppointmentResponse[]
-  >([]);
-  const [pastAppointments, setPastAppointments] = useState<
-    AppointmentResponse[]
-  >([]);
-
-  useEffect(() => {
-    if (!appointmentsWithMetadata) return;
-    const { data, metadata } = appointmentsWithMetadata;
-    setTotalPage(metadata.total_pages);
-    const { upcoming, past } = groupAppointmentsByTime(data);
-    setUpComingAppointments(upcoming);
-    setPastAppointments(past);
-  }, [appointmentsWithMetadata]);
+  const { data: doctorId } = useDoctorIdQuery();
 
   return (
     <div className="flex flex-col h-full">
@@ -51,7 +40,7 @@ export default function DoctorAppointmentPage() {
               : "text-gray-500 hover:text-gray-800"
           }`}
         >
-          Upcoming ({upComingAppointments.length})
+          Upcoming
         </button>
         <button
           onClick={() => setActiveTab("history")}
@@ -61,7 +50,7 @@ export default function DoctorAppointmentPage() {
               : "text-gray-500 hover:text-gray-800"
           }`}
         >
-          History ({pastAppointments.length})
+          History
         </button>
       </div>
 
@@ -74,19 +63,9 @@ export default function DoctorAppointmentPage() {
           transition={{ duration: 0.2 }}
         >
           {activeTab === "upcoming" ? (
-            <AppointmentList
-              appointments={upComingAppointments}
-              page={page}
-              totalPage={totalPage}
-              setPage={setPage}
-            />
+            <UpcomingTab doctorId={doctorId!} />
           ) : (
-            <AppointmentList
-              appointments={pastAppointments}
-              page={page}
-              totalPage={totalPage}
-              setPage={setPage}
-            />
+            <HistoryTab doctorId={doctorId!} />
           )}
         </motion.div>
       </AnimatePresence>

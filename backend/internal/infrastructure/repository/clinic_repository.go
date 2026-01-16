@@ -52,6 +52,7 @@ func (r *clinicRepository) GetAll(ctx context.Context, limit int, offset int) ([
 	}
 
 	if err := baseQuery.
+		Order("created_at DESC").
 		Limit(limit).
 		Offset(offset).
 		Find(&clinics).Error; err != nil {
@@ -75,9 +76,10 @@ func (r *clinicRepository) Find(ctx context.Context, name string, limit int, off
 		return nil, 0, err
 	}
 	if err := baseQuery.
+		Where("name LIKE ?", "%"+name+"%").
+		Order("created_at DESC").
 		Limit(limit).
 		Offset(offset).
-		Where("name LIKE ?", "%"+name+"%").
 		Find(&clinics).Error; err != nil {
 		return nil, 0, err
 	}

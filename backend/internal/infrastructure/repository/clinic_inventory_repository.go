@@ -28,6 +28,7 @@ func (r *ClinicInventoryRepository) GetAll(ctx context.Context) ([]entity.Clinic
 		Preload("Clinic", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id", "name")
 		}).
+		Order("created_at desc").
 		Find(&clinicInventories).Error; err != nil {
 		return nil, err
 	}
